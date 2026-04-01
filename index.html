@@ -664,6 +664,29 @@ nav{
 .app-page.on{display:block}
 /* hide old homeView nav (not present) but keep qhdr */
 
+/* mobile typography & overflow fix */
+@media (max-width: 480px){
+  body{font-size:13px}
+  .home-title{font-size:clamp(30px,10vw,44px);letter-spacing:-1px}
+  .home-sub{font-size:13px}
+  .streak-bar{padding:14px 16px;gap:12px}
+  .streak-num{font-size:30px}
+  .qhdr{height:44px;padding:0 10px;gap:6px}
+  .qhdr-title{max-width:120px;font-size:12px}
+  .mini-stat{font-size:10px}
+  .q-area{padding:10px}
+  .passage-block,.q-card{padding:14px 12px}
+  .p-body,.qc-text,.opt,.ai-body,.rcard-q,.rcard-passage,.rcard-exp{
+    font-size:12.5px;
+    line-height:1.75;
+    word-break:keep-all;
+    overflow-wrap:anywhere;
+  }
+  .result-box{padding:36px 18px}
+  .r-pct{font-size:62px}
+  .r-grid,.r-part-stats{gap:8px}
+}
+
 </style>
 </head>
 <body>
