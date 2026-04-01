@@ -1,0 +1,2333 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="TOEIC">
+<title>TOEIC Master</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Noto+Sans+KR:wght@300;400;500;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0c0c14;
+  --s1:#12121e;
+  --s2:#1a1a2e;
+  --s3:#22223a;
+  --accent:#e8b84b;
+  --accent2:#ff6b6b;
+  --accent3:#4ecdc4;
+  --blue:#5b8dee;
+  --text:#e8e8f0;
+  --dim:#8888aa;
+  --muted:#44445a;
+  --border:rgba(255,255,255,0.07);
+  --correct:#4ecdc4;
+  --wrong:#ff6b6b;
+  --cbg:rgba(78,205,196,0.1);
+  --wbg:rgba(255,107,107,0.1);
+}
+
+html,body{min-height:100vh}
+body{background:var(--bg);color:var(--text);font-family:'Noto Sans KR',sans-serif;font-size:14px;line-height:1.6}
+
+/* grid noise */
+body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(232,184,75,0.02) 1px,transparent 1px),linear-gradient(90deg,rgba(232,184,75,0.02) 1px,transparent 1px);background-size:60px 60px;pointer-events:none;z-index:0}
+
+/* ── VIEWS ── */
+.view{display:none;position:relative;z-index:1}
+.view.active{display:block}
+
+/* ══════════════ HOME VIEW ══════════════ */
+#homeView{
+  min-height:100vh;
+  display:none;flex-direction:column;align-items:center;justify-content:center;
+  padding:40px 20px 100px;
+}
+#homeView.active{display:flex}
+
+.home-top{text-align:center;margin-bottom:48px}
+.home-brand{
+  font-family:'Syne',sans-serif;font-size:13px;font-weight:700;
+  letter-spacing:4px;text-transform:uppercase;color:var(--accent);
+  margin-bottom:16px;
+}
+.home-title{
+  font-family:'Syne',sans-serif;font-size:clamp(40px,8vw,72px);
+  font-weight:800;line-height:1;letter-spacing:-2px;color:var(--text);
+}
+.home-title em{color:var(--accent);font-style:normal}
+.home-sub{color:var(--dim);font-size:15px;margin-top:16px}
+
+/* day cards */
+.day-grid{
+  display:grid;
+  grid-template-columns:repeat(7,1fr);
+  gap:10px;
+  width:100%;max-width:980px;
+  margin-bottom:40px;
+}
+@media(max-width:700px){.day-grid{grid-template-columns:repeat(4,1fr)}}
+.day-card{
+  background:var(--s1);
+  border:1px solid var(--border);
+  border-radius:14px;
+  padding:14px 10px;
+  cursor:pointer;
+  transition:all 0.2s;
+  text-align:center;
+  position:relative;overflow:hidden;
+}
+.day-card:hover{border-color:var(--accent);transform:translateY(-3px);box-shadow:0 12px 32px rgba(232,184,75,0.15)}
+.day-card.today{border-color:var(--accent);background:rgba(232,184,75,0.06)}
+.day-card.today::before{content:'오늘';position:absolute;top:8px;right:8px;font-size:9px;font-family:'JetBrains Mono',monospace;color:var(--accent);letter-spacing:1px}
+.day-card.completed{border-color:var(--correct);opacity:0.7}
+.day-card.completed::after{content:'✓';position:absolute;top:8px;right:8px;font-size:11px;color:var(--correct)}
+.dc-day{font-family:'Syne',sans-serif;font-size:22px;font-weight:800;color:var(--accent);margin-bottom:4px}
+.dc-name{font-size:11px;color:var(--dim);margin-bottom:12px;letter-spacing:1px}
+.dc-parts{display:flex;flex-direction:column;gap:4px}
+.dc-part{font-size:10px;font-family:'JetBrains Mono',monospace;padding:3px 6px;border-radius:4px;background:var(--s2);color:var(--dim)}
+.dc-part.p5{color:#a8d8ea;background:rgba(168,216,234,0.08)}
+.dc-part.p6{color:#ffd6a5;background:rgba(255,214,165,0.08)}
+.dc-part.p7{color:#caffbf;background:rgba(202,255,191,0.08)}
+.dc-time{
+  margin-top:10px;font-family:'JetBrains Mono',monospace;
+  font-size:11px;color:var(--muted);
+}
+
+/* streak */
+.streak-bar{
+  display:flex;align-items:center;gap:20px;
+  background:var(--s1);border:1px solid var(--border);border-radius:16px;
+  padding:20px 28px;width:100%;max-width:980px;
+}
+.streak-num{font-family:'Syne',sans-serif;font-size:40px;font-weight:800;color:var(--accent);line-height:1}
+.streak-label{font-size:12px;color:var(--dim);margin-top:2px}
+.streak-dots{display:flex;gap:6px;margin-left:auto}
+.s-dot{width:12px;height:12px;border-radius:50%;background:var(--s3);border:1px solid var(--border)}
+.s-dot.on{background:var(--accent);box-shadow:0 0 8px rgba(232,184,75,0.5)}
+
+/* ══════════════ QUIZ VIEW ══════════════ */
+#quizView{min-height:100vh;padding-bottom:100px}
+
+/* quiz header */
+.qhdr{
+  position:sticky;top:0;z-index:50;
+  background:rgba(12,12,20,0.95);backdrop-filter:blur(16px);
+  border-bottom:1px solid var(--border);
+  padding:0 16px;height:48px;
+  display:flex;align-items:center;gap:10px;
+}
+.qhdr-back{
+  background:none;border:1px solid var(--border);color:var(--dim);
+  border-radius:8px;padding:6px 12px;cursor:pointer;font-size:12px;
+  font-family:'Noto Sans KR',sans-serif;
+  transition:all 0.15s;
+}
+.qhdr-back:hover{border-color:var(--dim);color:var(--text)}
+.qhdr-title{font-family:'Syne',sans-serif;font-size:13px;font-weight:700;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:180px}
+.qhdr-right{margin-left:auto;display:flex;align-items:center;gap:14px}
+.mini-stat{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--dim)}
+.mini-stat span{color:var(--text)}
+
+/* section header */
+.section-hdr{
+  background:var(--s2);border:1px solid var(--border);border-radius:12px;
+  padding:12px 16px;
+  display:flex;align-items:center;gap:12px;
+  margin:0 0 16px;
+  position:static;
+}
+.sec-badge{
+  font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:2px;
+  text-transform:uppercase;padding:5px 12px;border-radius:6px;
+  font-weight:700;
+}
+.sec-badge.p5{background:rgba(168,216,234,0.12);color:#a8d8ea;border:1px solid rgba(168,216,234,0.2)}
+.sec-badge.p6{background:rgba(255,214,165,0.12);color:#ffd6a5;border:1px solid rgba(255,214,165,0.2)}
+.sec-badge.p7{background:rgba(202,255,191,0.12);color:#caffbf;border:1px solid rgba(202,255,191,0.2)}
+.sec-info{flex:1}
+.sec-title{font-family:'Syne',sans-serif;font-size:14px;font-weight:700;color:var(--text)}
+.sec-desc{font-size:11px;color:var(--dim)}
+.sec-timer{margin-left:auto;display:flex;align-items:center;gap:8px}
+.sec-timer-num{font-family:'JetBrains Mono',monospace;font-size:20px;color:var(--accent3);font-weight:700;min-width:48px}
+.sec-timer-num.warn{color:var(--accent2);animation:blink 0.8s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0.3}}
+
+/* progress */
+.quiz-progress{padding:6px 16px;background:var(--bg)}
+.qprog-track{height:3px;background:var(--s3);border-radius:100px;overflow:hidden}
+.qprog-fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--accent3));transition:width 0.5s;border-radius:100px}
+.qprog-row{display:flex;justify-content:space-between;margin-top:6px}
+.qprog-txt{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted)}
+
+/* passage block */
+.q-area{max-width:900px;margin:0 auto;padding:12px 16px}
+.passage-block{
+  background:var(--s1);border:1px solid var(--border);border-radius:12px;
+  padding:16px;margin-bottom:16px;
+  position:relative;overflow:hidden;
+}
+.passage-block::before{content:'';position:absolute;top:0;left:0;bottom:0;width:3px;background:var(--accent)}
+.p-label{font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;margin-bottom:12px}
+.p-header-row{display:grid;grid-template-columns:auto 1fr;gap:6px 14px;margin-bottom:12px;font-size:13px}
+.p-hkey{color:var(--muted);font-size:12px}
+.p-hval{color:var(--dim)}
+.p-body{font-size:13.5px;line-height:2;color:var(--text)}
+.p-body em{color:var(--dim);font-style:normal}
+.p-sep{border:none;border-top:1px solid var(--border);margin:16px 0}
+.blank{display:inline-block;background:rgba(232,184,75,0.12);border-bottom:2px solid var(--accent);min-width:80px;padding:0 8px;text-align:center;border-radius:3px;font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--accent)}
+
+/* question card */
+.q-card{
+  background:var(--s1);border:1px solid var(--border);border-radius:14px;
+  padding:18px 16px;margin-bottom:12px;
+  animation:fadeUp 0.3s ease;
+}
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.q-card.answered{border-color:rgba(255,255,255,0.1)}
+.qc-meta{display:flex;align-items:center;gap:10px;margin-bottom:18px}
+.qc-num{
+  font-family:'Syne',sans-serif;font-size:20px;font-weight:800;
+  color:var(--accent);line-height:1;
+}
+.qc-type{
+  font-family:'JetBrains Mono',monospace;font-size:9px;
+  letter-spacing:1.5px;text-transform:uppercase;
+  padding:3px 8px;border-radius:4px;
+  background:var(--s2);color:var(--muted);border:1px solid var(--border);
+}
+.qc-diff{display:flex;gap:3px;margin-left:auto}
+.dd{width:5px;height:5px;border-radius:50%;background:var(--s3)}
+.dd.on{background:var(--accent)}
+
+.qc-text{font-size:14px;line-height:1.7;color:var(--text);margin-bottom:16px}
+.qc-text strong{color:var(--accent);font-weight:600}
+
+.opts{display:flex;flex-direction:column;gap:6px}
+.opt{
+  background:var(--s2);border:1.5px solid var(--border);border-radius:10px;
+  padding:10px 14px;cursor:pointer;display:flex;align-items:center;gap:10px;
+  transition:all 0.15s;text-align:left;font-family:'Noto Sans KR',sans-serif;
+  font-size:13.5px;color:var(--text);width:100%;
+}
+.opt:hover:not(:disabled){border-color:var(--blue);background:rgba(91,141,238,0.08);transform:translateX(3px)}
+.opt:disabled{cursor:default}
+.ol{
+  width:26px;height:26px;min-width:26px;border-radius:6px;
+  background:var(--s3);border:1.5px solid var(--border);
+  display:flex;align-items:center;justify-content:center;
+  font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;
+  color:var(--muted);transition:all 0.15s;margin-top:1px;
+}
+.opt.sel{border-color:var(--blue);background:rgba(91,141,238,0.1)}
+.opt.sel .ol{background:var(--blue);color:#fff;border-color:var(--blue)}
+.opt.ok{border-color:var(--correct);background:var(--cbg)}
+.opt.ok .ol{background:var(--correct);color:var(--bg);border-color:var(--correct)}
+.opt.ng{border-color:var(--wrong);background:var(--wbg)}
+.opt.ng .ol{background:var(--wrong);color:#fff;border-color:var(--wrong)}
+
+/* result */
+.res-row{
+  margin-top:10px;border-radius:8px;padding:10px 14px;
+  display:none;align-items:center;gap:8px;font-size:13px;font-weight:500;
+}
+.res-row.show{display:flex}
+.res-row.ok{background:var(--cbg);border:1px solid var(--correct);color:var(--correct)}
+.res-row.ng{background:var(--wbg);border:1px solid var(--wrong);color:var(--wrong)}
+
+/* actions */
+.q-actions{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap}
+.btn{
+  padding:10px 20px;border-radius:8px;font-family:'Noto Sans KR',sans-serif;
+  font-size:13px;font-weight:500;cursor:pointer;transition:all 0.15s;border:none;
+}
+.btn-main{background:var(--accent);color:var(--bg);font-weight:700}
+.btn-main:hover{filter:brightness(1.1);transform:translateY(-1px)}
+.btn-ghost{background:transparent;border:1px solid var(--border);color:var(--dim)}
+.btn-ghost:hover{border-color:var(--dim);color:var(--text)}
+.btn:disabled{opacity:0.3;cursor:default;transform:none!important;filter:none!important}
+
+/* AI explanation */
+.ai-exp{
+  background:var(--s2);border:1px solid var(--border);border-radius:10px;
+  padding:14px;margin-top:10px;display:none;
+}
+.ai-exp.show{display:block;animation:fadeUp 0.3s ease}
+.ai-exp-hdr{display:flex;align-items:center;gap:8px;margin-bottom:12px}
+.ai-dot{width:7px;height:7px;border-radius:50%;background:var(--accent3);box-shadow:0 0 8px var(--accent3);animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.3}}
+.ai-title{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--dim)}
+.ai-body{font-size:13px;line-height:1.85;color:var(--dim)}
+.ai-body.loading{display:flex;align-items:center;gap:8px;color:var(--muted)}
+.dots span{display:inline-block;width:5px;height:5px;border-radius:50%;background:var(--accent);animation:da 1.2s infinite;margin:0 2px}
+.dots span:nth-child(2){animation-delay:0.2s}
+.dots span:nth-child(3){animation-delay:0.4s}
+@keyframes da{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
+.vocab-row{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px;padding-top:10px;border-top:1px solid var(--border)}
+.vt{padding:3px 10px;border-radius:5px;font-family:'JetBrains Mono',monospace;font-size:10px;background:rgba(232,184,75,0.08);color:var(--accent);border:1px solid rgba(232,184,75,0.15)}
+
+/* section divider */
+.sec-divider{padding:24px 0 8px;}
+.sec-div-inner{display:none}
+.sec-div-txt{display:none}
+
+/* ══════════════ RESULT VIEW ══════════════ */
+#resultView{
+  min-height:100vh;display:none;
+  flex-direction:column;align-items:center;justify-content:center;
+  padding:40px 20px 100px;
+}
+#resultView.active{display:flex}
+.result-box{
+  background:var(--s1);border:1px solid var(--border);border-radius:24px;
+  padding:56px 48px;max-width:700px;width:100%;text-align:center;
+  position:relative;overflow:hidden;
+  animation:popIn 0.5s cubic-bezier(0.34,1.56,0.64,1);
+}
+@keyframes popIn{from{opacity:0;transform:scale(0.8)}to{opacity:1;transform:scale(1)}}
+.result-box::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg,var(--accent),var(--accent3),var(--blue))}
+.r-day{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:3px;color:var(--muted);margin-bottom:8px}
+.r-pct{font-family:'Syne',sans-serif;font-size:88px;font-weight:800;line-height:1;background:linear-gradient(135deg,var(--accent),var(--accent3));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.r-grade{font-family:'Syne',sans-serif;font-size:22px;font-weight:700;color:var(--text);margin-bottom:6px}
+.r-desc{font-size:13px;color:var(--dim);margin-bottom:36px}
+.r-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:36px}
+.r-cell{background:var(--s2);border-radius:12px;padding:18px 10px}
+.r-num{font-family:'Syne',sans-serif;font-size:32px;font-weight:800}
+.r-num.g{color:var(--correct)}.r-num.r{color:var(--wrong)}.r-num.b{color:var(--blue)}
+.r-lbl{font-size:11px;color:var(--muted);margin-top:4px}
+.r-part-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:36px}
+.r-ps{background:var(--s2);border-radius:10px;padding:14px;text-align:left}
+.r-ps-label{font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:1.5px;color:var(--muted);margin-bottom:6px}
+.r-ps-val{font-family:'Syne',sans-serif;font-size:22px;font-weight:800;color:var(--accent)}
+.r-ps-sub{font-size:11px;color:var(--muted);margin-top:2px}
+.r-actions{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+
+/* wrong review */
+.review-section{max-width:900px;margin:40px auto;padding:0 24px 80px}
+.review-title{font-family:'Syne',sans-serif;font-size:24px;font-weight:800;color:var(--text);margin-bottom:24px;display:flex;align-items:center;gap:12px}
+.review-title span{color:var(--wrong)}
+.rcard{
+  background:var(--s1);border:1px solid var(--border);border-left:3px solid var(--wrong);
+  border-radius:0 14px 14px 0;padding:24px;margin-bottom:14px;
+}
+.rcard-meta{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--muted);letter-spacing:1px;margin-bottom:10px}
+.rcard-passage{background:var(--s2);border-radius:8px;padding:14px;font-size:13px;line-height:1.85;margin-bottom:12px;border-left:2px solid var(--accent)}
+.rcard-q{font-size:14px;color:var(--text);margin-bottom:12px;line-height:1.7}
+.rcard-ans{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px;align-items:center}
+.chip{padding:4px 12px;border-radius:5px;font-family:'JetBrains Mono',monospace;font-size:11px}
+.chip-ng{background:var(--wbg);color:var(--wrong);border:1px solid var(--wrong)}
+.chip-ok{background:var(--cbg);color:var(--correct);border:1px solid var(--correct)}
+.rcard-exp{font-size:13px;color:var(--dim);line-height:1.8;padding-top:12px;border-top:1px solid var(--border)}
+.rcard-vocab{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
+
+::-webkit-scrollbar{width:5px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--s3);border-radius:10px}
+/* safe-area for iPhone */
+body{padding-top:env(safe-area-inset-top);padding-bottom:env(safe-area-inset-bottom)}
+.qhdr{top:env(safe-area-inset-top)}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--s3);border-radius:10px}
+
+/* ══ VOCAB STYLES ══ */
+
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0c0c14;
+  --s1:#13131f;
+  --s2:#1b1b2c;
+  --s3:#242438;
+  --gold:#e8b84b;
+  --gold2:#f0d080;
+  --teal:#4ecdc4;
+  --red:#ff6b6b;
+  --blue:#5b8dee;
+  --text:#e8e8f2;
+  --dim:#8080a0;
+  --muted:#404058;
+  --border:rgba(255,255,255,0.07);
+  --cbg:rgba(78,205,196,0.1);
+  --wbg:rgba(255,107,107,0.1);
+}
+html,body{min-height:100vh;background:var(--bg);color:var(--text);font-family:'Noto Sans KR',sans-serif;font-size:14px;line-height:1.6}
+body{padding-top:env(safe-area-inset-top);padding-bottom:env(safe-area-inset-bottom)}
+body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse 80% 60% at 50% -10%, rgba(232,184,75,0.07) 0%, transparent 70%);pointer-events:none;z-index:0}
+
+/* ── NAV ── */
+nav{
+  position:sticky;top:0;z-index:100;
+  background:rgba(12,12,20,0.9);backdrop-filter:blur(16px);
+  border-bottom:1px solid var(--border);
+  padding:0 20px;height:56px;
+  display:flex;align-items:center;gap:0;
+  top:env(safe-area-inset-top);
+}
+.nav-logo{font-family:'Syne',sans-serif;font-size:16px;font-weight:800;color:var(--gold);margin-right:auto;letter-spacing:-0.5px}
+.nav-tabs{display:flex;gap:4px}
+.nav-tab{
+  padding:7px 14px;border-radius:8px;border:none;background:transparent;
+  font-family:'Noto Sans KR',sans-serif;font-size:12px;color:var(--dim);
+  cursor:pointer;transition:all 0.15s;font-weight:500;
+}
+.nav-tab:hover{color:var(--text);background:var(--s2)}
+.nav-tab.on{background:var(--gold);color:var(--bg);font-weight:700}
+.nav-count{
+  font-family:'JetBrains Mono',monospace;font-size:10px;
+  background:var(--s2);border:1px solid var(--border);
+  border-radius:20px;padding:2px 8px;color:var(--dim);margin-left:8px;
+}
+
+/* ── VIEWS ── */
+.view{display:none;position:relative;z-index:1;min-height:calc(100vh - 56px);padding:24px 20px 80px}
+.view.on{display:block}
+@media(min-width:700px){.view{max-width:760px;margin:0 auto;padding:32px 24px 80px}}
+
+/* ── SECTION TITLE ── */
+.sec-title{
+  font-family:'Syne',sans-serif;font-size:22px;font-weight:800;
+  color:var(--text);margin-bottom:6px;letter-spacing:-0.5px;
+}
+.sec-sub{font-size:13px;color:var(--dim);margin-bottom:24px}
+
+/* ── ADD WORD FORM ── */
+.add-form{
+  background:var(--s1);border:1px solid var(--border);border-radius:16px;
+  padding:20px;margin-bottom:28px;
+}
+.add-form-title{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:14px}
+.form-row{display:flex;gap:10px;margin-bottom:10px;flex-wrap:wrap}
+.inp{
+  background:var(--s2);border:1.5px solid var(--border);border-radius:10px;
+  padding:11px 14px;font-family:'Noto Sans KR',sans-serif;font-size:14px;
+  color:var(--text);outline:none;transition:border-color 0.15s;
+}
+.inp:focus{border-color:var(--gold)}
+.inp::placeholder{color:var(--muted)}
+.inp-word{flex:1;min-width:140px}
+.inp-mean{flex:2;min-width:200px}
+.inp-ex{width:100%}
+.btn{
+  padding:11px 20px;border-radius:10px;font-family:'Noto Sans KR',sans-serif;
+  font-size:13px;font-weight:700;cursor:pointer;transition:all 0.15s;border:none;
+  white-space:nowrap;
+}
+.btn-gold{background:var(--gold);color:var(--bg)}
+.btn-gold:hover{filter:brightness(1.1);transform:translateY(-1px)}
+.btn-ghost{background:transparent;border:1px solid var(--border);color:var(--dim)}
+.btn-ghost:hover{border-color:var(--dim);color:var(--text)}
+.btn-sm{padding:6px 12px;font-size:11px;border-radius:6px}
+.btn-teal{background:var(--teal);color:var(--bg);font-weight:700}
+.btn-red{background:var(--red);color:#fff}
+.ai-gen-btn{
+  display:flex;align-items:center;gap:6px;
+  background:rgba(232,184,75,0.1);border:1px solid rgba(232,184,75,0.25);
+  color:var(--gold);padding:8px 14px;border-radius:8px;font-size:12px;font-weight:600;
+  cursor:pointer;transition:all 0.15s;white-space:nowrap;
+}
+.ai-gen-btn:hover{background:rgba(232,184,75,0.18)}
+.ai-spinner{width:12px;height:12px;border:2px solid rgba(232,184,75,0.3);border-top-color:var(--gold);border-radius:50%;animation:spin 0.8s linear infinite;display:none}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* ── FILTER / SEARCH ── */
+.filter-row{display:flex;gap:10px;margin-bottom:20px;flex-wrap:wrap;align-items:center}
+.search-inp{flex:1;min-width:160px}
+.filter-chips{display:flex;gap:6px;flex-wrap:wrap}
+.chip{
+  padding:5px 12px;border-radius:20px;font-size:11px;font-family:'JetBrains Mono',monospace;
+  border:1px solid var(--border);background:var(--s2);color:var(--dim);cursor:pointer;
+  transition:all 0.15s;
+}
+.chip:hover{border-color:var(--dim);color:var(--text)}
+.chip.on{background:var(--gold);border-color:var(--gold);color:var(--bg);font-weight:700}
+
+/* ── WORD LIST ── */
+.word-list{display:flex;flex-direction:column;gap:10px}
+.word-card{
+  background:var(--s1);border:1px solid var(--border);border-radius:14px;
+  padding:16px 18px;
+  transition:border-color 0.15s;
+  position:relative;overflow:hidden;
+}
+.word-card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--gold);opacity:0.5}
+.word-card.from-wrong::before{background:var(--red)}
+.word-card:hover{border-color:rgba(255,255,255,0.15)}
+.wc-top{display:flex;align-items:flex-start;gap:12px;margin-bottom:6px}
+.wc-word{font-family:'Syne',sans-serif;font-size:18px;font-weight:800;color:var(--gold);line-height:1.2;cursor:pointer}
+.wc-word:hover{text-decoration:underline;text-decoration-color:rgba(232,184,75,0.5)}
+.wc-tags{display:flex;gap:5px;flex-wrap:wrap;margin-top:3px}
+.wc-tag{font-family:'JetBrains Mono',monospace;font-size:9px;padding:2px 7px;border-radius:4px;background:var(--s3);color:var(--dim);border:1px solid var(--border)}
+.wc-tag.wrong-src{background:rgba(255,107,107,0.12);color:var(--red);border-color:rgba(255,107,107,0.25)}
+.wc-actions{margin-left:auto;display:flex;gap:6px}
+.wc-mean{font-size:14px;color:var(--text);margin-bottom:4px;line-height:1.6}
+.wc-ex{font-size:12px;color:var(--dim);font-style:italic;line-height:1.6;border-left:2px solid var(--muted);padding-left:10px;margin-top:6px}
+.wc-meta{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--muted);margin-top:8px}
+.star-btn{background:none;border:none;cursor:pointer;font-size:16px;padding:2px;line-height:1;transition:transform 0.15s}
+.star-btn:hover{transform:scale(1.2)}
+.del-btn{background:none;border:none;cursor:pointer;font-size:12px;color:var(--muted);padding:4px;transition:color 0.15s}
+.del-btn:hover{color:var(--red)}
+
+/* empty state */
+.empty{text-align:center;padding:60px 20px;color:var(--muted)}
+.empty-icon{font-size:48px;margin-bottom:16px}
+.empty-txt{font-size:14px;line-height:1.8}
+
+/* ── FLASHCARD ── */
+.flashcard-wrap{display:flex;flex-direction:column;align-items:center;gap:24px}
+.fc-progress{
+  width:100%;background:var(--s2);border-radius:100px;height:3px;overflow:hidden;margin-bottom:4px;
+}
+.fc-prog-fill{height:100%;background:linear-gradient(90deg,var(--gold),var(--teal));transition:width 0.4s;border-radius:100px}
+.fc-counter{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--muted);text-align:center;margin-bottom:16px}
+.flashcard{
+  width:100%;max-width:520px;
+  perspective:1000px;cursor:pointer;
+}
+.flashcard-inner{
+  position:relative;width:100%;
+  transform-style:preserve-3d;
+  transition:transform 0.55s cubic-bezier(0.4,0,0.2,1);
+  border-radius:20px;
+}
+.flashcard.flipped .flashcard-inner{transform:rotateY(180deg)}
+.fc-front,.fc-back{
+  width:100%;
+  background:var(--s1);border:1px solid var(--border);border-radius:20px;
+  padding:48px 32px;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  min-height:240px;text-align:center;
+  backface-visibility:hidden;
+  -webkit-backface-visibility:hidden;
+}
+.fc-back{
+  position:absolute;top:0;left:0;
+  transform:rotateY(180deg);
+  background:var(--s2);border-color:rgba(232,184,75,0.2);
+}
+.fc-front::before,.fc-back::before{
+  content:'';position:absolute;inset:0;border-radius:20px;
+  background:linear-gradient(135deg,rgba(232,184,75,0.04) 0%,transparent 60%);
+  pointer-events:none;
+}
+.fc-hint{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:20px}
+.fc-word{font-family:'Syne',sans-serif;font-size:clamp(28px,6vw,44px);font-weight:800;color:var(--gold);line-height:1.1}
+.fc-mean{font-size:18px;color:var(--text);font-weight:500;line-height:1.5;margin-bottom:10px}
+.fc-ex{font-size:12px;color:var(--dim);font-style:italic;line-height:1.7;max-width:360px}
+.fc-source{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--muted);margin-top:14px;letter-spacing:1px}
+.fc-btns{display:flex;gap:12px;width:100%;max-width:520px;justify-content:center}
+.fc-btn{
+  flex:1;max-width:160px;padding:14px;border-radius:12px;border:none;
+  font-family:'Noto Sans KR',sans-serif;font-size:14px;font-weight:700;cursor:pointer;
+  transition:all 0.15s;
+}
+.fc-btn-know{background:var(--teal);color:var(--bg)}
+.fc-btn-know:hover{filter:brightness(1.1);transform:translateY(-2px)}
+.fc-btn-dontknow{background:var(--s2);border:1.5px solid var(--red);color:var(--red)}
+.fc-btn-dontknow:hover{background:var(--wbg)}
+.fc-tip{font-size:12px;color:var(--muted);text-align:center}
+.fc-finish{
+  background:var(--s1);border:1px solid var(--border);border-radius:20px;
+  padding:40px;text-align:center;width:100%;max-width:520px;
+}
+.fc-result-big{font-family:'Syne',sans-serif;font-size:60px;font-weight:800;background:linear-gradient(135deg,var(--gold),var(--teal));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1}
+.fc-filter-row{display:flex;gap:8px;margin-bottom:20px;justify-content:center;flex-wrap:wrap}
+.fc-filter-btn{padding:8px 16px;border-radius:20px;border:1px solid var(--border);background:var(--s2);color:var(--dim);font-size:12px;cursor:pointer;transition:all 0.15s}
+.fc-filter-btn.on{background:var(--gold);color:var(--bg);border-color:var(--gold);font-weight:700}
+
+/* ── OX QUIZ ── */
+.ox-wrap{display:flex;flex-direction:column;align-items:center;gap:20px}
+.ox-card{
+  background:var(--s1);border:1px solid var(--border);border-radius:20px;
+  padding:36px 28px;text-align:center;width:100%;max-width:520px;
+}
+.ox-meaning{font-size:20px;color:var(--text);font-weight:600;line-height:1.5;margin-bottom:8px}
+.ox-hint{font-size:12px;color:var(--muted);margin-bottom:28px;font-style:italic}
+.ox-choices{display:flex;flex-direction:column;gap:10px;width:100%;max-width:520px}
+.ox-choice{
+  background:var(--s2);border:1.5px solid var(--border);border-radius:12px;
+  padding:14px 18px;font-size:15px;font-family:'Syne',sans-serif;font-weight:700;
+  cursor:pointer;transition:all 0.15s;color:var(--text);text-align:left;
+  display:flex;align-items:center;gap:12px;
+}
+.ox-choice:hover:not(:disabled){border-color:var(--blue);transform:translateX(4px)}
+.ox-choice:disabled{cursor:default}
+.ox-choice.correct{border-color:var(--teal);background:var(--cbg);color:var(--teal)}
+.ox-choice.wrong{border-color:var(--red);background:var(--wbg);color:var(--red)}
+.ox-choice.reveal{border-color:var(--teal);background:var(--cbg);color:var(--teal)}
+.ox-choice-letter{
+  width:28px;height:28px;min-width:28px;border-radius:6px;
+  background:var(--s3);display:flex;align-items:center;justify-content:center;
+  font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;color:var(--muted);
+}
+.ox-choice.correct .ox-choice-letter{background:var(--teal);color:var(--bg)}
+.ox-choice.wrong .ox-choice-letter{background:var(--red);color:#fff}
+.ox-result{
+  margin-top:12px;padding:12px 16px;border-radius:10px;font-size:13px;font-weight:500;
+  display:none;align-items:center;gap:8px;
+}
+.ox-result.show{display:flex}
+.ox-result.ok{background:var(--cbg);border:1px solid var(--teal);color:var(--teal)}
+.ox-result.ng{background:var(--wbg);border:1px solid var(--red);color:var(--red)}
+.ox-next-btn{
+  background:var(--gold);color:var(--bg);border:none;border-radius:10px;
+  padding:12px 28px;font-family:'Noto Sans KR',sans-serif;font-weight:700;font-size:14px;
+  cursor:pointer;transition:all 0.15s;display:none;
+}
+.ox-next-btn.show{display:block}
+.ox-next-btn:hover{filter:brightness(1.1);transform:translateY(-1px)}
+.ox-score-bar{
+  width:100%;max-width:520px;
+  background:var(--s1);border:1px solid var(--border);border-radius:12px;
+  padding:14px 18px;display:flex;align-items:center;justify-content:space-between;
+}
+
+/* ── WRONG NOTE ── */
+.wrong-note-list{display:flex;flex-direction:column;gap:12px}
+.wn-card{
+  background:var(--s1);border:1px solid var(--border);border-left:3px solid var(--red);
+  border-radius:0 14px 14px 0;padding:18px 20px;
+}
+.wn-meta{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--muted);letter-spacing:1px;margin-bottom:8px}
+.wn-q{font-size:13.5px;color:var(--text);margin-bottom:10px;line-height:1.7}
+.wn-ans-row{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:10px;align-items:center}
+.ans-chip{padding:4px 12px;border-radius:5px;font-family:'JetBrains Mono',monospace;font-size:11px}
+.chip-ng{background:var(--wbg);color:var(--red);border:1px solid var(--red)}
+.chip-ok{background:var(--cbg);color:var(--teal);border:1px solid var(--teal)}
+.wn-exp{font-size:12.5px;color:var(--dim);line-height:1.8;padding-top:10px;border-top:1px solid var(--border)}
+.wn-vocab{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.wn-vtag{
+  padding:3px 10px;border-radius:5px;font-family:'JetBrains Mono',monospace;font-size:10px;
+  background:rgba(232,184,75,0.08);color:var(--gold);border:1px solid rgba(232,184,75,0.15);
+  cursor:pointer;transition:all 0.15s;
+}
+.wn-vtag:hover{background:rgba(232,184,75,0.2);transform:translateY(-1px)}
+.wn-vtag-saved{background:rgba(78,205,196,0.1);color:var(--teal);border-color:rgba(78,205,196,0.25)}
+
+/* ── WORD DETAIL POPUP ── */
+#wordPopup{
+  display:none;position:fixed;inset:0;z-index:500;
+  background:rgba(12,12,20,0.85);backdrop-filter:blur(8px);
+  align-items:flex-end;justify-content:center;
+  padding-bottom:env(safe-area-inset-bottom);
+}
+#wordPopup.show{display:flex}
+.wp-box{
+  background:var(--s1);border:1px solid var(--border);border-radius:24px 24px 0 0;
+  padding:32px 24px 40px;width:100%;max-width:600px;
+  animation:slideUpPop 0.35s cubic-bezier(0.34,1.56,0.64,1);
+  position:relative;
+}
+@keyframes slideUpPop{from{transform:translateY(100%);opacity:0}to{transform:translateY(0);opacity:1}}
+.wp-handle{width:36px;height:4px;background:var(--s3);border-radius:100px;margin:0 auto 24px}
+.wp-word{font-family:'Syne',sans-serif;font-size:32px;font-weight:800;color:var(--gold);margin-bottom:4px}
+.wp-mean{font-size:16px;color:var(--text);margin-bottom:12px;line-height:1.6}
+.wp-ex{font-size:13px;color:var(--dim);font-style:italic;line-height:1.7;border-left:2px solid var(--muted);padding-left:12px;margin-bottom:20px}
+.wp-loading{display:flex;align-items:center;gap:10px;color:var(--muted);font-size:13px;margin:16px 0}
+.wp-dots span{display:inline-block;width:5px;height:5px;border-radius:50%;background:var(--gold);animation:da 1.2s infinite;margin:0 2px}
+.wp-dots span:nth-child(2){animation-delay:.2s}
+.wp-dots span:nth-child(3){animation-delay:.4s}
+@keyframes da{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
+.wp-actions{display:flex;gap:10px}
+.wp-close{position:absolute;top:20px;right:20px;background:var(--s2);border:none;color:var(--dim);width:32px;height:32px;border-radius:50%;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;transition:all 0.15s}
+.wp-close:hover{color:var(--text);background:var(--s3)}
+
+/* ── TOAST ── */
+#toast{
+  position:fixed;bottom:calc(24px + env(safe-area-inset-bottom));left:50%;
+  transform:translateX(-50%);
+  background:var(--s2);border:1px solid var(--border);border-radius:100px;
+  padding:10px 20px;font-size:13px;color:var(--text);
+  opacity:0;transition:opacity 0.25s;pointer-events:none;white-space:nowrap;
+  z-index:600;box-shadow:0 4px 24px rgba(0,0,0,0.4);
+}
+#toast.show{opacity:1}
+
+::-webkit-scrollbar{width:4px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--s3);border-radius:10px}
+
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.fade-in{animation:fadeUp 0.3s ease}
+
+
+/* ══ BOTTOM TAB BAR ══ */
+#appTabBar{position:fixed;bottom:0;left:0;right:0;background:rgba(12,12,20,0.97);backdrop-filter:blur(20px);border-top:1px solid var(--border);padding:6px 0 calc(6px + env(safe-area-inset-bottom));z-index:200;display:flex;justify-content:center}
+.atab{flex:1;max-width:120px;display:flex;flex-direction:column;align-items:center;gap:3px;padding:5px 2px;cursor:pointer;border:none;background:transparent;transition:all 0.15s;position:relative}
+.atab-icon{font-size:22px;line-height:1;transition:transform 0.15s}
+.atab-lbl{font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:0.5px;color:var(--muted);transition:color 0.15s}
+.atab.on .atab-lbl{color:var(--gold)}
+.atab.on .atab-icon{transform:translateY(-2px)}
+.atab-badge{position:absolute;top:2px;right:14px;background:var(--red);color:#fff;font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:700;border-radius:10px;padding:1px 5px;min-width:16px;text-align:center;display:none}
+.atab-badge.show{display:block}
+.app-page{display:none;padding-bottom:100px}
+.app-page.on{display:block}
+/* hide old homeView nav (not present) but keep qhdr */
+
+</style>
+</head>
+<body>
+
+<!-- ══════════════ HOME VIEW ══════════════ -->
+<div id="homeView" class="view active">
+  <div class="home-top">
+    <div class="home-brand">TOEIC DAILY MISSION</div>
+    <div class="home-title">매일 <em>90분</em><br>기출 완전정복</div>
+    <div class="home-sub">5개년 기출 유형 기반 · Part 5~7 전 파트 · AI 해설</div>
+  </div>
+
+  <div class="day-grid" id="dayGrid"></div>
+
+  <div class="streak-bar">
+    <div>
+      <div class="streak-num" id="streakNum">0</div>
+      <div class="streak-label">일 연속 학습</div>
+    </div>
+    <div>
+      <div style="font-size:12px;color:var(--dim);margin-bottom:6px">최근 7일</div>
+      <div class="streak-dots" id="streakDots"></div>
+    </div>
+    <div style="margin-left:auto;text-align:right">
+      <div style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--dim)">총 학습</div>
+      <div style="font-family:'Syne',sans-serif;font-size:22px;font-weight:800;color:var(--text)" id="totalStudied">0일</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════ QUIZ VIEW ══════════════ -->
+<div id="quizView" class="view">
+  <!-- header -->
+  <div class="qhdr">
+    <button class="qhdr-back" onclick="goHome()">← 홈</button>
+    <div class="qhdr-title" id="qhdrTitle">DAY 1</div>
+    <div class="qhdr-right">
+      <div class="mini-stat">정답 <span id="hdrC">0</span></div>
+      <div class="mini-stat">오답 <span id="hdrW">0</span></div>
+      <div class="mini-stat"><span id="hdrI">0</span>/<span id="hdrT">0</span></div>
+    </div>
+  </div>
+
+  <!-- progress bar -->
+  <div class="quiz-progress">
+    <div class="qprog-track"><div class="qprog-fill" id="progFill" style="width:0%"></div></div>
+    <div class="qprog-row">
+      <span class="qprog-txt" id="progTxt">0 / 0</span>
+      <span class="qprog-txt" id="progTime">경과: 0:00</span>
+    </div>
+  </div>
+
+  <!-- questions render area -->
+  <div id="quizContent"></div>
+</div>
+
+<!-- ══════════════ RESULT VIEW ══════════════ -->
+<div id="resultView" class="view">
+  <div class="result-box">
+    <div class="r-day" id="rDay">DAY 1 결과</div>
+    <div class="r-pct" id="rPct">0%</div>
+    <div class="r-grade" id="rGrade">—</div>
+    <div class="r-desc" id="rDesc"></div>
+    <div class="r-grid">
+      <div class="r-cell"><div class="r-num g" id="rC">0</div><div class="r-lbl">정답</div></div>
+      <div class="r-cell"><div class="r-num r" id="rW">0</div><div class="r-lbl">오답</div></div>
+      <div class="r-cell"><div class="r-num b" id="rT">0</div><div class="r-lbl">풀이</div></div>
+    </div>
+    <div class="r-part-stats">
+      <div class="r-ps"><div class="r-ps-label">PART 5</div><div class="r-ps-val" id="rP5">—</div><div class="r-ps-sub" id="rP5s">—</div></div>
+      <div class="r-ps"><div class="r-ps-label">PART 6</div><div class="r-ps-val" id="rP6">—</div><div class="r-ps-sub" id="rP6s">—</div></div>
+      <div class="r-ps"><div class="r-ps-label">PART 7</div><div class="r-ps-val" id="rP7">—</div><div class="r-ps-sub" id="rP7s">—</div></div>
+    </div>
+    <div class="r-actions">
+      <button class="btn btn-ghost" onclick="showWrongReview()">오답 풀이 보기</button>
+      <button class="btn btn-main" onclick="goHome()">홈으로</button>
+    </div>
+  </div>
+  <div class="review-section" id="wrongReview" style="display:none;width:100%">
+    <div class="review-title">오답 <span>노트</span></div>
+    <div id="wrongGrid"></div>
+    <div style="text-align:center;margin-top:32px">
+      <button class="btn btn-main" onclick="goHome()">홈으로 돌아가기</button>
+    </div>
+  </div>
+</div>
+
+
+<!-- ── RESUME BANNER ── -->
+<div id="_resumeBanner" style="display:none;position:fixed;bottom:24px;left:50%;transform:translateX(-50%);z-index:999;background:#12121e;border:1.5px solid #e8b84b;border-radius:16px;padding:18px 24px;flex-direction:column;align-items:center;gap:12px;box-shadow:0 8px 40px rgba(232,184,75,0.25);min-width:300px;max-width:90vw;text-align:center">
+  <div style="font-family:'Syne',sans-serif;font-size:15px;font-weight:700;color:#e8e8f0">📌 이어하기</div>
+  <div id="_resumeDesc" style="font-size:12px;color:#8888aa;line-height:1.5"></div>
+  <div style="display:flex;gap:10px">
+    <button onclick="_resumeNow()" style="background:#e8b84b;color:#0c0c14;border:none;border-radius:8px;padding:10px 22px;font-family:'Noto Sans KR',sans-serif;font-weight:700;font-size:13px;cursor:pointer">이어하기</button>
+    <button onclick="_resumeDismiss();startDay(window._pendingSession?.day,false,null)" style="background:transparent;border:1px solid #44445a;color:#8888aa;border-radius:8px;padding:10px 16px;font-family:'Noto Sans KR',sans-serif;font-size:12px;cursor:pointer">처음부터</button>
+  </div>
+</div>
+
+<!-- ── SAVE INDICATOR ── -->
+<div id="_saveIndicator" style="position:fixed;top:68px;right:16px;z-index:300;font-family:'JetBrains Mono',monospace;font-size:10px;color:#4ecdc4;letter-spacing:1px;opacity:0;transition:opacity 0.3s;background:#1a1a2e;border:1px solid rgba(78,205,196,0.25);border-radius:6px;padding:4px 10px;pointer-events:none">💾 저장됨</div>
+
+
+<script>
+// ════════════════════════════════════════════════════════════
+//  STORAGE HELPERS (localStorage)
+// ════════════════════════════════════════════════════════════
+const _KEY_PROG = 'toeic_progress_v1';
+
+const KEY_WRONG_NOTE = 'toeic_wrong_note_v1'; // shared with vocab app
+const KEY_VOCAB      = 'toeic_vocab_v1';       // shared with vocab app
+
+function _saveWrongNote(item, myAns) {
+  try {
+    let notes = JSON.parse(localStorage.getItem(KEY_WRONG_NOTE)||'[]');
+    // avoid duplicates (same q num + same day)
+    notes = notes.filter(n => !(n.qNum===item.num && n.day===currentDay));
+    notes.unshift({
+      id: Date.now()+'',
+      day: currentDay,
+      qNum: item.num,
+      year: item.year,
+      part: item.part,
+      qtype: item.qtype,
+      text: item.text,
+      opts: item.opts,
+      ans: item.ans,
+      myAns: myAns,
+      exp: item.exp,
+      vocab: item.v || [],
+      savedAt: new Date().toISOString(),
+    });
+    // keep last 200 wrong notes
+    if (notes.length > 200) notes = notes.slice(0, 200);
+    localStorage.setItem(KEY_WRONG_NOTE, JSON.stringify(notes));
+  } catch(e) {}
+}
+
+const _KEY_SESS = 'toeic_session_v1';
+
+function _saveProgress(data) {
+  try { localStorage.setItem(_KEY_PROG, JSON.stringify(data)); } catch(e){}
+}
+function _loadProgress() {
+  try { return JSON.parse(localStorage.getItem(_KEY_PROG)||'{}'); } catch(e){ return {}; }
+}
+function _saveSession(data) {
+  try { localStorage.setItem(_KEY_SESS, JSON.stringify(data)); } catch(e){}
+}
+function _loadSession() {
+  try { const r=localStorage.getItem(_KEY_SESS); return r?JSON.parse(r):null; } catch(e){ return null; }
+}
+function _clearSession() {
+  try { localStorage.removeItem(_KEY_SESS); } catch(e){}
+}
+
+let _saveTimer = null;
+function _scheduleSave() {
+  clearTimeout(_saveTimer);
+  _saveTimer = setTimeout(() => {
+    if (!currentDay || !allQs.length) return;
+    const answered = allQs
+      .filter(q => q.type==='q' && q.answered)
+      .map(q => ({ num:q.num, myAns:q._myAns, ok:q._ok, skipped:q.skipped||false }));
+    _saveSession({
+      day: currentDay,
+      answeredCount: answered.length,
+      totalCount: allQs.filter(q=>q.type==='q').length,
+      answered,
+      stats: {...stats},
+      elapsed: sessionStart ? Math.floor((Date.now()-sessionStart)/1000) : 0,
+    });
+    // flash save indicator
+    const el = document.getElementById('_saveIndicator');
+    if (el) { el.style.opacity='1'; clearTimeout(el._t); el._t=setTimeout(()=>el.style.opacity='0',1500); }
+  }, 800);
+}
+
+// ════════════════════════════════════════════════════════════
+//   QUESTION BANK — 5개년 기출 유형 기반
+//   Part 5: 30문제×7세트=210, Part 6: 4지문×7=28, Part 7: 세트×7=49
+//   실제 앱에서는 아래 뱅크를 요일별로 30+16+~17문제씩 배분
+// ════════════════════════════════════════════════════════════
+
+const P5 = [
+// ── 2020 ──
+{id:'a01',y:'2020',type:'품사-명사',d:2,q:"The ------- of the new training program has improved overall productivity across all departments.",text:"The ------- of the new training program has improved overall productivity across all departments.",opts:["implement","implementation","implemented","implementing"],ans:1,exp:"관사 'The' 뒤, 전치사 'of' 앞 → 명사 자리. 'implementation(실행, 시행)'이 명사. implement=동사, implemented=과거분사, implementing=현재분사",v:["implementation","productivity","department"]},
+{id:'a02',y:'2020',type:'전치사',d:2,q:"The office will be closed ------- the national holiday on October 3rd.",opts:["during","while","for","when"],ans:0,exp:"'during + 명사구'='~동안'. while은 접속사(절 필요), for는 기간 길이(숫자), when은 접속사. 'during the national holiday'가 자연스러운 전치사구.",v:["national holiday","closed","during"]},
+{id:'a03',y:'2020',type:'수동태',d:2,q:"Visitors ------- to sign in at the reception desk before proceeding to any office area.",opts:["require","are required","will require","requiring"],ans:1,exp:"'Visitors'는 '요구받는' 수동 관계. are required to do = '~하도록 요구된다'. 조동사 없이 현재 일반 규칙이므로 현재 수동태 are required.",v:["visitor","reception desk","proceed","require"]},
+{id:'a04',y:'2020',type:'관계대명사',d:3,q:"The consultant ------- recommendations the board accepted was highly praised at the annual meeting.",opts:["who","whom","whose","which"],ans:2,exp:"선행사 consultant 뒤, 명사 recommendations 앞 → 소유격 관계대명사 whose. 'whose recommendations the board accepted'는 관계절.",v:["consultant","recommendation","board","annual meeting"]},
+{id:'a05',y:'2020',type:'시제-현재완료',d:3,q:"The research team ------- three groundbreaking papers since joining the institute two years ago.",opts:["publishes","published","has published","will publish"],ans:2,exp:"'since joining ~ two years ago' = 과거 시점부터 현재까지 → 현재완료. has published.",v:["groundbreaking","institute","publish","since"]},
+{id:'a06',y:'2020',type:'접속사',d:3,q:"------- the shipment was delayed by two weeks, the project was still completed on schedule.",opts:["Although","Because","Therefore","Moreover"],ans:0,exp:"'배송이 지연됐지만 프로젝트는 예정대로 완료됐다'=양보. Although(비록~이지만). Because=이유, Therefore/Moreover=부사(절 불가).",v:["shipment","delay","on schedule","complete"]},
+{id:'a07',y:'2020',type:'형용사',d:2,q:"All staff members are ------- for the quarterly performance bonuses based on individual results.",opts:["eligibly","eligibility","eligible","eligibleness"],ans:2,exp:"be동사 뒤 보어 자리=형용사. eligible(자격이 있는). eligibly=부사, eligibility=명사.",v:["quarterly","performance bonus","eligible","individual"]},
+{id:'a08',y:'2020',type:'비교급',d:2,q:"The new production line operates ------- than the previous model, reducing energy costs by 25%.",opts:["efficient","more efficiently","most efficiently","efficiently"],ans:1,exp:"than이 있으면 비교급. 동사 operates를 수식=부사. more efficiently(비교급 부사).",v:["production line","efficiently","reduce","energy cost"]},
+
+// ── 2021 ──
+{id:'b01',y:'2021',type:'동명사vs부정사',d:3,q:"The HR department recommends ------- a detailed onboarding plan for all new recruits.",opts:["to develop","developing","developed","develops"],ans:1,exp:"recommend는 동명사를 목적어로 취하는 동사. recommend + V-ing. '~할 것을 권장하다'.",v:["HR department","onboarding","recruit","recommend"]},
+{id:'b02',y:'2021',type:'부사절접속사',d:3,q:"Employees must notify their supervisors ------- they anticipate being absent for more than three days.",opts:["unless","whenever","as if","in case"],ans:1,exp:"'whenever(~할 때마다)'가 조건적 상황을 나타냄. '3일 이상 결석할 것이 예상될 때마다 상사에게 알려야 한다'는 문맥.",v:["notify","supervisor","anticipate","absent"]},
+{id:'b03',y:'2021',type:'수일치',d:2,q:"Neither the CEO nor the department managers ------- in favor of the proposed budget cuts.",opts:["was","are","is","were"],ans:1,exp:"'Neither A nor B' 구조에서 동사는 B(department managers=복수)에 일치→ are. 현재 시제 문장.",v:["CEO","department manager","in favor of","budget cut"]},
+{id:'b04',y:'2021',type:'어휘-동사',d:3,q:"The legal team carefully ------- the contract to ensure all terms were clearly defined.",opts:["scrutinized","circulated","allocated","overlooked"],ans:0,exp:"'계약서의 모든 조항이 명확한지 확인하기 위해' → scrutinize(면밀히 검토하다). circulate=유통하다, allocate=배분하다, overlook=간과하다.",v:["scrutinize","contract","term","legal team"]},
+{id:'b05',y:'2021',type:'가정법과거완료',d:4,q:"If the technician ------- the warning signs earlier, the equipment failure could have been prevented.",opts:["notices","noticed","had noticed","would notice"],ans:2,exp:"'could have been prevented'(주절: 과거완료 가정법) → if절도 had p.p. = 가정법 과거완료(과거 사실 반대 가정).",v:["technician","warning sign","equipment failure","prevent"]},
+{id:'b06',y:'2021',type:'분사구문',d:3,q:"------- all necessary approvals, the construction team proceeded with the foundation work.",opts:["Obtaining","Having obtained","To obtain","Obtained"],ans:1,exp:"주절의 동작(proceeded) 이전에 완료된 행위 → 완료 분사구문 Having obtained. 인허가를 얻은 후 공사 진행.",v:["approval","construction","proceed","foundation"]},
+{id:'b07',y:'2021',type:'대명사',d:2,q:"The company revised ------- return policy to make it more customer-friendly.",opts:["it","its","their","themselves"],ans:1,exp:"'The company'는 단수 → 소유격 its. 명사 return policy 앞에서 수식하는 소유격 대명사.",v:["revise","return policy","customer-friendly","company"]},
+{id:'b08',y:'2021',type:'어휘-형용사',d:3,q:"The annual conference brought together ------- professionals from over 40 countries to discuss global trade.",opts:["distinguished","distinguishing","distinction","distinctly"],ans:0,exp:"명사 professionals를 수식하는 형용사 자리. distinguished=저명한, 뛰어난. distinguishing=형용사이지만 '구별되는'의 의미로 부적합.",v:["distinguished","conference","global trade","professional"]},
+
+// ── 2022 ──
+{id:'c01',y:'2022',type:'to부정사',d:2,q:"The board agreed ------- the merger proposal after three months of negotiations.",opts:["approving","approve","to approve","approved"],ans:2,exp:"agree는 to부정사를 목적어로 취하는 동사. agree to do = '~하기로 합의하다'.",v:["board","merger proposal","negotiation","agree"]},
+{id:'c02',y:'2022',type:'전치사구-이유',d:2,q:"------- the overwhelming demand, the company decided to extend the promotional period by one week.",opts:["Due to","Even though","As well as","In addition to"],ans:0,exp:"'due to + 명사구' = '~ 때문에'(이유). even though=접속사(절 필요), as well as=추가, in addition to=추가.",v:["overwhelming","demand","promotional period","extend"]},
+{id:'c03',y:'2022',type:'명사절접속사',d:4,q:"The auditors could not determine ------- the discrepancies in the financial records were intentional.",opts:["that","what","whether","which"],ans:2,exp:"'의도적이었는지 아닌지' = whether(~인지 아닌지). determine의 목적어 명사절. that=단순 사실 진술, what=무엇, which=어느 것.",v:["auditor","discrepancy","financial record","intentional"]},
+{id:'c04',y:'2022',type:'관계부사',d:3,q:"The facility ------- the annual shareholders meeting will be held has a capacity of 2,000 people.",opts:["which","where","when","what"],ans:1,exp:"선행사 facility(장소) + 완전한 절 → 관계부사 where. 'which' 뒤에는 불완전한 절.",v:["facility","shareholders meeting","capacity","annual"]},
+{id:'c05',y:'2022',type:'어휘-부사',d:3,q:"The new customer service protocol has ------- reduced complaint rates by 42% since its introduction.",opts:["drastically","drastic","drasticness","more drastic"],ans:0,exp:"동사 reduced를 수식하는 부사 자리. drastically=급격하게, 대폭. drastic=형용사.",v:["protocol","complaint rate","drastically","introduction"]},
+{id:'c06',y:'2022',type:'병렬구조',d:3,q:"The position requires candidates who are creative, detail-oriented, and ------- to meet tight deadlines.",opts:["ability","being able","able","ably"],ans:2,exp:"'creative, detail-oriented, and ___' 병렬 구조 → 형용사만 가능. able(능력 있는). ability=명사, ably=부사.",v:["detail-oriented","tight deadline","parallel structure","candidate"]},
+{id:'c07',y:'2022',type:'사역동사',d:3,q:"The project manager had the team ------- the entire prototype from scratch after the client changed specifications.",opts:["rebuilding","rebuild","rebuilt","to rebuild"],ans:1,exp:"사역동사 have + 목적어 + 동사원형. 'had the team rebuild'",v:["prototype","from scratch","specification","project manager"]},
+{id:'c08',y:'2022',type:'어휘-명사',d:2,q:"To attract top talent, the company offers a comprehensive ------- package including health insurance and retirement plans.",opts:["compensate","compensation","compensating","compensatory"],ans:1,exp:"관사 a + 형용사 comprehensive 뒤 → 명사 자리. compensation package=보상 패키지.",v:["comprehensive","compensation package","retirement plan","attract"]},
+
+// ── 2023 ──
+{id:'d01',y:'2023',type:'강조구문',d:4,q:"It was the innovative supply chain management system ------- allowed the company to outperform its competitors.",opts:["which","that","what","where"],ans:1,exp:"'It is/was ~ that ...' 강조구문. 강조하는 대상(the innovative supply chain management system)을 It was와 that 사이에.",v:["supply chain","outperform","competitor","innovative"]},
+{id:'d02',y:'2023',type:'부정대명사',d:3,q:"------- of the candidates interviewed for the senior director position fully met the company's qualifications.",opts:["None","Few","Any","Several"],ans:0,exp:"'fully met the qualifications'와 어울리는 부정 표현 → None(아무도 ~않다). Few=거의 없다(완전 부정 아님), Any=부정문/의문문에서, Several=몇몇.",v:["candidate","qualification","senior director","interview"]},
+{id:'d03',y:'2023',type:'어휘-전치사',d:2,q:"The new safety regulations apply ------- all employees, regardless of their position or seniority.",opts:["for","to","at","on"],ans:1,exp:"apply to = '~에 적용되다'. apply for = '~에 지원하다'. 규정이 모든 직원에게 '적용된다' → apply to.",v:["regulation","apply to","seniority","regardless"]},
+{id:'d04',y:'2023',type:'시제-미래완료',d:4,q:"By the end of this quarter, the sales team ------- its annual target three months ahead of schedule.",opts:["will reach","will have reached","has reached","reached"],ans:1,exp:"'By the end of this quarter'(미래 기점) + 완료 → 미래완료 will have reached.",v:["quarterly","annual target","ahead of schedule","sales team"]},
+{id:'d05',y:'2023',type:'어휘-동사구',d:3,q:"The software company decided to ------- its older product lines to focus resources on next-generation technology.",opts:["phase out","take on","pull off","look into"],ans:0,exp:"phase out=단계적으로 중단/폐지하다. take on=맡다, pull off=해내다, look into=조사하다. '오래된 제품군을 단계적으로 폐지한다' → phase out.",v:["phase out","product line","next-generation","resource"]},
+{id:'d06',y:'2023',type:'접속부사',d:3,q:"The merger negotiations had been progressing smoothly; ----, an unexpected disagreement over asset valuation caused significant delays.",opts:["therefore","meanwhile","however","consequently"],ans:2,exp:"'순조롭게 진행됐으나; 예상치 못한 불일치가 발생해 지연됐다' → 역접. however(그러나). therefore/consequently=결과, meanwhile=그동안.",v:["merger","asset valuation","negotiation","consequently"]},
+{id:'d07',y:'2023',type:'형용사비교',d:2,q:"The revised proposal is considerably ------- than the original in terms of projected return on investment.",opts:["promising","more promising","most promising","promise"],ans:1,exp:"than → 비교급. 3음절+ 형용사는 more + 원급 형태. more promising(더 유망한).",v:["revised proposal","projected","return on investment","promising"]},
+{id:'d08',y:'2023',type:'수동태-조동사',d:2,q:"All financial transactions ------- thoroughly audited before the annual report is finalized.",opts:["should audit","should be audited","should have audited","should auditing"],ans:1,exp:"financial transactions는 감사받는 대상(수동). should + be + p.p. = 수동 조동사 구조.",v:["financial transaction","audit","annual report","finalize"]},
+
+// ── 2024 ──
+{id:'e01',y:'2024',type:'어휘-형용사뉘앙스',d:4,q:"The board's decision to restructure the organization was both ------- and long overdue.",opts:["bold","bolden","boldly","bolding"],ans:0,exp:"'both A and B' 구조에서 A 자리, long overdue(형용사)와 병렬 → 형용사. bold=대담한. long overdue=오래 미뤄진.",v:["restructure","bold","long overdue","board"]},
+{id:'e02',y:'2024',type:'전치사-시간',d:2,q:"The new logistics software was fully operational ------- a week of installation.",opts:["within","during","throughout","until"],ans:0,exp:"'설치 후 일주일 이내에' → within(~ 이내). during=~하는 동안, throughout=전반에 걸쳐, until=~까지.",v:["logistics","fully operational","installation","within"]},
+{id:'e03',y:'2024',type:'관계대명사-계속적',d:4,q:"The company released its quarterly earnings report, ------- showed a 15% increase in net profit.",opts:["that","who","which","what"],ans:2,exp:"계속적 용법(쉼표+관계절)에서는 that 불가. 선행사가 사물(report) → which.",v:["quarterly earnings","net profit","release","report"]},
+{id:'e04',y:'2024',type:'어휘-동사어감',d:3,q:"The new marketing director ------- a complete rebranding strategy that transformed the company's public image.",opts:["devised","divided","revised","advised"],ans:0,exp:"'완전한 리브랜딩 전략을 고안했다' → devise(고안하다, 전략을 세우다). divide=나누다, revise=수정하다, advise=조언하다.",v:["rebranding","devise","strategy","public image"]},
+{id:'e05',y:'2024',type:'수일치-복합주어',d:3,q:"The quality of the products as well as the efficiency of the delivery service ------- significantly improved this year.",opts:["have","has","are","were"],ans:1,exp:"'A as well as B' 구조에서 동사는 A(the quality=단수)에 일치 → has. 현재 시제.",v:["quality","efficiency","delivery service","improve"]},
+{id:'e06',y:'2024',type:'부사절-양보',d:3,q:"------- her limited experience in international markets, Ms. Yamamoto secured three major overseas contracts.",opts:["Despite","Although","Nevertheless","However"],ans:0,exp:"despite + 명사구. although는 접속사(절 필요). nevertheless/however는 접속부사.",v:["limited experience","international market","secure","overseas"]},
+{id:'e07',y:'2024',type:'어휘-명사비즈니스',d:2,q:"The team's strong ------- during the crisis demonstrated their ability to handle unexpected challenges.",opts:["resilience","resonance","resistance","relevance"],ans:0,exp:"위기 중 강한 '회복력/탄력성' → resilience. resonance=울림, resistance=저항, relevance=관련성.",v:["resilience","crisis","demonstrate","challenge"]},
+{id:'e08',y:'2024',type:'to부정사-형용사적',d:2,q:"The company is seeking qualified engineers ------- on the offshore wind energy project in Norway.",opts:["work","to work","working","worked"],ans:1,exp:"be seeking + 명사 + to부정사 = '~할 사람을 찾다'. 형용사적 용법의 to부정사가 engineers를 수식.",v:["qualified","offshore","wind energy","engineer"]},
+
+// 추가 Part 5 (다양한 유형, 2020~2024 혼합)
+{id:'f01',y:'2021',type:'어휘-접속사',d:3,q:"The project was completed on time ------- several unforeseen obstacles emerged during the final phase.",opts:["in spite of","because of","so that","such that"],ans:0,exp:"'여러 예상치 못한 장애물에도 불구하고 제때 완료' → in spite of(~에도 불구하고, 전치사구). because of=이유, so that/such that=결과.",v:["unforeseen","obstacle","in spite of","emerge"]},
+{id:'f02',y:'2022',type:'동사어형',d:2,q:"Please ------- that all meeting materials are distributed to participants at least 24 hours in advance.",opts:["ensure","ensuring","ensured","ensures"],ans:0,exp:"Please + 동사원형(명령문). ensure=확인하다, 보장하다.",v:["ensure","distribute","participant","in advance"]},
+{id:'f03',y:'2023',type:'어휘-형용사',d:3,q:"The executive team made a ------- decision to allocate 30% of the annual budget to research and development.",opts:["unanimous","unilateral","ultimate","unfavorable"],ans:0,exp:"'만장일치의 결정' → unanimous. unilateral=일방적, ultimate=궁극적, unfavorable=불리한.",v:["unanimous","allocate","research and development","executive"]},
+{id:'f04',y:'2024',type:'어휘-동사',d:2,q:"The charity organization ------- donations from both local businesses and international corporations.",opts:["solicits","soliciting","solicited","solicit"],ans:0,exp:"현재 일반적 사실(3인칭 단수 주어 The charity organization) → 동사원형+s. solicits(모금하다, 구하다).",v:["charity","solicit","donation","corporation"]},
+{id:'f05',y:'2020',type:'상관접속사',d:3,q:"The training program is designed for ------- entry-level staff ------- experienced managers who want to refresh their skills.",opts:["either / or","both / and","neither / nor","not only / but also"],ans:1,exp:"'초급 직원과 경험 있는 매니저 모두를 위해' → both A and B.",v:["entry-level","experienced","refresh","training program"]},
+{id:'f06',y:'2021',type:'명사절-whether',d:4,q:"The survey results will help management determine ------- additional resources should be allocated to the project.",opts:["that","what","whether","when"],ans:2,exp:"'추가 자원을 배분해야 하는지 아닌지' → whether(~인지 아닌지). determine의 목적어 명사절.",v:["survey","determine","allocate","resource"]},
+{id:'f07',y:'2022',type:'to부정사-명사적',d:2,q:"------- this contract would set a precedent for all future negotiations with international partners.",opts:["Sign","Signing","To sign","Signed"],ans:2,exp:"'이 계약을 체결하는 것은 선례가 될 것이다' → to부정사 주어(명사적 용법). Signing도 가능하나 보기 세트에서 (C)가 정답.",v:["precedent","negotiation","set","international"]},
+{id:'f08',y:'2023',type:'어휘-부사강조',d:2,q:"The new manufacturing technique has proved ------- effective at reducing material waste in large-scale production.",opts:["remarkably","remarkable","remark","remarked"],ans:0,exp:"형용사 effective를 수식하는 부사 → remarkably(눈에 띄게, 현저히).",v:["manufacturing","remarkably","effective","material waste"]},
+{id:'f09',y:'2024',type:'전치사-in',d:2,q:"The startup has seen exponential growth ------- the past 18 months, attracting $50 million in venture capital.",opts:["over","during","since","by"],ans:0,exp:"'지난 18개월에 걸쳐' → over(~에 걸쳐, 기간 전체). during도 가능하나 'over the past N months'가 관용표현.",v:["exponential growth","venture capital","startup","attract"]},
+{id:'f10',y:'2020',type:'혼합어형',d:3,q:"The ------- contract between the two firms outlines the terms of their five-year partnership.",opts:["negotiating","negotiated","negotiate","negotiation"],ans:1,exp:"명사 contract를 수식하는 분사형 형용사. contract는 '협상된' 것이므로 수동의 과거분사 negotiated.",v:["negotiated","contract","outline","partnership"]},
+{id:'f11',y:'2021',type:'어휘-동사구',d:3,q:"The board voted to ------- the underperforming division and redirect its resources to the core business.",opts:["wind down","take over","bring about","hold off"],ans:0,exp:"wind down=단계적으로 축소/종료하다. take over=인수하다, bring about=야기하다, hold off=미루다. '실적 부진 부서를 축소'→wind down.",v:["underperforming","division","redirect","core business"]},
+{id:'f12',y:'2022',type:'혼합-접속사전치사',d:3,q:"The project was delivered ahead of schedule ------- to the team's exceptional collaboration and planning.",opts:["owing","due","because","thanks"],ans:1,exp:"'due to + 명사구' = '~ 덕분에/때문에'. 'owing to'도 정답이나 보기에 owing만 있으므로 due가 정답. 'because of'=because+of(전치사 쌍).",v:["ahead of schedule","exceptional","collaboration","due to"]},
+];
+
+const P6_SETS = [
+// SET A
+{id:'P6A',year:'2020',title:'사내 공지',passage:`INTERNAL MEMORANDUM
+
+TO: All Staff
+FROM: Administration Office
+RE: Office Relocation — Floor 4
+
+Dear Team,
+
+Please be advised that the Administration Office will be relocating from Floor 2 to Floor 4 ---[1]--- the weekend of November 14–15. All administrative services will be temporarily ---[2]--- during this period.
+
+Operations will resume as normal on Monday, November 18th. If you need immediate assistance over the weekend, please contact our emergency line at ext. 9100.
+
+We appreciate your understanding and cooperation during this transition.`,
+qs:[
+{q:"[1] 빈칸에 알맞은 전치사를 고르세요.",opts:["during","while","since","from"],ans:0,exp:"'during + 명사구(the weekend)'='~하는 동안'. while은 접속사(절 필요).",v:["relocation","during","temporarily"]},
+{q:"[2] 빈칸에 알맞은 단어를 고르세요.",opts:["unavailable","unavailability","unavailably","unavail"],ans:0,exp:"be동사 뒤 보어 자리=형용사. unavailable(이용 불가한). 주어 services는 '이용 불가한 상태가 되는' 것.",v:["unavailable","resume","transition"]},
+]},
+
+// SET B
+{id:'P6B',year:'2021',title:'채용 공고',passage:`POSITION ANNOUNCEMENT
+Marketing Coordinator — Digital Division
+
+TrueNorth Media Group is ---[1]--- applications for the position of Marketing Coordinator within our rapidly growing Digital Division. The ideal candidate will have a bachelor's degree in marketing or communications, at least two years of relevant work experience, and ---[2]--- knowledge of social media platforms and analytics tools.
+
+Responsibilities include creating content calendars, monitoring campaign performance, and coordinating with external agencies. The position offers a competitive salary and benefits package. To apply, submit your résumé and portfolio to careers@truenorth.com.`,
+qs:[
+{q:"[1] 알맞은 동사 형태를 고르세요.",opts:["accepted","accepting","currently accepting","is accepting"],ans:3,exp:"주어 TrueNorth Media Group(3인칭 단수) + 현재 진행 중인 채용 → is accepting(현재 진행형).",v:["application","Digital Division","coordinator"]},
+{q:"[2] 문맥에 맞는 표현을 고르세요.",opts:["thorough","thoroughly","thoroughness","more thoroughly"],ans:0,exp:"명사 knowledge를 수식하는 형용사 자리 → thorough(철저한, 완전한). thorough knowledge=깊은 이해.",v:["thorough","analytics","campaign","portfolio"]},
+]},
+
+// SET C
+{id:'P6C',year:'2022',title:'고객 서비스 이메일',passage:`Dear Mr. Nakamura,
+
+Thank you for your recent purchase and for reaching out to us regarding order #KL-20241. We sincerely apologize for the inconvenience caused by the incorrect item you received.
+
+Upon reviewing your case, we have confirmed that a packaging error ---[1]--- during the fulfillment process. We will ---[2]--- a replacement shipment within 24 hours. You do not need to return the incorrect item — please keep or donate it at your convenience.
+
+As compensation for the trouble, a 20% discount code has been applied to your account for your next purchase. Once again, we sincerely apologize and thank you for your continued patronage.`,
+qs:[
+{q:"[1] 알맞은 동사 형태를 고르세요.",opts:["occurring","occurred","has occurring","occur"],ans:1,exp:"'패키징 오류가 발생했다'는 과거의 확인된 사실 → 단순 과거 occurred.",v:["packaging error","fulfillment","confirm"]},
+{q:"[2] 문맥에 맞는 단어를 고르세요.",opts:["dispatch","dispatching","dispatched","be dispatched"],ans:0,exp:"조동사 will 뒤 → 동사원형. will dispatch(배송할 것이다).",v:["dispatch","replacement","compensation","patronage"]},
+]},
+
+// SET D
+{id:'P6D',year:'2023',title:'정책 변경 안내',passage:`TO: All Research Department Personnel
+FROM: Dr. Elena Vasquez, Research Director
+RE: Updated Data Security Protocol
+
+Effective January 1, 2024, all research staff will be required to adhere to the updated data security protocol ---[1]--- herein. This update follows the recommendations of our external cybersecurity audit conducted in October.
+
+Key changes include mandatory two-factor authentication for all lab systems, encrypted storage for all research data, and monthly security training sessions. ---[2]--- All violations of the protocol will result in immediate suspension of system access pending investigation.
+
+Please acknowledge receipt of this memo by replying to this email by December 15th.`,
+qs:[
+{q:"[1] 알맞은 표현을 고르세요.",opts:["outline","outlined","outlining","outlines"],ans:1,exp:"'protocol _____ herein' — protocol은 '서술된' 수동 대상. 과거분사 outlined가 protocol을 수식하는 형용사적 분사.",v:["protocol","outline","cybersecurity","mandatory"]},
+{q:"[2] 빈칸에 들어갈 가장 적절한 문장은?",opts:["Employees may choose which sessions to attend based on their schedules.","All staff must complete a compliance certification by March 31st.","The new software will automatically protect all research files.","The HR department will schedule the training sessions."],ans:1,exp:"보안 프로토콜 변경 사항을 나열한 후, 규정 준수를 강제하는 내용이 자연스러움. 'compliance certification by March 31st'가 준수 의무를 구체화.",v:["compliance","certification","mandatory","protocol"]},
+]},
+
+// SET E
+{id:'P6E',year:'2024',title:'출장 정책',passage:`CORPORATE TRAVEL POLICY — UPDATE
+
+The Finance Department would like to inform all staff of the following updates to the Corporate Travel Policy, effective April 1, 2024.
+
+Employees traveling for business purposes ---[1]--- submit a Travel Request Form at least five business days prior to departure. All accommodation bookings must be made through the company's preferred vendor, Apex Business Travel. 
+
+Reimbursement claims ---[2]--- submitted within 10 business days of returning from travel, accompanied by original receipts for all expenses exceeding $25.`,
+qs:[
+{q:"[1] 알맞은 조동사를 고르세요.",opts:["can","may","must","might"],ans:2,exp:"정책 변경 사항에서 의무 사항 서술 → must(반드시 ~해야 한다).",v:["travel request","departure","preferred vendor","policy"]},
+{q:"[2] 알맞은 동사 형태는?",opts:["must","must be","are must","must being"],ans:1,exp:"'reimbursement claims'는 '제출되어야 하는' 수동 관계 + 의무 → must be submitted.",v:["reimbursement","claim","receipt","submission"]},
+]},
+
+// SET F
+{id:'P6F',year:'2020',title:'제품 출시 보도자료',passage:`FOR IMMEDIATE RELEASE
+
+STELLARTECH LAUNCHES NEXUS PRO — THE NEXT GENERATION OF ENTERPRISE COLLABORATION
+
+StellarTech Corporation is ---[1]--- to announce the launch of Nexus Pro, its latest enterprise collaboration platform. Designed to streamline workflows and enhance team productivity, Nexus Pro integrates seamlessly with over 200 third-party applications.
+
+"This launch represents a ---[2]--- milestone in our mission to redefine how global teams work together," said CEO Dr. Adrian Cole. The platform will be available globally starting March 1st, with pricing plans designed to accommodate businesses of all sizes.`,
+qs:[
+{q:"[1] 알맞은 형용사를 고르세요.",opts:["pleased","pleasing","pleasingly","pleasure"],ans:0,exp:"'be + 형용사' 구조. 'is pleased to announce' = '발표하게 되어 기쁘다'. 보도자료의 전형적 표현.",v:["pleased","launch","collaboration","enterprise"]},
+{q:"[2] 알맞은 형용사를 고르세요.",opts:["significance","significant","significantly","signify"],ans:1,exp:"명사 milestone을 수식하는 형용사 자리 → significant(중요한). a significant milestone=중요한 이정표.",v:["significant","milestone","redefine","platform"]},
+]},
+
+// SET G
+{id:'P6G',year:'2021',title:'교육 프로그램 안내',passage:`Leadership Development Program — Spring Cohort
+
+The Human Resources Department is pleased to announce the Spring Cohort of the Leadership Development Program. This intensive 12-week program is designed for mid-level managers ---[1]--- to advance into senior leadership roles within the next 18 months.
+
+Participants will engage in executive coaching, cross-departmental project assignments, and mentorship sessions with C-suite executives. ---[2]--- Selected candidates will be notified by March 10th.
+
+To apply, submit your completed application form along with a letter of endorsement from your direct supervisor by February 28th.`,
+qs:[
+{q:"[1] 알맞은 표현을 고르세요.",opts:["looking","who looking","who are looking","looks"],ans:2,exp:"선행사 mid-level managers(사람) + 현재 진행적 의미 → who are looking to do(~하려고 하는).",v:["leadership development","advance","senior leadership"]},
+{q:"[2] 빈칸에 들어갈 가장 적절한 문장은?",opts:["The program is free of charge for all qualifying employees.","Applications from external candidates will also be considered.","Enrollment is limited to 20 participants per cohort.","The program duration may be extended based on demand."],ans:2,exp:"프로그램 참여 방법을 설명하는 맥락에서, 정원 제한 정보(20명)가 지원 결정에 실질적으로 중요한 정보. 뒤의 '3월 10일 선발 통보' 문장과 자연스럽게 연결.",v:["enrollment","cohort","endorsement","supervisor"]},
+]},
+];
+
+const P7_SETS = [
+// ── DAY 1: 단일×4 + 이중×1 ──
+{dayKey:'d1',sections:[
+{type:'single',year:'2020',context:'이메일',
+ passage:`From: Brenda Okafor <b.okafor@greystone-partners.com>\nTo: Oliver Menz <o.menz@flexibuild.de>\nDate: September 8, 2020\nSubject: Partnership Proposal — Distribution Network Expansion\n\nDear Mr. Menz,\n\nI hope this email finds you well. I am writing on behalf of Greystone Partners to express our strong interest in forming a strategic partnership with FlexiBuild GmbH to expand our distribution network across Central Europe.\n\nWe believe that FlexiBuild's established market presence in Germany, Austria, and Switzerland, combined with Greystone's product portfolio and logistical capabilities, could create significant synergies. I have attached a preliminary proposal document for your review.\n\nI would welcome the opportunity to schedule a virtual meeting at your earliest convenience to discuss this further. Please let me know your availability.\n\nKind regards,\nBrenda Okafor\nHead of Business Development, Greystone Partners`,
+ qs:[
+  {q:"What is the purpose of Ms. Okafor's email?",opts:["To confirm the details of an existing contract","To propose a business collaboration","To request payment for services rendered","To follow up on a previously submitted application"],ans:1,exp:"'I am writing on behalf of Greystone Partners to express our strong interest in forming a strategic partnership' → 파트너십 제안이 목적.",v:["strategic partnership","distribution network","synergy","logistical"]},
+  {q:"What has Ms. Okafor included with her email?",opts:["A signed contract","A preliminary proposal document","An invoice for services","A list of references"],ans:1,exp:"'I have attached a preliminary proposal document for your review' → 첨부 문서는 예비 제안서.",v:["attached","preliminary proposal","review"]},
+ ]},
+{type:'single',year:'2021',context:'광고',
+ passage:`RIVERDALE PROFESSIONAL CENTER — NOW LEASING\n\nPrime commercial office space available immediately in the heart of Riverdale's business district.\n\n✦ Suites from 500 to 3,500 sq ft\n✦ 24/7 secure access and on-site parking\n✦ High-speed fiber internet included\n✦ Fully equipped conference rooms available for hourly rental\n✦ Walking distance from Riverdale Central Station\n\nSpecial Introductory Offer: First three months at 15% below market rate for leases signed before October 31st.\n\nFor inquiries, contact our leasing office at:\n(555) 440-2200 | leasing@riverdalepro.com\nVisit our website: www.riverdalepro.com`,
+ qs:[
+  {q:"What is being advertised?",opts:["Residential apartments for rent","Commercial office spaces for lease","A new transit station opening","A business networking event"],ans:1,exp:"'RIVERDALE PROFESSIONAL CENTER — NOW LEASING'와 'Prime commercial office space available' → 상업용 사무 공간 임대 광고.",v:["commercial office","lease","sq ft","on-site parking"]},
+  {q:"What special offer is currently available?",opts:["Free internet for the first year","A discounted rate for early lease signers","One month of free rent with any lease","A waived security deposit"],ans:1,exp:"'First three months at 15% below market rate for leases signed before October 31st' → 10월 31일 이전 계약 시 할인율 적용.",v:["introductory offer","market rate","lease","discount"]},
+ ]},
+{type:'single',year:'2022',context:'공지/정책',
+ passage:`NOTICE — EXPENSE REIMBURSEMENT POLICY UPDATE\nEffective Date: February 1, 2022\n\nTo support our growing remote workforce, the company has updated its expense reimbursement policy. The following changes are effective immediately:\n\n1. Home Office Setup: Employees approved for permanent remote work may claim up to $800 for home office equipment (e.g., monitors, keyboards, ergonomic chairs).\n\n2. Internet Allowance: A monthly internet allowance of $50 will be added to the salary of all full-time remote employees.\n\n3. Meal Reimbursement: Meal reimbursements during client meetings are capped at $75 per person per meeting, down from the previous cap of $100.\n\nAll claims must be submitted via the company's online expense portal within 30 days of the expenditure. Questions may be directed to hr-expenses@company.com.`,
+ qs:[
+  {q:"What change was made to the meal reimbursement policy?",opts:["The cap was increased from $75 to $100","The cap was reduced from $100 to $75","Meal reimbursements were eliminated entirely","Meal reimbursements now require manager approval"],ans:1,exp:"'Meal reimbursements during client meetings are capped at $75 per person per meeting, down from the previous cap of $100' → $100에서 $75로 감소.",v:["reimbursement","cap","client meeting","expenditure"]},
+  {q:"What is NOT mentioned as a benefit for remote employees?",opts:["An allowance for internet costs","Funding for office equipment","Free meals delivered to their homes","A monthly payment added to their salary"],ans:2,exp:"인터넷 수당, 홈오피스 장비 비용은 언급됨. 식사 배달은 언급 없음. 식사 비용은 '클라이언트 미팅 시'에만 해당.",v:["remote workforce","allowance","home office","policy"]},
+ ]},
+{type:'single',year:'2023',context:'기사',
+ passage:`BUSINESS DAILY — November 14, 2023\n\nCORNERSTONE ANALYTICS ACQUIRES DATAWAVE SOLUTIONS\n\nCornerstone Analytics, a leader in enterprise data management, announced Monday that it has completed the acquisition of DataWave Solutions, a Singapore-based data visualization company, for $340 million in cash.\n\nThe move is expected to significantly enhance Cornerstone's product offerings, particularly in the area of real-time business intelligence dashboards. Cornerstone CEO Maria Santos stated that the acquisition would allow the company to "deliver more powerful insights to clients across Asia-Pacific and beyond."\n\nDataWave, founded in 2015, currently serves over 1,200 enterprise clients across 30 countries and employs approximately 480 staff. All DataWave employees will be retained, and the Singapore office will continue to operate as a regional headquarters.\n\nThe combined company is projected to generate revenues of $1.8 billion in the upcoming fiscal year.`,
+ qs:[
+  {q:"What is the article mainly about?",opts:["The launch of a new software product","A corporate acquisition","A company's annual earnings report","The expansion of a Singapore office"],ans:1,exp:"'Cornerstone Analytics, a leader in enterprise data management, announced that it has completed the acquisition of DataWave Solutions' → 기업 인수가 주제.",v:["acquisition","enterprise","data visualization","revenue"]},
+  {q:"According to the article, what will happen to DataWave's employees?",opts:["They will be relocated to Cornerstone's headquarters","They will be offered voluntary redundancy packages","They will all be kept on by the company","Their employment is currently under review"],ans:2,exp:"'All DataWave employees will be retained' → 전원 유지.",v:["retain","employee","headquarters","redundancy"]},
+ ]},
+{type:'double',year:'2020',context:'이중지문(이메일+회신)',
+ passageA:`From: Kevin Marsh <k.marsh@innovatex.com>\nTo: Sarah Lin <s.lin@precisionparts.com>\nDate: March 4, 2020\nSubject: Bulk Order Inquiry — Component #PP-447\n\nDear Ms. Lin,\n\nWe are interested in placing a bulk order for Component #PP-447 for use in our new production line launching in Q2. We anticipate needing approximately 5,000 units per month, starting in May.\n\nCould you please confirm current availability, lead time, and any volume discount applicable for orders of this size? Also, I would like to know if you offer customized specifications, as we may need slight modifications to the standard design.\n\nThank you for your time.\n\nKind regards,\nKevin Marsh\nProcurement Manager, InnovatEx`,
+ passageB:`From: Sarah Lin <s.lin@precisionparts.com>\nTo: Kevin Marsh <k.marsh@innovatex.com>\nDate: March 6, 2020\nSubject: RE: Bulk Order Inquiry — Component #PP-447\n\nDear Mr. Marsh,\n\nThank you for your inquiry. We are pleased to confirm that Component #PP-447 is currently in stock and available for bulk orders. For orders of 3,000+ units per month, we offer a 12% volume discount on the standard unit price of $18.50.\n\nRegarding lead time, standard orders ship within 10–14 business days. For your May launch, we recommend placing the order no later than April 7th to ensure on-time delivery.\n\nAs for custom specifications, we do offer engineering customizations; however, a one-time tooling fee of $2,400 applies. Our engineering team would need to review your requirements before confirming feasibility.\n\nPlease feel free to reach out if you have further questions.\n\nBest regards,\nSarah Lin\nSales Director, Precision Parts Inc.`,
+ qs:[
+  {q:"What is the standard unit price of Component #PP-447?",opts:["$16.28","$18.50","$20.72","$22.00"],ans:1,exp:"'standard unit price of $18.50' → 정가는 $18.50.",v:["unit price","volume discount","bulk order","component"]},
+  {q:"How much would InnovatEx pay per unit with the volume discount?",opts:["$14.80","$16.28","$17.50","$18.50"],ans:1,exp:"$18.50 × (1 - 0.12) = $18.50 × 0.88 = $16.28. 5,000 units/month는 3,000+ 기준 12% 할인 적용.",v:["volume discount","per unit","calculation"]},
+  {q:"By what date should InnovatEx place the order for a May launch?",opts:["March 31","April 7","April 14","May 1"],ans:1,exp:"'recommend placing the order no later than April 7th to ensure on-time delivery' → 4월 7일까지 주문 권장.",v:["lead time","on-time delivery","recommend"]},
+  {q:"What will Precision Parts require if InnovatEx requests custom specifications?",opts:["A signed partnership agreement","An upfront tooling fee","A sample order before production","A six-month commitment"],ans:1,exp:"'a one-time tooling fee of $2,400 applies' → 맞춤 사양에는 1회성 금형 비용 $2,400 발생.",v:["custom specification","tooling fee","engineering","feasibility"]},
+  {q:"What does Ms. Lin indicate about engineering customizations?",opts:["They are not possible for Component #PP-447","They are available but require review of InnovatEx's requirements","They are included in the volume discount price","They require a two-week additional lead time"],ans:1,exp:"'our engineering team would need to review your requirements before confirming feasibility' → 맞춤 사양 가능하나 검토 필요.",v:["customization","engineering team","feasibility","review"]},
+ ]},
+]},
+
+// ── DAY 2: 단일×4 + 이중×1 ──
+{dayKey:'d2',sections:[
+{type:'single',year:'2021',context:'일정표/프로그램',
+ passage:`RIVERSIDE WELLNESS EXPO 2021\nOctober 9–10 | Riverside Civic Center\n\nSATURDAY, OCTOBER 9\n09:00  Doors Open / Registration\n10:00  Opening Keynote: "The Science of Longevity" — Dr. Priya Nair\n11:30  Workshop Track A: Nutrition for Peak Performance\n11:30  Workshop Track B: Mindfulness & Stress Reduction\n13:00  Lunch (provided for registered attendees)\n14:30  Panel: "Mental Health in the Modern Workplace"\n16:30  Exhibitor Networking Hour\n\nSUNDAY, OCTOBER 10\n09:30  Morning Yoga Session (open to all — extra $15 fee)\n10:30  Keynote: "Technology and Human Health" — Prof. James Okeke\n12:00  Lunch (provided)\n13:30  Breakout Sessions (12 topics available)\n15:30  Closing Ceremony & Prize Draw\n\nGeneral Admission: $120 | Student Rate: $60\nGroup Discount: 15% off for groups of 8 or more\nRegister at: www.riversidewellnessexpo.com`,
+ qs:[
+  {q:"What is NOT included in the general admission price?",opts:["Lunch on both days","Access to panel discussions","The morning yoga session","Attendance at the keynote speeches"],ans:2,exp:"Morning Yoga Session에 'extra $15 fee'가 명시 → 별도 비용. 나머지(점심, 패널, 기조연설)는 입장료에 포함.",v:["general admission","yoga session","extra fee","panel"]},
+  {q:"How much would a group of 10 students pay in total?",opts:["$510","$600","$900","$1,020"],ans:0,exp:"학생 요금 $60 × 10명 = $600. 8명 이상 그룹 할인 15% → $600 × 0.85 = $510.",v:["student rate","group discount","calculation","admission"]},
+ ]},
+{type:'single',year:'2022',context:'편지/서신',
+ passage:`Dear Ms. Hoffmann,\n\nI am writing to express my sincere appreciation for the exceptional service I received during my recent stay at the Lakeview Grand Hotel from June 14 to June 18. From the moment of check-in, every member of your team demonstrated outstanding professionalism and attentiveness.\n\nI would particularly like to commend your concierge team, especially a staff member named Thomas, who went above and beyond to arrange last-minute reservations at several fully booked restaurants and secured theatre tickets that I had been unable to obtain on my own.\n\nI will without question be returning to the Lakeview Grand for my next visit to Vienna and will strongly recommend your hotel to my colleagues.\n\nWith gratitude,\nEleanor Stanton\nManaging Director, Stanton & Associates`,
+ qs:[
+  {q:"Why did Ms. Stanton write this letter?",opts:["To request a refund for a billing error","To complain about poor service at the hotel","To express satisfaction with her stay","To inquire about future reservation availability"],ans:2,exp:"'writing to express my sincere appreciation for the exceptional service' → 만족감을 표현하는 편지.",v:["appreciation","exceptional","commend","professionalism"]},
+  {q:"What did Thomas do for Ms. Stanton?",opts:["He upgraded her room to a suite","He arranged restaurant reservations and theatre tickets","He provided airport transportation","He delivered her luggage after check-in"],ans:1,exp:"'arrange last-minute reservations at several fully booked restaurants and secured theatre tickets' → 레스토랑 예약과 연극 티켓 확보.",v:["concierge","last-minute","reservation","theatre tickets"]},
+ ]},
+{type:'single',year:'2023',context:'설문/안내',
+ passage:`CUSTOMER SATISFACTION SURVEY — SUMMARY REPORT\nPrepared by: Quality Assurance Department\nPeriod: Q3 2023 (July–September)\n\nTotal Respondents: 1,847\n\nOVERALL SATISFACTION\n• Very Satisfied: 34%  • Satisfied: 41%  • Neutral: 15%\n• Dissatisfied: 7%  • Very Dissatisfied: 3%\n\nTOP AREAS OF PRAISE\n1. Product Quality (92% positive)\n2. Delivery Speed (88% positive)\n3. Customer Support Responsiveness (79% positive)\n\nAREAS FOR IMPROVEMENT\n1. Website Navigation (43% found it difficult)\n2. Returns Process (38% rated it as cumbersome)\n3. Packaging Sustainability (29% expressed concern)\n\nKEY INSIGHT: 75% of respondents stated they would recommend our services to others. The most common reason given for dissatisfaction was the difficulty of the website's checkout process.`,
+ qs:[
+  {q:"What percentage of customers were satisfied or very satisfied?",opts:["34%","41%","75%","75%"],ans:2,exp:"Very Satisfied 34% + Satisfied 41% = 75%. 질문이 두 범주를 합산.",v:["satisfaction","survey","respondent","rating"]},
+  {q:"What was the most frequently cited reason for customer dissatisfaction?",opts:["Slow delivery speeds","Difficult website checkout","Poor product quality","Inadequate customer support"],ans:1,exp:"'The most common reason given for dissatisfaction was the difficulty of the website's checkout process.' → 결제 과정의 어려움.",v:["dissatisfaction","checkout process","website navigation","cumbersome"]},
+ ]},
+{type:'single',year:'2024',context:'보도자료',
+ passage:`FOR IMMEDIATE RELEASE — February 20, 2024\n\nGREENFIELD ENERGY ANNOUNCES PARTNERSHIP WITH CITY OF SUNPORT FOR SOLAR GRID INITIATIVE\n\nGreenfield Energy Corporation today announced a 15-year public-private partnership with the City of Sunport to develop a 200-megawatt solar energy grid that will power approximately 65,000 homes.\n\nThe $420 million project, funded jointly by Greenfield Energy and federal clean energy grants, is scheduled to begin construction in Q3 2024 and reach full operational capacity by early 2027.\n\n"This partnership is a testament to our shared commitment to sustainable development," said Greenfield CEO Dr. Yuki Tanaka. "We are proud to make Sunport one of the first mid-sized cities in the country to achieve 80% renewable energy coverage."\n\nThe project is expected to create approximately 1,200 construction jobs and 150 permanent positions. Local contractors will be given priority in the bidding process.`,
+ qs:[
+  {q:"What is the main purpose of the press release?",opts:["To announce the completion of a renewable energy project","To report on declining fossil fuel usage in Sunport","To publicize a new energy partnership between a company and a city","To describe government funding for solar energy research"],ans:2,exp:"'announced a 15-year public-private partnership with the City of Sunport' → 기업-도시 간 파트너십 발표가 목적.",v:["partnership","solar grid","renewable energy","public-private"]},
+  {q:"What advantage will local contractors receive?",opts:["Guaranteed contracts without competition","Reduced tax rates on project earnings","Priority consideration in the bidding process","Funding from federal clean energy grants"],ans:2,exp:"'Local contractors will be given priority in the bidding process.' → 입찰 과정에서 우선권.",v:["local contractor","bidding process","priority","construction"]},
+ ]},
+{type:'double',year:'2022',context:'이중지문(이메일+회의록)',
+ passageA:`From: Diana Romero <d.romero@altus-consulting.com>\nTo: Marcus Bell <m.bell@altus-consulting.com>\nDate: April 12, 2022\nSubject: Proposed Agenda — Q2 Strategy Meeting\n\nHi Marcus,\n\nAs discussed, I've put together a draft agenda for our Q2 Strategy Meeting on April 20th. I've allocated two hours for the session.\n\nProposed Agenda:\n1. Q1 Performance Review (30 min)\n2. Market Expansion Opportunities — Southeast Asia focus (45 min)\n3. Budget Reallocation for Q2 (30 min)\n4. AOB (15 min)\n\nI think we should invite Elena from the Research Division to present on the Southeast Asia market data, as her team has been tracking this closely. Let me know if you'd like to make any changes.\n\nBest,\nDiana`,
+ passageB:`MEETING MINUTES\nQ2 Strategy Meeting — April 20, 2022\nAttendees: Diana Romero, Marcus Bell, Elena Vasquez, Peter Chung (Finance)\n\nItem 1 — Q1 Performance Review\nThe team reviewed Q1 results. Revenue was 8% above target. Action: Marcus to prepare a detailed breakdown for the board by April 30.\n\nItem 2 — Market Expansion: Southeast Asia\nElena Vasquez presented findings from the Research Division. Indonesia and Vietnam were identified as priority markets. Action: Diana to commission a feasibility study by May 15.\n\nItem 3 — Budget Reallocation\nPeter Chung presented revised figures. It was agreed to reallocate $200,000 from the North America marketing budget to the Southeast Asia expansion fund.\n\nItem 4 — AOB\nMarcus raised the issue of staff shortages in the Operations team. Action: HR to be consulted by April 28.`,
+ qs:[
+  {q:"Who was invited to present at the meeting?",opts:["Peter Chung","Marcus Bell","Elena Vasquez","Diana Romero"],ans:2,exp:"Diana의 이메일: 'I think we should invite Elena from the Research Division to present on the Southeast Asia market data.' → 회의록에도 Elena Vasquez가 Southeast Asia 발표.",v:["agenda","Research Division","present","invite"]},
+  {q:"What was Q1 revenue performance compared to target?",opts:["5% below","On target","8% above","12% above"],ans:2,exp:"회의록: 'Revenue was 8% above target.'",v:["Q1","revenue","target","performance review"]},
+  {q:"What change was made to the budget?",opts:["$200,000 was cut from total operating expenses","$200,000 was moved from North America marketing to Southeast Asia expansion","The Q2 budget was frozen pending board approval","Southeast Asia received a $200,000 government grant"],ans:1,exp:"'reallocate $200,000 from the North America marketing budget to the Southeast Asia expansion fund' → 북미 마케팅 예산에서 동남아 확장 펀드로 이전.",v:["reallocate","budget","North America","Southeast Asia"]},
+  {q:"What action was Diana assigned after the meeting?",opts:["Prepare a board presentation","Commission a feasibility study","Consult with HR about staffing","Revise the Q2 marketing budget"],ans:1,exp:"'Action: Diana to commission a feasibility study by May 15.' → Diana의 액션 아이템.",v:["feasibility study","commission","action item","expansion"]},
+  {q:"Which item was NOT in Diana's original proposed agenda?",opts:["A review of Q1 results","Discussion of market expansion","Staff shortage in Operations","Budget reallocation"],ans:2,exp:"Diana의 원래 안건(Q1 Review, Market Expansion, Budget Reallocation, AOB)에 직원 부족 문제는 포함되지 않았음. 회의에서 Marcus가 AOB로 추가 제기.",v:["agenda","AOB","staff shortage","Operations"]},
+ ]},
+]},
+
+// ── DAY 3: 단일×3 + 이중×1 + 삼중×1 ──
+{dayKey:'d3',sections:[
+{type:'single',year:'2023',context:'회람/메모',
+ passage:`MEMO\nTO: Sales Department\nFROM: Regional Director — Jennifer Hollis\nDATE: June 5, 2023\nRE: New Sales Territory Assignments\n\nEffective July 1, the following territory reassignments will take effect to better align our sales resources with market opportunities.\n\nReassigned Territories:\n• Brad Kowalski: Previously Western Region → Now Pacific Northwest\n• Aisha Patel: Previously Southern Region → Now Southwest & Texas\n• Carlos Mendes: Previously Midwest → Now Great Lakes Region\n• Sandra Yun: No change — continues Northeast Region\n\nThe reassignments reflect Q1 market analysis data showing higher growth potential in these areas. Training sessions on new territory accounts will be held June 18–20 in the Chicago office.\n\nPlease confirm receipt of this memo by replying to my assistant, Grace Tan, at g.tan@company.com by June 12.`,
+ qs:[
+  {q:"What is the purpose of this memo?",opts:["To announce staff promotions in the sales department","To inform employees of new territory assignments","To schedule a mandatory sales training program","To report on Q1 sales performance results"],ans:1,exp:"'RE: New Sales Territory Assignments'와 'the following territory reassignments will take effect' → 영업 구역 재배정 안내.",v:["territory assignment","regional director","reassignment","effective"]},
+  {q:"Whose territory assignment is NOT changing?",opts:["Brad Kowalski","Aisha Patel","Sandra Yun","Carlos Mendes"],ans:2,exp:"'Sandra Yun: No change — continues Northeast Region' → Sandra Yun의 구역은 변경 없음.",v:["reassignment","territory","region","memo"]},
+ ]},
+{type:'single',year:'2024',context:'제품 리뷰',
+ passage:`★★★★★ — Verified Purchase, Posted January 14, 2024\nReviewer: TechEnthusiast_Jae\n\nI've been using the Luminar X Pro noise-canceling headphones for three weeks and I'm genuinely impressed. The sound quality is exceptional — particularly the bass response, which rivals far more expensive models. The noise cancellation is virtually flawless in office environments, though it's slightly less effective at blocking low-frequency outdoor noise like traffic.\n\nBattery life is outstanding: I consistently get around 32 hours of playback on a single charge, which aligns perfectly with the 30-hour advertised figure (and then some). The companion app is intuitive and allows granular control of the EQ settings.\n\nMy only minor complaint is that the ear cushions become slightly warm during extended listening sessions of over two hours. However, this is a minor inconvenience for an otherwise excellent product at this price point.\n\nHighly recommended for office workers and frequent travelers.`,
+ qs:[
+  {q:"What minor issue does the reviewer mention?",opts:["The battery life is shorter than advertised","The noise cancellation does not work in offices","The ear cushions get warm with prolonged use","The companion app is difficult to navigate"],ans:2,exp:"'the ear cushions become slightly warm during extended listening sessions of over two hours' → 장시간 사용 시 귀 쿠션이 따뜻해지는 문제.",v:["ear cushion","extended","minor complaint","noise cancellation"]},
+  {q:"What does the reviewer say about the battery life?",opts:["It falls short of the 30-hour advertised figure","It matches or slightly exceeds the advertised figure","It drains quickly in noise-cancellation mode","It requires frequent charging during travel"],ans:1,exp:"'I consistently get around 32 hours of playback... aligns perfectly with the 30-hour advertised figure (and then some)' → 광고된 30시간과 일치하거나 약간 초과.",v:["battery life","advertised","playback","single charge"]},
+ ]},
+{type:'single',year:'2020',context:'안내/공고',
+ passage:`SUNBRIDGE LIBRARY — COMMUNITY NOTICE\n\nDigital Skills Workshop Series — Registration Now Open\n\nSunbridge Public Library is pleased to offer a free six-week Digital Skills Workshop Series beginning March 10. Sessions will be held every Tuesday from 6:00 P.M. to 8:00 P.M. at the Main Branch, Room 204.\n\nWeek 1: Introduction to Computers & Internet Safety\nWeek 2: Using Email & Cloud Storage Effectively\nWeek 3: Online Banking & Government Services\nWeek 4: Video Calling & Social Media Basics\nWeek 5: Job Searching & Resume Building Online\nWeek 6: Protecting Yourself from Online Scams\n\nWorkshops are designed for adults aged 50 and above with limited digital experience. Space is limited to 20 participants per session. Registration is required.\n\nTo register, visit the library front desk or call (555) 319-2100. Proof of library membership is required at time of registration.`,
+ qs:[
+  {q:"What is a requirement for registration?",opts:["Payment of a workshop fee","Prior experience with computers","A valid library membership","A referral from a community center"],ans:2,exp:"'Proof of library membership is required at time of registration.' → 도서관 회원증 필요.",v:["registration","library membership","proof","requirement"]},
+  {q:"For whom is the workshop designed?",opts:["School-aged children learning basic IT skills","University students preparing for digital careers","Adults over 50 with limited digital experience","Working professionals upgrading their technology skills"],ans:2,exp:"'Workshops are designed for adults aged 50 and above with limited digital experience.' → 50세 이상 디지털 경험이 적은 성인.",v:["digital skills","workshop","adults","registration"]},
+ ]},
+{type:'triple',year:'2024',context:'삼중지문(공고+이메일+메모)',
+ passageA:`JOB POSTING\nSenior Financial Analyst\nNorthstar Capital Group\n\nNorthstar Capital Group is seeking a Senior Financial Analyst to join our Investment Analysis team in Toronto. The ideal candidate will hold a CFA designation or be actively working toward completion, possess a minimum of 6 years of experience in financial modeling and equity research, and demonstrate strong proficiency in Python or R for data analysis.\n\nResponsibilities include building financial models for investment decisions, preparing client-facing research reports, and presenting findings to senior management.\n\nCompetitive salary: CAD 110,000–130,000 + performance bonus\nDeadline to apply: September 15, 2024\nSend applications to: talent@northstarcapital.ca`,
+ passageB:`From: Rachel Kim <r.kim@northstarcapital.ca>\nTo: talent@northstarcapital.ca\nDate: September 13, 2024\nSubject: Application — Senior Financial Analyst\n\nDear Hiring Team,\n\nI am writing to apply for the Senior Financial Analyst position. I have eight years of equity research experience at major investment banks in Seoul and Vancouver, and I passed all three levels of the CFA exam in 2021.\n\nI am proficient in both Python and R, having used both extensively for quantitative analysis. My résumé and three professional references are attached.\n\nI look forward to the opportunity to contribute to Northstar's investment analysis team.\n\nSincerely,\nRachel Kim`,
+ passageC:`INTERNAL HR NOTE\n\nCandidate: Rachel Kim\nApplication Received: September 13, 2024\nStatus: Within deadline ✓\n\nInitial Screening:\n• CFA: Level III passed (2021) ✓\n• Experience: 8 years equity research ✓ (exceeds 6-year minimum)\n• Programming: Python & R ✓\n• Location: Currently based in Vancouver — no relocation required ✓\n\nNote: References not yet verified. Schedule first-round interview for the week of September 23rd.\nInterviewer assigned: David Park (Head of Investment Analysis)`,
+ qs:[
+  {q:"What CFA requirement does the job posting mention?",opts:["Candidates must have passed all three CFA levels","Candidates must hold or be working toward a CFA designation","Candidates must have held a CFA for at least five years","Candidates must have a CFA and an MBA"],ans:1,exp:"'hold a CFA designation or be actively working toward completion' → CFA를 보유하거나 취득 중이어야 함.",v:["CFA designation","qualification","requirement","investment"]},
+  {q:"How does Rachel Kim exceed the minimum experience requirement?",opts:["She has international work experience in three countries","She has 8 years of experience vs. the 6-year minimum","She holds additional certifications beyond the CFA","She has experience managing a team of analysts"],ans:1,exp:"공고의 최소 요건: 6년. Rachel Kim: 8년 경험. 'exceeds 6-year minimum' in HR note.",v:["minimum requirement","equity research","experience","exceed"]},
+  {q:"What does the HR note indicate still needs to be completed?",opts:["Verification of CFA certification","Review of Rachel's Python proficiency","Confirmation of her references","A background check"],ans:2,exp:"'References not yet verified.' → 추천인 검증이 아직 완료되지 않음.",v:["reference","verify","screening","background check"]},
+  {q:"Who will conduct Rachel Kim's first-round interview?",opts:["Rachel Kim's former supervisor","A member of the HR department","The Head of Investment Analysis","The CEO of Northstar Capital"],ans:2,exp:"'Interviewer assigned: David Park (Head of Investment Analysis)' → 투자분석팀 팀장 David Park.",v:["interview","Investment Analysis","assigned","first-round"]},
+  {q:"What can be inferred about Rachel Kim's location?",opts:["She would need to relocate from Seoul to Toronto","Her current city is the same as Northstar's office city","She is currently based in the same country as Northstar","She is applying remotely from outside North America"],ans:2,exp:"HR Note: 'Currently based in Vancouver — no relocation required'. Northstar는 Toronto(캐나다), Vancouver도 캐나다 → 같은 국가 내.",v:["relocation","Vancouver","Toronto","candidate"]},
+ ]},
+]},
+];
+
+// ════════════════════════════════════════════════════════════
+//  DAY PLAN: 7일 플랜 정의
+// ════════════════════════════════════════════════════════════
+const DAY_PLANS = [
+ {day:1,name:'월요일',theme:'문법 집중일',p5Idx:[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29],p6Idx:[0,1],p7Key:'d1',time:'90분',desc:'Part 5×30 · Part 6 2지문 · Part 7 단일×4+이중×1'},
+ {day:2,name:'화요일',theme:'어휘 집중일',p5Idx:[1,3,5,7,9,11,13,15,17,19,21,23,25,27,29,0,2,4,6,8,10,12,14,16,18,20,22,24,26,28],p6Idx:[2,3],p7Key:'d2',time:'90분',desc:'Part 5×30 · Part 6 2지문 · Part 7 단일×4+이중×1'},
+ {day:3,name:'수요일',theme:'독해 집중일',p5Idx:[4,8,12,16,20,24,28,0,4,8,12,16,20,24,28,1,5,9,13,17,21,25,29,2,6,10,14,18,22,26],p6Idx:[4,5],p7Key:'d3',time:'90분',desc:'Part 5×30 · Part 6 2지문 · Part 7 단일×3+삼중×1'},
+ {day:4,name:'목요일',theme:'이중지문 마스터',p5Idx:[2,6,10,14,18,22,26,3,7,11,15,19,23,27,1,5,9,13,17,21,25,29,0,4,8,12,16,20,24,28],p6Idx:[0,6],p7Key:'d1',time:'90분',desc:'Part 5×30 · Part 6 2지문 · Part 7 실전 세트'},
+ {day:5,name:'금요일',theme:'실전 모의고사',p5Idx:[7,15,23,1,9,17,25,3,11,19,27,5,13,21,29,0,8,16,24,2,10,18,26,4,12,20,28,6,14,22],p6Idx:[1,2],p7Key:'d2',time:'90분',desc:'Part 5×30 · Part 6 2지문 · Part 7 실전 세트'},
+ {day:6,name:'토요일',theme:'오답 복습의 날',p5Idx:[29,28,27,26,25,24,23,22,21,20,19,18,17,16,15,14,13,12,11,10,9,8,7,6,5,4,3,2,1,0],p6Idx:[3,4],p7Key:'d3',time:'90분',desc:'Part 5×30 · Part 6 2지문 · Part 7 실전 세트'},
+ {day:7,name:'일요일',theme:'전 파트 종합',p5Idx:[14,7,21,0,28,13,6,20,29,12,5,19,25,11,4,18,27,10,3,17,26,9,2,16,24,8,1,15,23,22],p6Idx:[5,6],p7Key:'d1',time:'90분',desc:'Part 5×30 · Part 6 2지문 · Part 7 실전 세트'},
+];
+
+// ════════════════════════════════════════════════════════════
+//  STATE
+// ════════════════════════════════════════════════════════════
+let currentDay = null;
+let allQs = []; // flat array of {type,q,sectionLabel,...}
+let qIdx = 0;
+let stats = {correct:0,wrong:0,p5c:0,p5t:0,p6c:0,p6t:0,p7c:0,p7t:0};
+let wrongItems = [];
+let sessionStart = null;
+let elapsedInterval = null;
+let progress = {}; // loaded in initHome
+
+// ════════════════════════════════════════════════════════════
+//  INIT HOME
+// ════════════════════════════════════════════════════════════
+function initHome(){
+  progress = _loadProgress();
+
+  const grid = document.getElementById('dayGrid');
+  grid.innerHTML = '';
+  const today = new Date().getDay(); // 0=Sun,1=Mon,...6=Sat
+  const dayMap = [7,1,2,3,4,5,6]; // Sunday->7, Mon->1...
+  const todayPlan = dayMap[today];
+
+  DAY_PLANS.forEach(plan=>{
+    const done = progress['day'+plan.day];
+    const isToday = plan.day === todayPlan;
+    const card = document.createElement('div');
+    card.className='day-card'+(isToday?' today':'')+(done?' completed':'');
+    card.onclick=()=>_startOrResume(plan.day);
+    card.innerHTML=`
+      <div class="dc-day">D${plan.day}</div>
+      <div class="dc-name">${plan.name}</div>
+      <div class="dc-parts">
+        <div class="dc-part p5">Part 5 ×30</div>
+        <div class="dc-part p6">Part 6 ×2지문</div>
+        <div class="dc-part p7">Part 7 세트</div>
+      </div>
+      <div class="dc-time">${plan.theme}</div>
+      <div class="dc-time" style="margin-top:4px;color:var(--accent)">${plan.time}</div>
+    `;
+    grid.appendChild(card);
+  });
+
+  // streak
+  let streak=0, total=0;
+  const dots = document.getElementById('streakDots');
+  dots.innerHTML='';
+  for(let i=6;i>=0;i--){
+    const d=new Date(); d.setDate(d.getDate()-i);
+    const key='day'+(dayMap[d.getDay()]);
+    const on=!!progress[key+'_date']&&progress[key+'_date']===d.toDateString();
+    const dot=document.createElement('div');
+    dot.className='s-dot'+(on?' on':'');
+    dots.appendChild(dot);
+    if(on)streak++;
+  }
+  Object.keys(progress).forEach(k=>{if(progress[k])total++});
+  document.getElementById('streakNum').textContent=streak;
+  document.getElementById('totalStudied').textContent=Math.floor(total/2)+'일';
+}
+
+// ════════════════════════════════════════════════════════════
+//  BUILD QUESTION QUEUE
+// ════════════════════════════════════════════════════════════
+function buildQueue(dayNum){
+  const plan = DAY_PLANS.find(p=>p.day===dayNum);
+  const queue = [];
+  let globalNum = 1;
+
+  // ── PART 5 ──
+  const p5qs = plan.p5Idx.map(i=>P5[i%P5.length]);
+  queue.push({type:'section_header',label:'PART 5',cls:'p5',title:'문법·어휘 (Incomplete Sentences)',desc:'각 문장의 빈칸에 가장 알맞은 단어나 표현을 고르세요.',time:plan.day%2===0?1200:1200});
+
+  p5qs.forEach(q=>{
+    queue.push({
+      type:'q',part:'5',secLabel:'Part 5',
+      num: globalNum++,
+      year:q.y, qtype:q.type, d:q.d,
+      text:q.q||q.text, opts:q.opts, ans:q.ans,
+      exp:q.exp, v:q.v,
+      passage:null,
+    });
+  });
+
+  // ── PART 6 ──
+  const p6sets = plan.p6Idx.map(i=>P6_SETS[i%P6_SETS.length]);
+  queue.push({type:'section_header',label:'PART 6',cls:'p6',title:'장문 빈칸 (Text Completion)',desc:'지문을 읽고 각 빈칸에 가장 알맞은 답을 고르세요.',time:1200});
+
+  p6sets.forEach(set=>{
+    queue.push({type:'passage_header',passage:set.passage,title:set.title,year:set.year});
+    set.qs.forEach(q=>{
+      queue.push({
+        type:'q',part:'6',secLabel:'Part 6',
+        num:globalNum++,
+        year:set.year,qtype:'장문 빈칸',d:3,
+        text:q.q,opts:q.opts,ans:q.ans,exp:q.exp,v:q.v,
+        passage:set.passage,
+      });
+    });
+  });
+
+  // ── PART 7 ──
+  const p7set = P7_SETS.find(s=>s.dayKey===plan.p7Key)||P7_SETS[0];
+  queue.push({type:'section_header',label:'PART 7',cls:'p7',title:'독해 (Reading Comprehension)',desc:'지문을 읽고 질문에 가장 알맞은 답을 고르세요.',time:3000});
+
+  p7set.sections.forEach(sec=>{
+    if(sec.type==='single'){
+      queue.push({type:'passage_header',passage:sec.passage,title:`[${sec.year}년 기출 유형] ${sec.context}`,year:sec.year});
+      sec.qs.forEach(q=>{
+        queue.push({type:'q',part:'7',secLabel:'Part 7',num:globalNum++,year:sec.year,qtype:sec.context,d:3,text:q.q,opts:q.opts,ans:q.ans,exp:q.exp,v:q.v,passage:sec.passage});
+      });
+    } else if(sec.type==='double'){
+      queue.push({type:'passage_header',passage:`[Document 1]\n${sec.passageA}\n\n[Document 2]\n${sec.passageB}`,title:`[${sec.year}년 기출 유형] 이중지문 — ${sec.context}`,year:sec.year,isDouble:true});
+      sec.qs.forEach(q=>{
+        queue.push({type:'q',part:'7',secLabel:'Part 7',num:globalNum++,year:sec.year,qtype:'이중지문',d:4,text:q.q,opts:q.opts,ans:q.ans,exp:q.exp,v:q.v,passage:`[Doc 1]\n${sec.passageA}\n\n[Doc 2]\n${sec.passageB}`});
+      });
+    } else if(sec.type==='triple'){
+      queue.push({type:'passage_header',passage:`[Document 1]\n${sec.passageA}\n\n[Document 2]\n${sec.passageB}\n\n[Document 3]\n${sec.passageC}`,title:`[${sec.year}년 기출 유형] 삼중지문 — ${sec.context}`,year:sec.year,isTriple:true});
+      sec.qs.forEach(q=>{
+        queue.push({type:'q',part:'7',secLabel:'Part 7',num:globalNum++,year:sec.year,qtype:'삼중지문',d:5,text:q.q,opts:q.opts,ans:q.ans,exp:q.exp,v:q.v,passage:`[Doc 1]\n${sec.passageA}\n\n[Doc 2]\n${sec.passageB}\n\n[Doc 3]\n${sec.passageC}`});
+      });
+    }
+  });
+
+  return queue;
+}
+
+// ════════════════════════════════════════════════════════════
+//  START DAY
+// ════════════════════════════════════════════════════════════
+function startDay(dayNum, _isResume, _savedSess){
+  currentDay = dayNum;
+  const plan = DAY_PLANS.find(p=>p.day===dayNum);
+  if (!_isResume) {
+    stats={correct:0,wrong:0,p5c:0,p5t:0,p6c:0,p6t:0,p7c:0,p7t:0};
+    wrongItems=[];
+    _clearSession();
+  } else {
+    stats={...(_savedSess?.stats||{correct:0,wrong:0,p5c:0,p5t:0,p6c:0,p6t:0,p7c:0,p7t:0})};
+    wrongItems=[];
+  }
+  allQs=buildQueue(dayNum);
+  qIdx=0;
+  sessionStart = Date.now() - ((_isResume&&_savedSess?.elapsed)||0)*1000;
+
+  if (_isResume && _savedSess?.answered) {
+    const _ansMap = {};
+    _savedSess.answered.forEach(a => { _ansMap[a.num] = a; });
+    allQs.forEach((item,idx)=>{
+      if (item.type!=='q') return;
+      const sv = _ansMap[item.num];
+      if (sv) {
+        item.answered=true; item._myAns=sv.myAns; item._ok=sv.ok; item.skipped=sv.skipped||false;
+        selectedOpts[idx]=sv.myAns;
+        if (!sv.ok && !sv.skipped) wrongItems.push({item,myAns:sv.myAns,idx});
+      }
+    });
+  }
+
+  document.getElementById('qhdrTitle').textContent=`DAY ${dayNum} — ${plan.name} (${plan.theme})`;
+  updateHeaderMini();
+
+  showView('quizView');
+  renderFromIdx();
+
+  // elapsed timer
+  clearInterval(elapsedInterval);
+  elapsedInterval=setInterval(()=>{
+    const e=Math.floor((Date.now()-sessionStart)/1000);
+    const m=Math.floor(e/60),s=e%60;
+    document.getElementById('progTime').textContent=`경과: ${m}:${String(s).padStart(2,'0')}`;
+  },1000);
+}
+
+function renderFromIdx(){
+  const content=document.getElementById('quizContent');
+  content.innerHTML='';
+
+  // render current section header + all questions in this section
+  let i=qIdx;
+  while(i<allQs.length){
+    const item=allQs[i];
+    if(item.type==='section_header'){
+      appendSectionHeader(content,item);
+      i++;
+    } else if(item.type==='passage_header'){
+      appendPassageBlock(content,item);
+      i++;
+    } else if(item.type==='q'){
+      appendQCard(content,item,i);
+      i++;
+      // after first unanswered q, stop
+      if(!item.answered) break;
+    } else { i++; }
+  }
+  qIdx=i;
+  updateProgress();
+  updateHeaderMini();
+}
+
+function appendSectionHeader(parent,item){
+  const div=document.createElement('div');
+  div.className='sec-divider';
+  div.innerHTML=`<div class="sec-div-inner"><span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted);letter-spacing:2px">${item.label}</span><span class="sec-div-txt">${item.title}</span><span style="font-size:11px;color:var(--dim)">${item.desc}</span></div>`;
+  parent.appendChild(div);
+
+  // section sticky header
+  const sh=document.createElement('div');
+  sh.className='section-hdr';
+  sh.innerHTML=`<span class="sec-badge ${item.cls}">${item.label}</span><div class="sec-info"><div class="sec-title">${item.title}</div><div class="sec-desc">${item.desc}</div></div>`;
+  parent.appendChild(sh);
+}
+
+function appendPassageBlock(parent,item){
+  const div=document.createElement('div');
+  div.className='q-area';
+  const block=document.createElement('div');
+  block.className='passage-block';
+  block.innerHTML=`<div class="p-label">${item.title||'지문'}</div><div class="p-body">${(item.passage||'').replace(/\n/g,'<br>').replace(/---\[\w+\]---/g,'<span class="blank">[ ___ ]</span>')}</div>`;
+  div.appendChild(block);
+  parent.appendChild(div);
+}
+
+function appendQCard(parent,item,idx){
+  const area=document.createElement('div');
+  area.className='q-area';
+  const card=document.createElement('div');
+  card.className='q-card';
+  card.id='qcard-'+idx;
+
+  const L=['A','B','C','D','E'];
+  const diffs=[...Array(5)].map((_,i)=>`<span class="dd${i<item.d?' on':''}"></span>`).join('');
+
+  card.innerHTML=`
+    <div class="qc-meta">
+      <div class="qc-num">${item.num}</div>
+      <div class="qc-type">${item.year}년 · ${item.qtype}</div>
+      <div class="qc-diff" title="난이도">${diffs}</div>
+    </div>
+    <div class="qc-text">${item.text}</div>
+    <div class="opts" id="opts-${idx}">
+      ${item.opts.map((o,i)=>`<button class="opt" onclick="selectOpt(${idx},${i},this)"><div class="ol">${L[i]}</div><span>${o}</span></button>`).join('')}
+    </div>
+    <div class="res-row" id="res-${idx}"><span id="resicon-${idx}"></span><span id="resmsg-${idx}"></span></div>
+    <div class="q-actions" id="acts-${idx}">
+      <button class="btn btn-main" id="submit-${idx}" disabled onclick="submitQ(${idx})">제출하기</button>
+      <button class="btn btn-ghost" id="skip-${idx}" onclick="skipQ(${idx})">건너뛰기</button>
+    </div>
+    <div class="ai-exp" id="aiexp-${idx}">
+      <div class="ai-exp-hdr"><div class="ai-dot"></div><div class="ai-title">AI 해설</div></div>
+      <div class="ai-body" id="aibody-${idx}"></div>
+      <div class="vocab-row" id="vocab-${idx}"></div>
+    </div>
+  `;
+  area.appendChild(card);
+  parent.appendChild(area);
+}
+
+// ════════════════════════════════════════════════════════════
+//  INTERACTION
+// ════════════════════════════════════════════════════════════
+let selectedOpts={};
+
+function selectOpt(idx,optIdx,btn){
+  const item=allQs[idx];
+  if(item.answered)return;
+  selectedOpts[idx]=optIdx;
+  document.querySelectorAll(`#opts-${idx} .opt`).forEach(b=>b.classList.remove('sel'));
+  btn.classList.add('sel');
+  document.getElementById('submit-'+idx).disabled=false;
+}
+
+function submitQ(idx){
+  const item=allQs[idx];
+  if(item.answered)return;
+  const myAns=selectedOpts[idx];
+  if(myAns===undefined)return;
+  item.answered=true;
+  const ok=myAns===item.ans;
+  const L=['A','B','C','D','E'];
+
+  document.querySelectorAll(`#opts-${idx} .opt`).forEach((b,i)=>{
+    b.disabled=true;
+    if(i===item.ans)b.classList.add('ok');
+    else if(i===myAns&&!ok)b.classList.add('ng');
+  });
+
+  const res=document.getElementById('res-'+idx);
+  res.className='res-row show '+(ok?'ok':'ng');
+  document.getElementById('resicon-'+idx).textContent=ok?'✓':'✗';
+  document.getElementById('resmsg-'+idx).textContent=ok?'정답입니다!':'오답. 정답: ('+L[item.ans]+') '+item.opts[item.ans];
+
+  // stats
+  if(ok){stats.correct++;if(item.part==='5')stats.p5c++;else if(item.part==='6')stats.p6c++;else stats.p7c++;}
+  else{stats.wrong++;wrongItems.push({item,myAns,idx});_saveWrongNote(item,myAns);}
+  if(item.part==='5')stats.p5t++;else if(item.part==='6')stats.p6t++;else stats.p7t++;
+  item._myAns=myAns; item._ok=ok;
+  _scheduleSave();
+
+  // hide submit, show next
+  document.getElementById('acts-'+idx).innerHTML=`<button class="btn btn-main" onclick="nextQ(${idx})">다음 문제 →</button>`;
+
+  updateHeaderMini();
+  fetchAI(idx,item,ok,myAns);
+}
+
+function skipQ(idx){
+  const item=allQs[idx];
+  if(item.answered)return;
+  item.answered=true;item.skipped=true;
+  document.querySelectorAll(`#opts-${idx} .opt`).forEach(b=>b.disabled=true);
+  document.getElementById('acts-'+idx).innerHTML=`<button class="btn btn-main" onclick="nextQ(${idx})">다음 문제 →</button>`;
+  updateHeaderMini();
+}
+
+function nextQ(fromIdx){
+  // find next unanswered q
+  let ni=fromIdx+1;
+  while(ni<allQs.length&&allQs[ni].type!=='q')ni++;
+  if(ni>=allQs.length){finishDay();return;}
+
+  // render remaining from ni's section context
+  const content=document.getElementById('quizContent');
+  // look backwards for passage_header and section_header not yet rendered
+  let si=ni-1;
+  const toRender=[];
+  while(si>=0){
+    if(allQs[si].type==='q'&&allQs[si].answered){break;}
+    if(allQs[si].type==='passage_header'||allQs[si].type==='section_header'){
+      // check if already rendered
+      if(!allQs[si]._rendered){toRender.unshift(si);}
+    }
+    si--;
+  }
+  toRender.forEach(i=>{
+    const item=allQs[i];
+    if(item.type==='section_header')appendSectionHeader(content,item);
+    else appendPassageBlock(content,item);
+    item._rendered=true;
+  });
+
+  appendQCard(content,allQs[ni],ni);
+  allQs[ni]._rendered=true;
+
+  // scroll to new card
+  setTimeout(()=>{
+    const el=document.getElementById('qcard-'+ni);
+    if(el)el.scrollIntoView({behavior:'smooth',block:'start'});
+  },100);
+
+  updateProgress(ni);
+}
+
+// ════════════════════════════════════════════════════════════
+//  AI EXPLANATION
+// ════════════════════════════════════════════════════════════
+async function fetchAI(idx,item,ok,myAns){
+  const bodyEl=document.getElementById('aibody-'+idx);
+  const expEl=document.getElementById('aiexp-'+idx);
+  expEl.classList.add('show');
+  bodyEl.className='ai-body loading';
+  bodyEl.innerHTML='분석 중 <div class="dots"><span></span><span></span><span></span></div>';
+
+  const L=['A','B','C','D'];
+  const prompt=`당신은 TOEIC 전문 강사입니다. ${item.year}년 기출 유형 Part ${item.part} 문제를 한국어로 해설해 주세요.
+
+유형: ${item.qtype}
+문제: ${item.text}
+${item.passage?'지문(일부):\n'+item.passage.substring(0,400)+'...\n':''}
+선택지:
+${item.opts.map((o,i)=>`(${L[i]}) ${o}`).join('\n')}
+정답: (${L[item.ans]}) ${item.opts[item.ans]}
+수험자: (${L[myAns]}) ${item.opts[myAns]}
+${ok?'✅ 정답':'❌ 오답'}
+
+200자 이내로:
+1. 정답 이유 (핵심 문법/어휘 포인트)
+2. 오답 분석 (왜 헷갈렸는지)
+3. 기출 출제 포인트 (자주 나오는 패턴)`;
+
+  try{
+    const r=await fetch("https://api.anthropic.com/v1/messages",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:800,messages:[{role:"user",content:prompt}]})});
+    const data=await r.json();
+    const txt=data.content?.map(c=>c.text||'').join('')||item.exp;
+    bodyEl.className='ai-body';
+    bodyEl.innerHTML=txt.replace(/\n/g,'<br>');
+  }catch(e){
+    bodyEl.className='ai-body';
+    bodyEl.innerHTML=item.exp;
+  }
+
+  const vEl=document.getElementById('vocab-'+idx);
+  if (item.v?.length) { const hint = document.createElement('span'); hint.style.cssText='font-size:9px;color:var(--muted);margin-right:4px;letter-spacing:1px'; hint.textContent='탭→저장'; vEl.appendChild(hint); }
+  vEl.innerHTML+=(item.v||[]).map(v=>`<span class="vt" style="cursor:pointer" onclick="_quickSaveVocab('${v.replace(/'/g,"\'")}','${item.year||''}년 Part ${item.part||'?'}',this)" title="탭하여 단어장에 저장">${v}</span>`).join('');
+}
+
+// ════════════════════════════════════════════════════════════
+//  FINISH
+// ════════════════════════════════════════════════════════════
+function finishDay(){
+  clearInterval(elapsedInterval);
+  clearTimeout(_saveTimer);
+  _clearSession();
+  // save progress
+  progress['day'+currentDay]=true;
+  progress['day'+currentDay+'_date']=new Date().toDateString();
+  _saveProgress(progress);
+
+  const tot=stats.correct+stats.wrong;
+  const pct=tot===0?0:Math.round(stats.correct/tot*100);
+  let grade,desc;
+  if(pct>=90){grade='🏆 Excellent!';desc='완벽에 가까운 실력입니다. 토익 900점대를 목표하세요!';}
+  else if(pct>=80){grade='⭐ Very Good!';desc='훌륭한 결과입니다. 조금만 더 다듬으면 목표 점수 달성!';}
+  else if(pct>=70){grade='👍 Good!';desc='좋은 진전입니다. 틀린 문제 유형을 집중 복습하세요.';}
+  else if(pct>=60){grade='📚 Keep Going!';desc='기초 문법과 어휘를 강화할 필요가 있습니다.';}
+  else{grade='💪 Don\'t Give Up!';desc='매일 꾸준히 하면 반드시 오릅니다. 오늘도 수고했습니다!';}
+
+  document.getElementById('rDay').textContent=`DAY ${currentDay} — 오늘의 결과`;
+  document.getElementById('rPct').textContent=pct+'%';
+  document.getElementById('rGrade').textContent=grade;
+  document.getElementById('rDesc').textContent=desc;
+  document.getElementById('rC').textContent=stats.correct;
+  document.getElementById('rW').textContent=stats.wrong;
+  document.getElementById('rT').textContent=tot;
+  document.getElementById('rP5').textContent=stats.p5t?Math.round(stats.p5c/stats.p5t*100)+'%':'—';
+  document.getElementById('rP5s').textContent=stats.p5t?`${stats.p5c}/${stats.p5t} 정답`:'—';
+  document.getElementById('rP6').textContent=stats.p6t?Math.round(stats.p6c/stats.p6t*100)+'%':'—';
+  document.getElementById('rP6s').textContent=stats.p6t?`${stats.p6c}/${stats.p6t} 정답`:'—';
+  document.getElementById('rP7').textContent=stats.p7t?Math.round(stats.p7c/stats.p7t*100)+'%':'—';
+  document.getElementById('rP7s').textContent=stats.p7t?`${stats.p7c}/${stats.p7t} 정답`:'—';
+
+  showView('resultView');
+}
+
+// ════════════════════════════════════════════════════════════
+//  WRONG REVIEW
+// ════════════════════════════════════════════════════════════
+function showWrongReview(){
+  const el=document.getElementById('wrongReview');
+  const grid=document.getElementById('wrongGrid');
+  if(wrongItems.length===0){el.style.display='block';grid.innerHTML='<div style="text-align:center;color:var(--dim);padding:40px">오답이 없습니다! 🎉</div>';return;}
+  const L=['A','B','C','D'];
+  grid.innerHTML='';
+  wrongItems.forEach(({item,myAns})=>{
+    const c=document.createElement('div');
+    c.className='rcard';
+    c.innerHTML=`
+      <div class="rcard-meta">${item.num}번 · ${item.year}년 · Part ${item.part} · ${item.qtype}</div>
+      ${item.passage?`<div class="rcard-passage">${item.passage.substring(0,500).replace(/\n/g,'<br>')}${item.passage.length>500?'...':''}</div>`:''}
+      <div class="rcard-q">${item.text}</div>
+      <div class="rcard-ans">
+        <span style="font-size:11px;color:var(--muted)">내 답:</span><span class="chip chip-ng">(${L[myAns]}) ${item.opts[myAns]}</span>
+        <span style="font-size:11px;color:var(--muted)">정답:</span><span class="chip chip-ok">(${L[item.ans]}) ${item.opts[item.ans]}</span>
+      </div>
+      <div class="rcard-exp">${item.exp}</div>
+      <div class="rcard-vocab">${(item.v||[]).map(v=>`<span class="vt">${v}</span>`).join('')}</div>
+    `;
+    grid.appendChild(c);
+  });
+  el.style.display='block';
+  el.scrollIntoView({behavior:'smooth'});
+}
+
+// ════════════════════════════════════════════════════════════
+//  UI HELPERS
+// ════════════════════════════════════════════════════════════
+function showView(id){
+  document.querySelectorAll('.view').forEach(v=>{v.classList.remove('active')});
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0,0);
+}
+function goHome(){
+  clearInterval(elapsedInterval);
+  clearTimeout(_saveTimer);
+  showView('homeView');
+  initHome();
+}
+
+function _startOrResume(dayNum) {
+  const sess = _loadSession();
+  if (sess && sess.day===dayNum && sess.answeredCount>0 && sess.answeredCount<sess.totalCount) {
+    // ask user
+    const plan = DAY_PLANS.find(p=>p.day===dayNum);
+    const rb = document.getElementById('_resumeBanner');
+    document.getElementById('_resumeDesc').textContent =
+      'DAY '+dayNum+' ('+plan.name+') — '+sess.answeredCount+'/'+sess.totalCount+'번 문제까지 저장됨';
+    rb.style.display='flex';
+    window._pendingSession = sess;
+  } else {
+    startDay(dayNum, false, null);
+  }
+}
+
+function _resumeNow() {
+  document.getElementById('_resumeBanner').style.display='none';
+  const sess = window._pendingSession;
+  if (sess) startDay(sess.day, true, sess);
+}
+
+function _resumeDismiss() {
+  document.getElementById('_resumeBanner').style.display='none';
+  _clearSession();
+  window._pendingSession = null;
+  const sess = window._pendingSession;
+  // start fresh for that day
+  const rb = document.getElementById('_resumeBanner');
+  const match = rb ? rb.getAttribute('data-day') : null;
+}
+
+function updateProgress(ni){
+  const answered=allQs.filter(q=>q.type==='q'&&q.answered).length;
+  const total=allQs.filter(q=>q.type==='q').length;
+  const pct=total?answered/total*100:0;
+  document.getElementById('progFill').style.width=pct+'%';
+  document.getElementById('progTxt').textContent=`${answered} / ${total} 문제`;
+}
+function updateHeaderMini(){
+  const total=allQs.filter(q=>q.type==='q').length;
+  const done=allQs.filter(q=>q.type==='q'&&q.answered).length;
+  document.getElementById('hdrC').textContent=stats.correct;
+  document.getElementById('hdrW').textContent=stats.wrong;
+  document.getElementById('hdrI').textContent=done;
+  document.getElementById('hdrT').textContent=total;
+}
+
+
+// ════════════════════════════════════════════════════════════
+//  APP TAB SWITCHER
+// ════════════════════════════════════════════════════════════
+const _STUDY_VIEWS = ['homeView','quizView','resultView'];
+let _activeApp = 'study';
+
+function switchApp(tab) {
+  _activeApp = tab;
+  // toggle study views vs app pages
+  _STUDY_VIEWS.forEach(id => {
+    const el = document.getElementById(id);
+    if(el) el.style.display = (tab==='study') ? '' : 'none';
+  });
+  document.querySelectorAll('.app-page').forEach(p => p.classList.remove('on'));
+  document.querySelectorAll('.atab').forEach(t => t.classList.remove('on'));
+  document.getElementById('atab-'+tab).classList.add('on');
+  if(tab !== 'study') document.getElementById('app-'+tab).classList.add('on');
+
+  if(tab==='vocab') { _vocabInit(); renderVocab(); }
+  if(tab==='flash') { _vocabInit(); initFlash(); }
+  if(tab==='ox')    { _vocabInit(); initOx(); }
+  if(tab==='wrong') { _vocabInit(); renderWrongNote(); }
+
+  window.scrollTo(0,0);
+}
+
+function _updateBadges() {
+  try {
+    const vl = JSON.parse(localStorage.getItem(KEY_VOCAB)||'[]').length;
+    const wl = JSON.parse(localStorage.getItem(KEY_WRONG_NOTE)||'[]').length;
+    const vb = document.getElementById('badge-vocab');
+    const wb = document.getElementById('badge-wrong');
+    if(vb){ vb.textContent=vl||''; vb.classList.toggle('show',vl>0); }
+    if(wb){ wb.textContent=wl||''; wb.classList.toggle('show',wl>0); }
+  } catch(e){}
+}
+
+
+// ════════════════════════════════════════════════════════════
+//  VOCAB APP JS
+// ════════════════════════════════════════════════════════════
+
+// ═══════════════════════════════════════════════════
+//  STORAGE  — shared key with TOEIC_Daily.html
+// ═══════════════════════════════════════════════════
+// KEY_VOCAB already defined above
+// KEY_WRONG_NOTE already defined above
+const KEY_FC = 'toeic_fc_state_v1';
+
+// function lsGet(k){ try{ const r=localStorage.getItem(k); return r?JSON.parse(r):null; }catch(e){return null;} }
+// function lsSet(k,v){ try{ localStorage.setItem(k,JSON.stringify(v)); }catch(e){} }
+
+// ═══════════════════════════════════════════════════
+//  STATE
+// ═══════════════════════════════════════════════════
+let vocab = [];        // [{id,word,mean,ex,star,fromWrong,addedAt,wrongSrc}]
+let wrongNotes = [];   // [{id,qNum,year,part,qtype,text,opts,ans,myAns,exp,vocab:[]}]
+let fcMode = 'all';
+let fcQueue = [];
+let fcIdx = 0;
+let fcKnown = new Set();
+let fcDontKnow = new Set();
+let fcFlipped = false;
+let oxQueue = [];
+let oxIdx = 0;
+let oxScore = {c:0,w:0};
+let currentFilter = 'all';
+let oxAnswered = false;
+
+// ═══════════════════════════════════════════════════
+//  INIT
+// ═══════════════════════════════════════════════════
+function _vocabInit(){
+  vocab = JSON.parse(localStorage.getItem(KEY_VOCAB)||'[]') || [];
+  wrongNotes = JSON.parse(localStorage.getItem(KEY_WRONG_NOTE)||'[]') || [];
+  renderVocab();
+  renderWrongNote();
+  updateCounts();
+}
+
+function updateCounts(){
+  _updateBadges();
+  const cv = document.getElementById('cntVocab');
+  const cw = document.getElementById('cntWrong');
+  if(cv) cv.textContent = vocab.length;
+  if(cw) cw.textContent = wrongNotes.length;
+}
+
+// ═══════════════════════════════════════════════════
+//  TABS
+// ═══════════════════════════════════════════════════
+function showTab(tab){
+  // redirected to switchApp in merged app
+  const tabMap = {vocab:'vocab', flash:'flash', ox:'ox', wrong:'wrong'};
+  if(tabMap[tab]) switchApp(tabMap[tab]);
+}
+function cap(s){ return s.charAt(0).toUpperCase()+s.slice(1); }
+
+// ═══════════════════════════════════════════════════
+//  VOCAB — ADD / DELETE / EDIT
+// ═══════════════════════════════════════════════════
+function addWord(word, mean, ex, fromWrong, wrongSrc){
+  const w = (word || document.getElementById('inpWord').value.trim());
+  const m = (mean || document.getElementById('inpMean').value.trim());
+  const e = (ex   || document.getElementById('inpEx').value.trim());
+  if(!w || !m){ toast('단어와 뜻을 입력해주세요'); return; }
+
+  // deduplicate
+  if(vocab.find(v=>v.word.toLowerCase()===w.toLowerCase())){
+    toast(`'${w}'는 이미 저장된 단어예요`); clearForm(); return;
+  }
+
+  const entry = {
+    id: Date.now()+'',
+    word: w, mean: m, ex: e||'',
+    star: false,
+    fromWrong: !!fromWrong,
+    wrongSrc: wrongSrc||'',
+    addedAt: new Date().toLocaleDateString('ko-KR'),
+  };
+  vocab.unshift(entry);
+  localStorage.setItem(KEY_VOCAB, JSON.stringify(vocab));
+  clearForm();
+  renderVocab();
+  updateCounts();
+  _updateBadges();
+  toast(`✅ '${w}' 저장됨`);
+}
+
+function clearForm(){
+  document.getElementById('inpWord').value='';
+  document.getElementById('inpMean').value='';
+  document.getElementById('inpEx').value='';
+}
+
+function toggleStar(id){
+  const v = vocab.find(v=>v.id===id);
+  if(v){ v.star=!v.star; lsSet(KEY_VOCAB,vocab); renderVocab(); }
+}
+
+function deleteWord(id){
+  vocab = vocab.filter(v=>v.id!==id);
+  localStorage.setItem(KEY_VOCAB, JSON.stringify(vocab));
+  renderVocab();
+  updateCounts();
+  toast('삭제됨');
+}
+
+function setFilter(el, f){
+  document.querySelectorAll('[data-filter]').forEach(c=>c.classList.remove('on'));
+  el.classList.add('on');
+  currentFilter = f;
+  renderVocab();
+}
+
+function renderVocab(){
+  const search = document.getElementById('searchInp')?.value.toLowerCase()||'';
+  let list = vocab.filter(v=>{
+    if(currentFilter==='star' && !v.star) return false;
+    if(currentFilter==='wrong' && !v.fromWrong) return false;
+    if(search && !v.word.toLowerCase().includes(search) && !v.mean.toLowerCase().includes(search)) return false;
+    return true;
+  });
+
+  const el = document.getElementById('wordList');
+  if(!el) return;
+  if(list.length===0){
+    el.innerHTML=`<div class="empty"><div class="empty-icon">📭</div><div class="empty-txt">${vocab.length===0?'아직 저장된 단어가 없습니다.<br>위 폼에서 단어를 추가하거나<br>오답노트의 단어 태그를 탭해보세요.':'검색 결과가 없습니다.'}</div></div>`;
+    return;
+  }
+  el.innerHTML='';
+  list.forEach(v=>{
+    const card=document.createElement('div');
+    card.className='word-card fade-in'+(v.fromWrong?' from-wrong':'');
+    card.innerHTML=`
+      <div class="wc-top">
+        <div>
+          <div class="wc-word" onclick="openPopup('${v.id}')">${v.word}</div>
+          <div class="wc-tags">
+            ${v.star?'<span class="wc-tag" style="color:var(--gold);border-color:rgba(232,184,75,0.3)">⭐ 중요</span>':''}
+            ${v.fromWrong?`<span class="wc-tag wrong-src">❌ 오답 출처</span>`:''}
+            ${v.wrongSrc?`<span class="wc-tag">${v.wrongSrc}</span>`:''}
+          </div>
+        </div>
+        <div class="wc-actions">
+          <button class="star-btn" onclick="toggleStar('${v.id}')" title="중요 표시">${v.star?'⭐':'☆'}</button>
+          <button class="del-btn" onclick="deleteWord('${v.id}')" title="삭제">✕</button>
+        </div>
+      </div>
+      <div class="wc-mean">${v.mean}</div>
+      ${v.ex?`<div class="wc-ex">${v.ex}</div>`:''}
+      <div class="wc-meta">${v.addedAt}</div>
+    `;
+    el.appendChild(card);
+  });
+}
+
+// ═══════════════════════════════════════════════════
+//  AI GENERATE (단어 뜻 + 예문 자동 생성)
+// ═══════════════════════════════════════════════════
+async function aiGenerate(){
+  const word = document.getElementById('inpWord').value.trim();
+  if(!word){ toast('단어를 먼저 입력해주세요'); return; }
+
+  const spinner = document.getElementById('aiSpinner');
+  const btnTxt = document.getElementById('aigenBtnTxt');
+  spinner.style.display='block';
+  btnTxt.textContent='생성 중...';
+  document.getElementById('aigenBtn').style.pointerEvents='none';
+
+  try{
+    const r = await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        model:'claude-sonnet-4-20250514',
+        max_tokens:300,
+        messages:[{role:'user',content:`TOEIC 단어 "${word}"의 정보를 JSON으로만 반환해주세요. 다른 텍스트 없이 JSON만.
+{"mean":"한국어 뜻 (2-3가지 핵심 의미)","ex":"영어 예문 1문장 (비즈니스 맥락, TOEIC 스타일)","exMean":"예문 한국어 해석"}`}]
+      })
+    });
+    const data = await r.json();
+    const txt = data.content?.map(c=>c.text||'').join('').trim();
+    const clean = txt.replace(/```json|```/g,'').trim();
+    const parsed = JSON.parse(clean);
+    document.getElementById('inpMean').value = parsed.mean||'';
+    document.getElementById('inpEx').value = parsed.ex ? `${parsed.ex} (${parsed.exMean})` : '';
+    toast('✦ AI가 뜻과 예문을 생성했습니다');
+  }catch(e){
+    toast('생성 실패 — 직접 입력해주세요');
+  }finally{
+    spinner.style.display='none';
+    btnTxt.textContent='✦ AI 뜻 생성';
+    document.getElementById('aigenBtn').style.pointerEvents='auto';
+  }
+}
+
+// ═══════════════════════════════════════════════════
+//  WORD POPUP (클릭 시 상세 팝업)
+// ═══════════════════════════════════════════════════
+function openPopup(id){
+  const v = vocab.find(v=>v.id===id);
+  if(!v) return;
+  const popup = document.getElementById('wordPopup');
+  popup.style.display='flex';
+  document.getElementById('wpWord').textContent = v.word;
+  const body = document.getElementById('wpBody');
+  const acts = document.getElementById('wpActions');
+
+  body.innerHTML = `
+    <div class="wp-mean">${v.mean}</div>
+    ${v.ex?`<div class="wp-ex">${v.ex}</div>`:'<div class="wp-loading"><div class="wp-dots"><span></span><span></span><span></span></div>AI가 예문을 생성 중...</div>'}
+  `;
+  acts.innerHTML=`
+    <button class="btn btn-ghost btn-sm" onclick="toggleStar('${id}');closePopup()" style="flex:1">${v.star?'⭐ 중요 해제':'☆ 중요 표시'}</button>
+    <button class="btn btn-red btn-sm" onclick="deleteWord('${id}');closePopup()" style="flex:1">삭제</button>
+  `;
+  popup.classList.add('show');
+
+  // fetch example if missing
+  if(!v.ex) fetchEx(v, body);
+}
+
+async function fetchEx(v, bodyEl){
+  try{
+    const r = await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        model:'claude-sonnet-4-20250514',
+        max_tokens:150,
+        messages:[{role:'user',content:`TOEIC 비즈니스 영어 예문 1문장 (단어: "${v.word}"). JSON만: {"ex":"영어 예문","exMean":"한국어 해석"}`}]
+      })
+    });
+    const data = await r.json();
+    const txt = data.content?.map(c=>c.text||'').join('').trim().replace(/```json|```/g,'').trim();
+    const parsed = JSON.parse(txt);
+    if(parsed.ex){
+      v.ex = `${parsed.ex} (${parsed.exMean})`;
+      localStorage.setItem(KEY_VOCAB, JSON.stringify(vocab));
+      bodyEl.innerHTML = `<div class="wp-mean">${v.mean}</div><div class="wp-ex">${v.ex}</div>`;
+    }
+  }catch(e){}
+}
+
+function closePopup(){
+  document.getElementById('wordPopup').style.display='none';;
+}
+
+// ═══════════════════════════════════════════════════
+//  FLASHCARD
+// ═══════════════════════════════════════════════════
+function setFcMode(el, mode){
+  document.querySelectorAll('[data-mode]').forEach(b=>b.classList.remove('on'));
+  el.classList.add('on');
+  fcMode = mode;
+  initFlash();
+}
+
+function initFlash(){
+  fcKnown = new Set();
+  fcDontKnow = (() => { try { const d = JSON.parse(localStorage.getItem(KEY_FC)); return d ? new Set(d) : new Set(); } catch(e) { return new Set(); } })();
+
+  let pool = [...vocab];
+  if(fcMode==='star') pool=pool.filter(v=>v.star);
+  if(fcMode==='wrong') pool=pool.filter(v=>v.fromWrong);
+  if(fcMode==='retry') pool=pool.filter(v=>fcDontKnow.has(v.id));
+
+  if(pool.length===0){
+    const _fw=document.getElementById('flashWrap'); if(!_fw) return; _fw.innerHTML=`<div class="empty"><div class="empty-icon">${fcMode==='retry'?'🎉':'📭'}</div><div class="empty-txt">${fcMode==='retry'?'모르는 단어가 없습니다!<br>모든 단어를 알고 있어요 👏':'단어장이 비어있습니다.<br>단어를 먼저 추가해주세요.'}</div></div>`;
+    return;
+  }
+
+  // shuffle
+  fcQueue = pool.sort(()=>Math.random()-0.5);
+  fcIdx = 0;
+  renderFlash();
+}
+
+function renderFlash(){
+  const wrap = document.getElementById('flashWrap'); if(!wrap) return;
+  if(fcIdx >= fcQueue.length){
+    const total = fcQueue.length;
+    const known = total - fcDontKnow.size;
+    wrap.innerHTML=`
+      <div class="fc-finish fade-in">
+        <div style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted);letter-spacing:2px;margin-bottom:8px">ROUND COMPLETE</div>
+        <div class="fc-result-big">${Math.round(known/total*100)}%</div>
+        <div style="font-size:14px;color:var(--dim);margin:12px 0 28px">${total}단어 중 ${known}개 알고 있음</div>
+        <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
+          <button class="btn btn-gold" onclick="initFlash()">다시 풀기</button>
+          ${fcDontKnow.size>0?`<button class="btn btn-ghost" onclick="setFcMode(document.querySelector('[data-mode=retry]'),'retry')">모르는 것만 (${fcDontKnow.size})</button>`:''}
+        </div>
+      </div>`;
+    return;
+  }
+
+  const v = fcQueue[fcIdx];
+  const total = fcQueue.length;
+  const pct = fcIdx/total*100;
+
+  wrap.innerHTML=`
+    <div style="width:100%;max-width:520px">
+      <div class="fc-progress"><div class="fc-prog-fill" style="width:${pct}%"></div></div>
+    </div>
+    <div class="fc-counter">${fcIdx+1} / ${total} — 알고 있음 ${fcKnown.size}개</div>
+    <div class="flashcard" id="fcCard" onclick="flipCard()">
+      <div class="flashcard-inner">
+        <div class="fc-front">
+          <div class="fc-hint">단어를 보고 뜻을 떠올려보세요</div>
+          <div class="fc-word">${v.word}</div>
+          <div style="margin-top:20px;font-size:11px;color:var(--muted)">탭하면 뒤집힙니다 ↓</div>
+        </div>
+        <div class="fc-back">
+          <div class="fc-hint">뜻</div>
+          <div class="fc-mean">${v.mean}</div>
+          ${v.ex?`<div class="fc-ex">${v.ex}</div>`:''}
+          ${v.fromWrong?`<div class="fc-source">❌ 오답 출처 ${v.wrongSrc}</div>`:''}
+        </div>
+      </div>
+    </div>
+    <div class="fc-btns" id="fcBtns" style="display:none">
+      <button class="fc-btn fc-btn-dontknow" onclick="fcAnswer(false)">❌ 몰랐어</button>
+      <button class="fc-btn fc-btn-know" onclick="fcAnswer(true)">✅ 알았어</button>
+    </div>
+    <div class="fc-tip">뒤집은 후 정직하게 선택해주세요</div>
+  `;
+  fcFlipped = false;
+}
+
+function flipCard(){
+  const card = document.getElementById('fcCard');
+  if(!card) return;
+  card.classList.toggle('flipped');
+  fcFlipped = !fcFlipped;
+  const btns = document.getElementById('fcBtns');
+  if(fcFlipped && btns) btns.style.display='flex';
+}
+
+function fcAnswer(knew){
+  if(knew){
+    fcKnown.add(fcQueue[fcIdx].id);
+    fcDontKnow.delete(fcQueue[fcIdx].id);
+  } else {
+    fcDontKnow.add(fcQueue[fcIdx].id);
+  }
+  localStorage.setItem(KEY_FC, JSON.stringify([...fcDontKnow]));
+  fcIdx++;
+  renderFlash();
+}
+
+// ═══════════════════════════════════════════════════
+//  OX QUIZ (4-choice)
+// ═══════════════════════════════════════════════════
+function initOx(){
+  if(vocab.length < 4){
+    const _ow=document.getElementById('oxWrap'); if(!_ow) return; _ow.innerHTML=`<div class="empty"><div class="empty-icon">📝</div><div class="empty-txt">OX 퀴즈는 최소 4개 단어가 필요합니다.<br>단어를 먼저 추가해주세요.</div></div>`;
+    return;
+  }
+  oxQueue = [...vocab].sort(()=>Math.random()-0.5);
+  oxIdx = 0;
+  oxScore = {c:0,w:0};
+  renderOx();
+}
+
+function renderOx(){
+  const wrap = document.getElementById('oxWrap'); if(!wrap) return;
+  if(oxIdx >= oxQueue.length){
+    const total = oxQueue.length;
+    const pct = Math.round(oxScore.c/total*100);
+    wrap.innerHTML=`
+      <div class="ox-score-bar" style="margin-bottom:0">
+        <div style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted);letter-spacing:2px">QUIZ COMPLETE</div>
+        <div style="font-family:'Syne',sans-serif;font-size:22px;font-weight:800;color:var(--gold)">${pct}%</div>
+      </div>
+      <div class="fc-finish fade-in" style="margin-top:0;border-radius:0 0 20px 20px">
+        <div style="font-size:14px;color:var(--dim);margin-bottom:24px">${total}문제 중 ${oxScore.c}개 정답</div>
+        <button class="btn btn-gold" onclick="initOx()">다시 풀기</button>
+      </div>`;
+    return;
+  }
+
+  const correct = oxQueue[oxIdx];
+  // pick 3 wrong choices
+  const others = oxQueue.filter((_,i)=>i!==oxIdx).sort(()=>Math.random()-0.5).slice(0,3);
+  const choices = [...others, correct].sort(()=>Math.random()-0.5);
+  const correctIdx = choices.findIndex(c=>c.id===correct.id);
+  const letters = ['A','B','C','D'];
+  oxAnswered = false;
+
+  wrap.innerHTML=`
+    <div class="ox-score-bar">
+      <div style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted)">${oxIdx+1} / ${oxQueue.length}</div>
+      <div style="display:flex;gap:12px">
+        <span style="color:var(--teal);font-family:'JetBrains Mono',monospace;font-size:11px">✓ ${oxScore.c}</span>
+        <span style="color:var(--red);font-family:'JetBrains Mono',monospace;font-size:11px">✗ ${oxScore.w}</span>
+      </div>
+    </div>
+    <div class="ox-card fade-in">
+      <div class="ox-meaning">"${correct.mean}"</div>
+      ${correct.ex?`<div class="ox-hint">${correct.ex.split('(')[0].trim()}</div>`:'<div class="ox-hint">위 뜻에 맞는 단어는?</div>'}
+    </div>
+    <div class="ox-choices">
+      ${choices.map((c,i)=>`
+        <button class="ox-choice" id="oxc${i}" onclick="oxAnswer(${i},${correctIdx},${i===correctIdx})">
+          <div class="ox-choice-letter">${letters[i]}</div>
+          <span style="font-family:'Syne',sans-serif">${c.word}</span>
+        </button>
+      `).join('')}
+    </div>
+    <div class="ox-result" id="oxResult"></div>
+    <button class="ox-next-btn" id="oxNext" onclick="oxNext()">다음 →</button>
+  `;
+}
+
+function oxAnswer(chosenIdx, correctIdx, isCorrect){
+  if(oxAnswered) return;
+  oxAnswered = true;
+
+  for(let i=0;i<4;i++){
+    const btn = document.getElementById('oxc'+i);
+    if(!btn) continue;
+    btn.disabled = true;
+    if(i===correctIdx) btn.classList.add('reveal');
+    else if(i===chosenIdx && !isCorrect) btn.classList.add('wrong');
+  }
+
+  const result = document.getElementById('oxResult');
+  if(isCorrect){
+    oxScore.c++;
+    result.className='ox-result show ok';
+    result.innerHTML='✓ 정답입니다!';
+  } else {
+    oxScore.w++;
+    result.className='ox-result show ng';
+    result.innerHTML=`✗ 오답. 정답은 <strong>${oxQueue[oxIdx].word}</strong>`;
+  }
+  document.getElementById('oxNext').classList.add('show');
+}
+
+function oxNext(){
+  oxIdx++;
+  renderOx();
+}
+
+// ═══════════════════════════════════════════════════
+//  WRONG NOTE
+// ═══════════════════════════════════════════════════
+function renderWrongNote(){
+  wrongNotes = JSON.parse(localStorage.getItem(KEY_WRONG_NOTE)||'[]') || [];
+  const el = document.getElementById('wrongNoteList');
+  updateCounts();
+
+  if(wrongNotes.length===0){
+    el.innerHTML=`<div class="empty"><div class="empty-icon">🎉</div><div class="empty-txt">오답 노트가 비어있습니다.<br>TOEIC Daily에서 문제를 풀면<br>틀린 문제가 여기에 저장됩니다.</div></div>`;
+    return;
+  }
+
+  const L=['A','B','C','D'];
+  el.innerHTML='';
+  wrongNotes.forEach(item=>{
+    const savedVocabIds = new Set(vocab.map(v=>v.word.toLowerCase()));
+    const card=document.createElement('div');
+    card.className='wn-card fade-in';
+    const vocabTags = (item.vocab||[]).map(word=>{
+      const saved = savedVocabIds.has(word.toLowerCase());
+      return `<span class="wn-vtag${saved?' wn-vtag-saved':''}" onclick="saveFromWrong('${word}','${item.year||''}년 Part ${item.part||'?'}')${saved?"/*already saved*/":''}">
+        ${saved?'✓ ':'+'}${word}
+      </span>`;
+    }).join('');
+
+    card.innerHTML=`
+      <div class="wn-meta">${item.qNum||''}번 · ${item.year||''}년 · Part ${item.part||'?'} · ${item.qtype||''}</div>
+      <div class="wn-q">${item.text||''}</div>
+      <div class="wn-ans-row">
+        <span style="font-size:11px;color:var(--muted)">내 답:</span>
+        <span class="ans-chip chip-ng">(${L[item.myAns]||'?'}) ${(item.opts||[])[item.myAns]||''}</span>
+        <span style="font-size:11px;color:var(--muted)">정답:</span>
+        <span class="ans-chip chip-ok">(${L[item.ans]||'?'}) ${(item.opts||[])[item.ans]||''}</span>
+      </div>
+      <div class="wn-exp">${item.exp||''}</div>
+      ${vocabTags?`<div class="wn-vocab">${vocabTags}</div>`:''}
+    `;
+    el.appendChild(card);
+  });
+}
+
+function saveFromWrong(word, src){
+  // check if already saved
+  if(vocab.find(v=>v.word.toLowerCase()===word.toLowerCase())){
+    toast(`'${word}'는 이미 저장됨`); return;
+  }
+  // pre-fill form and switch to vocab tab
+  switchApp('vocab');
+
+  document.getElementById('inpWord').value = word;
+  document.getElementById('inpWord').focus();
+
+  // auto-trigger AI
+  setTimeout(async ()=>{
+    await aiGenerate();
+    // mark as fromWrong after AI fills in
+    document.getElementById('inpMean').dataset.fromWrong = 'true';
+    document.getElementById('inpMean').dataset.wrongSrc = src;
+    // patch addWord to include fromWrong flag
+    const origAdd = window.addWord;
+    window._addWordOnce = function(){
+      const w = document.getElementById('inpWord').value.trim();
+      const m = document.getElementById('inpMean').value.trim();
+      const e = document.getElementById('inpEx').value.trim();
+      if(!w||!m){ toast('단어와 뜻을 입력해주세요'); return; }
+      if(vocab.find(v=>v.word.toLowerCase()===w.toLowerCase())){
+        toast(`'${w}'는 이미 저장된 단어예요`); clearForm(); return;
+      }
+      vocab.unshift({id:Date.now()+'',word:w,mean:m,ex:e||'',star:false,fromWrong:true,wrongSrc:src,addedAt:new Date().toLocaleDateString('ko-KR')});
+      lsSet(KEY_VOCAB,vocab);
+      clearForm();
+      renderVocab();
+      updateCounts();
+      toast(`✅ '${w}' 단어장에 저장됨`);
+      window.addWord = origAdd;
+    };
+    // Replace save button temporarily
+    document.querySelector('.btn-gold').onclick = window._addWordOnce;
+    toast('뜻이 자동 입력됐습니다. 확인 후 저장하세요');
+  }, 100);
+}
+
+// ═══════════════════════════════════════════════════
+//  TOAST
+// ═══════════════════════════════════════════════════
+let _toastTimer=null;
+function toast(msg){
+  let el=document.getElementById('toast');
+  if(!el){ el=document.createElement('div'); el.id='toast'; el.style.cssText='position:fixed;bottom:calc(90px + env(safe-area-inset-bottom));left:50%;transform:translateX(-50%);background:#1b1b2c;border:1px solid rgba(255,255,255,0.1);border-radius:100px;padding:10px 20px;font-size:13px;color:#e8e8f2;opacity:0;transition:opacity 0.25s;pointer-events:none;white-space:nowrap;z-index:600;box-shadow:0 4px 24px rgba(0,0,0,0.4)'; document.body.appendChild(el); }
+  el.textContent=msg;
+  el.style.opacity='1';
+  clearTimeout(_toastTimer);
+  _toastTimer=setTimeout(()=>el.style.opacity='0',2200);
+}
+
+// ═══════════════════════════════════════════════════
+//  INIT
+// ═══════════════════════════════════════════════════
+
+
+// ─── COMBINED INIT ───
+window.onload = () => { initHome(); _updateBadges(); };
+</script>
+
+<!-- ══ BOTTOM TAB BAR ══ -->
+<div id="appTabBar">
+  <button class="atab on" id="atab-study" onclick="switchApp('study')"><div class="atab-icon">📚</div><div class="atab-lbl">학습</div></button>
+  <button class="atab" id="atab-vocab" onclick="switchApp('vocab')"><div class="atab-icon">📖</div><div class="atab-lbl">단어장</div><div class="atab-badge" id="badge-vocab"></div></button>
+  <button class="atab" id="atab-flash" onclick="switchApp('flash')"><div class="atab-icon">🃏</div><div class="atab-lbl">플래시카드</div></button>
+  <button class="atab" id="atab-ox" onclick="switchApp('ox')"><div class="atab-icon">❓</div><div class="atab-lbl">OX퀴즈</div></button>
+  <button class="atab" id="atab-wrong" onclick="switchApp('wrong')"><div class="atab-icon">📝</div><div class="atab-lbl">오답노트</div><div class="atab-badge" id="badge-wrong"></div></button>
+</div>
+
+<!-- ══ VOCAB PAGE ══ -->
+<div class="app-page" id="app-vocab">
+  <div style="max-width:760px;margin:0 auto;padding:24px 20px 0">
+    <div class="sec-title">내 단어장</div>
+    <div class="sec-sub">문제 풀다 어휘 태그 탭 → 즉시 저장 · 단어 탭 → 뜻 팝업</div>
+    <div class="add-form" style="margin-top:20px">
+      <div class="add-form-title">단어 추가</div>
+      <div class="form-row"><input class="inp inp-word" id="inpWord" placeholder="단어 (예: scrutinize)" onkeydown="if(event.key==='Enter')aiGenerate()"><button class="ai-gen-btn" onclick="aiGenerate()" id="aigenBtn"><div class="ai-spinner" id="aiSpinner"></div><span id="aigenBtnTxt">✦ AI 뜻 생성</span></button></div>
+      <div class="form-row"><input class="inp inp-mean" id="inpMean" placeholder="뜻 (예: 면밀히 조사하다)"></div>
+      <div class="form-row"><input class="inp inp-ex" id="inpEx" placeholder="예문 (AI 생성 후 자동 입력)"></div>
+      <div class="form-row" style="justify-content:flex-end"><button class="btn btn-ghost btn-sm" onclick="clearForm()">초기화</button><button class="btn btn-gold" id="btnAddWord" onclick="addWord()">저장하기</button></div>
+    </div>
+    <div class="filter-row"><input class="inp search-inp" id="searchInp" placeholder="🔍 단어 검색..." oninput="renderVocab()"><div class="filter-chips"><div class="chip on" data-filter="all" onclick="setFilter(this,'all')">전체</div><div class="chip" data-filter="star" onclick="setFilter(this,'star')">⭐ 중요</div><div class="chip" data-filter="wrong" onclick="setFilter(this,'wrong')">❌ 오답출처</div></div></div>
+    <div class="word-list" id="wordList"></div>
+  </div>
+</div>
+
+<!-- ══ FLASHCARD PAGE ══ -->
+<div class="app-page" id="app-flash">
+  <div style="max-width:760px;margin:0 auto;padding:24px 20px 0">
+    <div class="sec-title">플래시카드</div>
+    <div class="sec-sub">카드를 탭하면 뒤집힙니다</div>
+    <div class="fc-filter-row" style="margin-top:16px">
+      <button class="fc-filter-btn on" data-mode="all" onclick="setFcMode(this,'all')">전체</button>
+      <button class="fc-filter-btn" data-mode="star" onclick="setFcMode(this,'star')">⭐ 중요만</button>
+      <button class="fc-filter-btn" data-mode="wrong" onclick="setFcMode(this,'wrong')">❌ 오답출처만</button>
+      <button class="fc-filter-btn" data-mode="retry" onclick="setFcMode(this,'retry')">🔁 모르는 것만</button>
+    </div>
+    <div class="flashcard-wrap" id="flashWrap"></div>
+  </div>
+</div>
+
+<!-- ══ OX QUIZ PAGE ══ -->
+<div class="app-page" id="app-ox">
+  <div style="max-width:760px;margin:0 auto;padding:24px 20px 0">
+    <div class="sec-title">OX 퀴즈</div>
+    <div class="sec-sub">뜻을 보고 알맞은 단어를 고르세요</div>
+    <div class="ox-wrap" id="oxWrap" style="margin-top:16px"></div>
+  </div>
+</div>
+
+<!-- ══ WRONG NOTE PAGE ══ -->
+<div class="app-page" id="app-wrong">
+  <div style="max-width:760px;margin:0 auto;padding:24px 20px 0">
+    <div class="sec-title">오답 노트</div>
+    <div class="sec-sub">단어 태그 탭 → 단어장에 바로 저장</div>
+    <div class="wrong-note-list" id="wrongNoteList" style="margin-top:16px"></div>
+  </div>
+</div>
+
+<!-- ══ WORD POPUP ══ -->
+<div id="wordPopup" onclick="if(event.target===this)closePopup()" style="display:none;position:fixed;inset:0;z-index:500;background:rgba(12,12,20,0.85);backdrop-filter:blur(8px);align-items:flex-end;justify-content:center;padding-bottom:env(safe-area-inset-bottom)">
+  <div style="background:var(--s1);border:1px solid var(--border);border-radius:24px 24px 0 0;padding:28px 24px 40px;width:100%;max-width:600px;animation:slideUpPop 0.35s cubic-bezier(0.34,1.56,0.64,1);position:relative">
+    <div style="width:36px;height:4px;background:var(--s3);border-radius:100px;margin:0 auto 20px"></div>
+    <button onclick="closePopup()" style="position:absolute;top:20px;right:20px;background:var(--s2);border:none;color:var(--dim);width:32px;height:32px;border-radius:50%;cursor:pointer;font-size:16px">✕</button>
+    <div class="wp-word" id="wpWord"></div>
+    <div id="wpBody"></div>
+    <div id="wpActions" style="margin-top:16px;display:flex;gap:10px"></div>
+  </div>
+</div>
+
+<!-- hidden badge targets (used by updateCounts) -->
+<span id="cntVocab" style="display:none"></span>
+<span id="cntWrong" style="display:none"></span>
+<!-- TOAST -->
+<div id="toast" style="position:fixed;bottom:calc(90px + env(safe-area-inset-bottom));left:50%;transform:translateX(-50%);background:#1b1b2c;border:1px solid var(--border);border-radius:100px;padding:10px 20px;font-size:13px;color:var(--text);opacity:0;transition:opacity 0.25s;pointer-events:none;white-space:nowrap;z-index:600;box-shadow:0 4px 24px rgba(0,0,0,0.4)"></div>
+</body>
+</html>
