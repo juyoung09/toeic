@@ -1,0 +1,75 @@
+{
+  "date": "2026-06-07",
+  "timezone": "Asia/Seoul",
+  "generated_at": "2026-06-07T06:00:00+09:00",
+  "summary": {
+    "question_count": 8,
+    "vocabulary_count": 12,
+    "target_minutes": 35
+  },
+  "report_path": "reports/2026-06-07.md",
+  "questions": [
+    {
+      "number": 1,
+      "part": "Part 5",
+      "skill": "Word form",
+      "answer": "C"
+    },
+    {
+      "number": 2,
+      "part": "Part 5",
+      "skill": "Tense",
+      "answer": "B"
+    },
+    {
+      "number": 3,
+      "part": "Part 5",
+      "skill": "Vocabulary",
+      "answer": "A"
+    },
+    {
+      "number": 4,
+      "part": "Part 5",
+      "skill": "Subject-verb agreement",
+      "answer": "C"
+    },
+    {
+      "number": 5,
+      "part": "Part 5",
+      "skill": "Phrasal verbs",
+      "answer": "B"
+    },
+    {
+      "number": 6,
+      "part": "Part 5",
+      "skill": "Conjunctions",
+      "answer": "A"
+    },
+    {
+      "number": 7,
+      "part": "Part 6",
+      "skill": "Sentence insertion",
+      "answer": "A"
+    },
+    {
+      "number": 8,
+      "part": "Part 7",
+      "skill": "Inference",
+      "answer": "B"
+    }
+  ],
+  "vocabulary": [
+    "allocate",
+    "amend",
+    "compliance",
+    "courier",
+    "delegate",
+    "inventory",
+    "mandatory",
+    "overdue",
+    "procurement",
+    "reimburse",
+    "tentative",
+    "warranty"
+  ]
+}
