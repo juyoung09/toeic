@@ -271,6 +271,10 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
 @keyframes da{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
 .vocab-row{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px;padding-top:10px;border-top:1px solid var(--border)}
 .vt{padding:3px 10px;border-radius:5px;font-family:'JetBrains Mono',monospace;font-size:10px;background:rgba(232,184,75,0.08);color:var(--accent);border:1px solid rgba(232,184,75,0.15)}
+.vt.tappable{cursor:pointer;transition:all 0.15s}
+.vt.tappable:hover{background:rgba(232,184,75,0.2);transform:translateY(-1px)}
+.vt.vt-saved{background:rgba(78,205,196,0.12);color:var(--correct);border-color:rgba(78,205,196,0.3)}
+.vt.vt-saved::after{content:' ✓'}
 
 /* section divider */
 .sec-divider{padding:24px 0 8px;}
@@ -751,13 +755,13 @@ nav{
     <div class="home-sub">5개년 기출 유형 기반 · Part 5~7 전 파트 · AI 해설</div>
   </div>
 
-  <div class="ai-reco-card" onclick="startAiSession()">
+  <div class="ai-reco-card" onclick="startAiSmart()">
     <div class="ai-reco-icon">🎯</div>
     <div class="ai-reco-body">
       <div class="ai-reco-title">AI <em>맞춤 학습</em></div>
       <div class="ai-reco-sub" id="aiRecoSub">내 취약 유형을 분석해 딱 맞는 문제만 골라 드립니다</div>
     </div>
-    <button class="ai-reco-btn" onclick="event.stopPropagation();startAiSession()">지금 시작 →</button>
+    <button class="ai-reco-btn" onclick="event.stopPropagation();startAiSmart()">지금 시작 →</button>
   </div>
 
   <div class="day-grid" id="dayGrid"></div>
@@ -838,11 +842,12 @@ nav{
 
 <!-- ── RESUME BANNER ── -->
 <div id="_resumeBanner" style="display:none;position:fixed;bottom:24px;left:50%;transform:translateX(-50%);z-index:999;background:#12121e;border:1.5px solid #e8b84b;border-radius:16px;padding:18px 24px;flex-direction:column;align-items:center;gap:12px;box-shadow:0 8px 40px rgba(232,184,75,0.25);min-width:300px;max-width:90vw;text-align:center">
+  <button onclick="_resumeDismiss()" style="position:absolute;top:10px;right:12px;background:transparent;border:none;color:#44445a;font-size:14px;cursor:pointer;padding:4px" title="닫기 (기록은 유지됩니다)">✕</button>
   <div style="font-family:'Syne',sans-serif;font-size:15px;font-weight:700;color:#e8e8f0">📌 이어하기</div>
   <div id="_resumeDesc" style="font-size:12px;color:#8888aa;line-height:1.5"></div>
   <div style="display:flex;gap:10px">
     <button onclick="_resumeNow()" style="background:#e8b84b;color:#0c0c14;border:none;border-radius:8px;padding:10px 22px;font-family:'Noto Sans KR',sans-serif;font-weight:700;font-size:13px;cursor:pointer">이어하기</button>
-    <button onclick="_resumeDismiss();startDay(window._pendingSession?.day,false,null)" style="background:transparent;border:1px solid #44445a;color:#8888aa;border-radius:8px;padding:10px 16px;font-family:'Noto Sans KR',sans-serif;font-size:12px;cursor:pointer">처음부터</button>
+    <button onclick="_resumeFresh()" style="background:transparent;border:1px solid #44445a;color:#8888aa;border-radius:8px;padding:10px 16px;font-family:'Noto Sans KR',sans-serif;font-size:12px;cursor:pointer">처음부터</button>
   </div>
 </div>
 
@@ -907,6 +912,60 @@ function _logAnswer(item, ok) {
   } catch(e) {}
 }
 
+// ── 단어 태그 탭 → 단어장 즉시 저장 ──
+function _saveVocabWord(word, src, ex, el) {
+  try {
+    let vlist = JSON.parse(localStorage.getItem(KEY_VOCAB)||'[]') || [];
+    if (vlist.find(v => v.word.toLowerCase() === word.toLowerCase())) {
+      if (el) el.classList.add('vt-saved');
+      toast(`'${word}'는 이미 단어장에 있어요`);
+      return;
+    }
+    const mean = TOEIC_DICT[word] || TOEIC_DICT[word.toLowerCase()] || '';
+    vlist.unshift({
+      id: Date.now()+'',
+      word: word,
+      mean: mean || '(뜻을 입력해 주세요)',
+      ex: ex || '',
+      star: false,
+      fromWrong: !!src,
+      wrongSrc: src || '',
+      addedAt: new Date().toLocaleDateString('ko-KR'),
+    });
+    localStorage.setItem(KEY_VOCAB, JSON.stringify(vlist));
+    if (typeof vocab !== 'undefined') vocab = vlist;
+    _updateBadges();
+    if (el) el.classList.add('vt-saved');
+    toast(`✅ '${word}' 저장됨${mean ? ' — ' + mean : ''}`);
+  } catch(e) {}
+}
+
+// 퀴즈 해설의 단어 태그 (allQs 기준)
+function _qsv(qIdx, vIdx, el) {
+  const item = allQs[qIdx];
+  if (!item || !item.v || !item.v[vIdx]) return;
+  const ex = (item.text||'').replace(/-{3,}/g, '_____');
+  _saveVocabWord(item.v[vIdx], `${item.year||''}년 Part ${item.part||'?'}`, ex, el);
+}
+
+// 결과 화면 오답 카드의 단어 태그 (wrongItems 기준)
+function _qsvW(wIdx, vIdx, el) {
+  const w = wrongItems[wIdx];
+  if (!w || !w.item.v || !w.item.v[vIdx]) return;
+  const ex = (w.item.text||'').replace(/-{3,}/g, '_____');
+  _saveVocabWord(w.item.v[vIdx], `${w.item.year||''}년 Part ${w.item.part||'?'}`, ex, el);
+}
+
+// 해설 하단 단어 태그 행 렌더 (풀이 직후·이어하기 복원 공용)
+function _renderVocabRow(idx, item) {
+  const vEl = document.getElementById('vocab-'+idx);
+  if (!vEl || !item.v?.length) return;
+  let saved = [];
+  try { saved = (JSON.parse(localStorage.getItem(KEY_VOCAB)||'[]')||[]).map(v=>v.word.toLowerCase()); } catch(e) {}
+  vEl.innerHTML = '<span style="font-size:9px;color:var(--muted);margin-right:4px;letter-spacing:1px">탭→저장</span>' +
+    item.v.map((v,i)=>`<span class="vt tappable${saved.includes(v.toLowerCase())?' vt-saved':''}" onclick="_qsv(${idx},${i},this)" title="탭하여 단어장에 저장">${v}</span>`).join('');
+}
+
 const _KEY_SESS = 'toeic_session_v1';
 
 function _saveProgress(data) {
@@ -929,23 +988,54 @@ let _saveTimer = null;
 function _scheduleSave() {
   clearTimeout(_saveTimer);
   _saveTimer = setTimeout(() => {
-    if (!currentDay || currentDay === 'ai' || !allQs.length) return;
+    if (!currentDay || !allQs.length) return;
     const answered = allQs
       .filter(q => q.type==='q' && q.answered)
       .map(q => ({ num:q.num, myAns:q._myAns, ok:q._ok, skipped:q.skipped||false }));
-    _saveSession({
+    const sess = {
       day: currentDay,
       answeredCount: answered.length,
       totalCount: allQs.filter(q=>q.type==='q').length,
       answered,
       stats: {...stats},
       elapsed: sessionStart ? Math.floor((Date.now()-sessionStart)/1000) : 0,
-    });
+    };
+    // AI 맞춤 세션은 출제된 문제 id 목록도 저장 → 동일 세트로 복원
+    if (currentDay === 'ai') sess.bids = allQs.filter(q=>q.type==='q').map(q=>q.bid);
+    _saveSession(sess);
     // flash save indicator
     const el = document.getElementById('_saveIndicator');
     if (el) { el.style.opacity='1'; clearTimeout(el._t); el._t=setTimeout(()=>el.style.opacity='0',1500); }
   }, 800);
 }
+
+// ════════════════════════════════════════════════════════════
+//   내장 TOEIC 단어 사전 — 단어 태그 탭 저장 시 뜻 자동 입력
+// ════════════════════════════════════════════════════════════
+const TOEIC_DICT = {
+"AOB":"기타 안건 (Any Other Business)","CEO":"최고경영자","CFA designation":"CFA(공인재무분석사) 자격","Digital Division":"디지털 사업부","HR department":"인사부","Investment Analysis":"투자 분석","North America":"북미","Operations":"운영 부서","Q1":"1분기","Research Division":"연구 부서","Southeast Asia":"동남아시아","Toronto":"토론토","Vancouver":"밴쿠버",
+"absent":"결석한, 부재중인","acquisition":"인수, 매입","action item":"실행 항목","admission":"입장(료), 입학","adults":"성인들","advance":"사전의; 전진하다","advertised":"광고된","agenda":"회의 안건","agree":"동의하다","ahead of schedule":"예정보다 빨리","allocate":"할당하다, 배분하다","allowance":"수당, 허용량","analytics":"분석(학)","annual":"연간의, 연례의","annual meeting":"연례 회의","annual report":"연차 보고서","annual target":"연간 목표","anticipate":"예상하다, 기대하다","application":"지원(서), 신청","apply to":"~에 적용되다, 지원하다","appreciation":"감사, 가치 상승","approval":"승인","asset valuation":"자산 평가","assigned":"배정된","attached":"첨부된","attract":"끌어들이다","audit":"회계 감사","auditor":"감사관",
+"background check":"신원 조회","battery life":"배터리 수명","bidding process":"입찰 과정","board":"이사회; 탑승하다","bold":"과감한, 대담한","budget":"예산","budget cut":"예산 삭감","bulk order":"대량 주문",
+"calculation":"계산","campaign":"캠페인, 홍보 활동","candidate":"지원자, 후보","cap":"상한(선); 상한을 두다","capacity":"수용력, 용량","certification":"인증, 자격증","challenge":"도전 과제","charity":"자선 (단체)","checkout process":"결제 과정","claim":"주장(하다), 청구(하다)","client meeting":"고객 미팅","closed":"닫힌, 폐쇄된","cohort":"집단, 기수","collaboration":"협업","commend":"칭찬하다","commercial office":"상업용 사무실","commission":"수수료, 위원회","company":"회사","compensation":"보상, 급여","compensation package":"보수 패키지","competitor":"경쟁사","complaint rate":"불만 접수율","complete":"완료하다; 완전한","compliance":"(규정) 준수","component":"부품, 구성 요소","comprehensive":"포괄적인, 종합적인","concierge":"컨시어지, 안내 데스크","conference":"회의, 학회","confirm":"확인하다","consequently":"결과적으로","construction":"건설, 공사","consultant":"컨설턴트, 자문가","contract":"계약(서)","coordinator":"조정 담당자","core business":"핵심 사업","corporation":"법인, 대기업","crisis":"위기","cumbersome":"번거로운, 다루기 힘든","custom specification":"맞춤 사양","customer-friendly":"고객 친화적인","customization":"맞춤 제작","cybersecurity":"사이버 보안",
+"data visualization":"데이터 시각화","delay":"지연(시키다)","delivery service":"배송 서비스","demand":"수요; 요구하다","demonstrate":"보여주다, 시연하다","department":"부서","department manager":"부서장","departure":"출발","detail-oriented":"꼼꼼한","determine":"결정하다, 알아내다","devise":"고안하다","digital skills":"디지털 역량","discount":"할인","discrepancy":"불일치, 차이","dispatch":"발송하다","dissatisfaction":"불만","distinguished":"저명한, 뛰어난","distribute":"배포하다, 유통하다","distribution network":"유통망","division":"사업부, 부문","donation":"기부(금)","drastically":"대폭, 급격하게","due to":"~ 때문에","during":"~ 동안",
+"ear cushion":"(헤드폰) 이어 쿠션","effective":"효과적인; 시행되는","efficiency":"효율(성)","efficiently":"효율적으로","eligible":"자격이 있는","emerge":"나타나다, 부상하다","employee":"직원","endorsement":"지지, 보증 광고","energy cost":"에너지 비용","engineer":"엔지니어","engineering":"공학, 엔지니어링","engineering team":"엔지니어링 팀","enrollment":"등록(자 수)","ensure":"보장하다, 반드시 ~하게 하다","enterprise":"기업","entry-level":"신입의, 초급의","equipment failure":"장비 고장","equity research":"주식 리서치","exceed":"초과하다, 넘어서다","exceptional":"뛰어난, 예외적인","executive":"임원, 경영진","expansion":"확장","expenditure":"지출","experience":"경험(하다)","experienced":"경력 있는, 숙련된","exponential growth":"기하급수적 성장","extend":"연장하다, 확대하다","extended":"연장된","extra fee":"추가 요금",
+"facility":"시설","feasibility":"실행 가능성","feasibility study":"타당성 조사","finalize":"마무리하다, 확정하다","financial record":"재무 기록","financial transaction":"금융 거래","first-round":"1차의","foundation":"재단, 기반","from scratch":"처음부터, 맨땅에서","fulfillment":"(주문) 이행, 성취","fully operational":"전면 가동 중인",
+"general admission":"일반 입장(권)","global trade":"국제 무역","groundbreaking":"획기적인","group discount":"단체 할인",
+"headquarters":"본사","home office":"재택 사무실, 본사",
+"implementation":"실행, 시행","improve":"개선하다","in advance":"미리, 사전에","in favor of":"~에 찬성하여","in spite of":"~에도 불구하고","individual":"개인(의)","innovative":"혁신적인","installation":"설치","institute":"연구소, 기관","intentional":"의도적인","international":"국제적인","international market":"해외 시장","interview":"면접, 인터뷰","introduction":"도입, 소개","introductory offer":"출시 기념 할인","investment":"투자","invite":"초대하다, 요청하다",
+"last-minute":"막판의, 마지막 순간의","launch":"출시(하다), 시작(하다)","lead time":"(준비·제작) 소요 기간","leadership development":"리더십 개발","lease":"임대(차) 계약","legal team":"법무팀","library membership":"도서관 회원권","limited experience":"제한된 경험","local contractor":"지역 시공업체","logistical":"물류의","logistics":"물류","long overdue":"한참 늦어진, 오래 미뤄진",
+"mandatory":"의무적인","manufacturing":"제조(업)","market rate":"시장 가격, 시세","material waste":"자재 낭비","memo":"사내 공지, 메모","merger":"합병","merger proposal":"합병 제안","milestone":"중요 단계, 이정표","minimum requirement":"최소 요건","minor complaint":"경미한 불만","national holiday":"국경일","negotiated":"협상된","negotiation":"협상","net profit":"순이익","next-generation":"차세대의","noise cancellation":"소음 차단","notify":"통지하다, 알리다",
+"obstacle":"장애물","offshore":"해외의, 역외의","on schedule":"예정대로","on-site parking":"현장 주차","on-time delivery":"정시 배송","onboarding":"신입 교육, 온보딩","outline":"개요(를 설명하다)","outperform":"~을 능가하다","overseas":"해외의, 해외로","overwhelming":"압도적인",
+"packaging error":"포장 오류","panel":"패널, 위원단","parallel structure":"병렬 구조","participant":"참가자","partnership":"제휴, 파트너십","patronage":"애용, 성원","per unit":"단위당","performance bonus":"성과급","performance review":"인사 평가","phase out":"단계적으로 폐지하다","platform":"플랫폼","playback":"재생","pleased":"기쁜, 만족한","policy":"정책, 방침","portfolio":"포트폴리오","precedent":"선례","preferred vendor":"우선 공급업체","preliminary proposal":"예비 제안서","present":"제시하다; 참석한; 선물","prevent":"방지하다","priority":"우선순위","proceed":"진행하다, 나아가다","product line":"제품군","production line":"생산 라인","productivity":"생산성","professional":"전문적인; 전문가","professionalism":"전문성","project manager":"프로젝트 관리자","projected":"예상된, 추정된","promising":"유망한","promotional period":"판촉 기간","proof":"증거, 증명","protocol":"규약, 절차","prototype":"시제품","public image":"대외 이미지","public-private":"민관 합동의","publish":"출판하다, 게재하다",
+"qualification":"자격 (요건)","qualified":"자격을 갖춘","quality":"품질","quarterly":"분기별의","quarterly earnings":"분기 실적",
+"rating":"평점, 등급","reallocate":"재배분하다","reassignment":"재배치","rebranding":"리브랜딩, 브랜드 쇄신","receipt":"영수증, 수령","reception desk":"안내 데스크","recommend":"추천하다, 권고하다","recommendation":"추천, 권고","recruit":"채용하다","redefine":"재정의하다","redirect":"방향을 바꾸다","reduce":"줄이다","redundancy":"중복; 정리 해고","reference":"참고, 추천인","refresh":"새롭게 하다","regardless":"상관없이","region":"지역","regional director":"지역 총괄 이사","registration":"등록","regulation":"규정, 규제","reimbursement":"(경비) 환급","release":"출시(하다), 발표(하다)","relocation":"이전, 이사","remarkably":"현저하게, 놀랍도록","remote workforce":"원격 근무 인력","renewable energy":"재생 에너지","replacement":"교체(품), 후임","report":"보고서; 보고하다","require":"요구하다, 필요로 하다","requirement":"요건, 필요조건","research and development":"연구 개발(R&D)","reservation":"예약","resilience":"회복력","resource":"자원","respondent":"응답자","restructure":"구조조정하다","resume":"재개하다; 이력서","retain":"유지하다, 보유하다","retirement plan":"퇴직 연금 (제도)","return on investment":"투자수익률(ROI)","return policy":"반품 정책","revenue":"수익, 매출","review":"검토(하다), 후기","revise":"수정하다","revised proposal":"수정 제안서",
+"sales team":"영업팀","satisfaction":"만족(도)","screening":"심사, 선별","scrutinize":"면밀히 검토하다","secure":"확보하다; 안전한","senior director":"상무, 선임 이사","senior leadership":"고위 경영진","seniority":"연공서열, 근속 연수","set":"설정하다; 세트","shareholders meeting":"주주총회","shipment":"배송(품), 선적","significant":"상당한, 중요한","since":"~ 이후로; ~ 때문에","single charge":"1회 충전","solar grid":"태양광 전력망","solicit":"요청하다, 간청하다","specification":"사양, 명세","sq ft":"제곱피트","staff shortage":"인력 부족","startup":"스타트업, 신생 기업","strategic partnership":"전략적 제휴","strategy":"전략","student rate":"학생 요금","submission":"제출(물)","supervisor":"상사, 감독자","supply chain":"공급망","survey":"설문 조사","synergy":"시너지, 상승효과",
+"target":"목표(로 삼다)","technician":"기술자","temporarily":"일시적으로","term":"조건, 기간, 용어","territory":"(담당) 구역, 영역","territory assignment":"담당 구역 배정","theatre tickets":"공연 티켓","thorough":"철저한","tight deadline":"빠듯한 마감","tooling fee":"금형 비용","training program":"교육 프로그램","transition":"전환, 이행","travel request":"출장 신청","unanimous":"만장일치의","unavailable":"이용할 수 없는","underperforming":"실적이 저조한","unforeseen":"예상치 못한","unit price":"단가",
+"venture capital":"벤처 캐피털","verify":"확인하다, 검증하다","visitor":"방문객","volume discount":"대량 구매 할인",
+"warning sign":"경고 신호","website navigation":"웹사이트 탐색","wind energy":"풍력 에너지","within":"~ 이내에","workshop":"워크숍","yoga session":"요가 수업",
+"inventory":"재고 (조사)","relocate":"이전하다","procurement":"조달, 구매","amend":"수정하다, 개정하다","warranty":"품질 보증(서)","shortage":"부족","courier":"택배 (기사)","renewal":"갱신, 연장","negotiate":"협상하다","postpone":"연기하다","forward":"전달하다, 전송하다","invoice":"청구서, 송장","proposal":"제안(서)","install":"설치하다",
+"itinerary":"여행 일정표","adjacent":"인접한","expire":"만료되다","tentative":"잠정적인","promptly":"즉시, 신속히","substantial":"상당한","complimentary":"무료의, 칭찬하는","subsequent":"그 다음의, 이후의","durable":"내구성 있는","defective":"결함이 있는","reluctant":"꺼리는","adverse":"불리한, 부정적인","estimate":"견적(서); 추정하다","refund":"환불(하다)","accommodate":"수용하다","address":"(문제를) 처리하다; 주소","implement":"시행하다","assess":"평가하다","expedite":"신속히 처리하다","disruption":"중단, 차질","turnout":"참가자 수, 투표율","attendance":"참석(률)","itemized":"항목별로 나눈","perishable":"부패하기 쉬운","fragile":"깨지기 쉬운","consecutive":"연속적인","preliminary":"예비의","proficient":"능숙한","authorize":"승인하다, 권한을 주다","designate":"지정하다","adjourn":"(회의를) 휴회하다","waive":"(요금 등을) 면제하다","incur":"(비용을) 발생시키다","comply":"(규정을) 준수하다","exempt":"면제된","surpass":"능가하다","streamline":"간소화하다","facilitate":"용이하게 하다","oversee":"감독하다","undergo":"겪다, 받다","tenant":"세입자","landlord":"임대인, 집주인","utility":"공과금, 공공 설비","amenity":"편의 시설","brochure":"안내 책자","testimonial":"추천 글, 후기","referral":"소개, 추천","backlog":"밀린 업무","outage":"(전기 등의) 중단, 정전","premises":"부지, 구내","liability":"법적 책임, 부채","apprentice":"견습생","tenure":"재직 기간","attire":"복장","banquet":"연회","keynote":"기조연설","podium":"연단","aisle":"통로","boarding pass":"탑승권","layover":"경유 (대기 시간)","carousel":"수하물 컨베이어","curb":"억제하다; 연석","viable":"실행 가능한","lucrative":"수익성이 좋은","stringent":"엄격한","meticulous":"꼼꼼한","versatile":"다용도의, 다재다능한","obsolete":"구식의","imperative":"필수적인","prospective":"장래의, 잠재적인","impending":"임박한","outstanding":"미지불된; 뛰어난","overdue":"기한이 지난","proximity":"가까움, 근접","vicinity":"인근, 부근","clientele":"고객층","patron":"고객, 후원자","merchandise":"상품","apparel":"의류","consignment":"위탁 (판매)","wholesale":"도매(의)","retailer":"소매업체","markup":"가격 인상(폭)","markdown":"가격 인하","voucher":"상품권, 쿠폰","redeem":"(쿠폰을) 사용하다, 상환하다","loyalty program":"고객 보상 프로그램","technical support":"기술 지원","colleague":"동료","renovation":"개보수, 리모델링",
+};
 
 // ════════════════════════════════════════════════════════════
 //   QUESTION BANK — 5개년 기출 유형 기반
@@ -1018,6 +1108,76 @@ const P5 = [
 {id:'f11',y:'2021',type:'어휘-동사구',d:3,q:"The board voted to ------- the underperforming division and redirect its resources to the core business.",opts:["wind down","take over","bring about","hold off"],ans:0,exp:"wind down=단계적으로 축소/종료하다. take over=인수하다, bring about=야기하다, hold off=미루다. '실적 부진 부서를 축소'→wind down.",v:["underperforming","division","redirect","core business"]},
 {id:'f12',y:'2022',type:'혼합-접속사전치사',d:3,q:"The project was delivered ahead of schedule ------- to the team's exceptional collaboration and planning.",opts:["owing","due","because","thanks"],ans:1,exp:"'due to + 명사구' = '~ 덕분에/때문에'. 'owing to'도 정답이나 보기에 owing만 있으므로 due가 정답. 'because of'=because+of(전치사 쌍).",v:["ahead of schedule","exceptional","collaboration","due to"]},
 ];
+
+// ════════════════════════════════════════════════════════════
+//   추가 문제 은행 — 어휘·짝표현·다양한 문법 유형 (2026 확장)
+//   AI 맞춤 학습 풀 확대 + 유형별 취약점 분석 다양화
+// ════════════════════════════════════════════════════════════
+const P5_EXTRA = [
+// ── 어휘-동사 ──
+{id:'x01',y:'2021',type:'어휘-동사',d:2,q:"The hotel can ------- up to 500 guests for conferences and banquets throughout the year.",opts:["accommodate","reserve","attend","include"],ans:0,exp:"accommodate=수용하다. 'up to 500 guests'와 함께 '500명까지 수용 가능'. reserve=예약하다, attend=참석하다, include=포함하다.",v:["accommodate","banquet","conference"]},
+{id:'x02',y:'2022',type:'어휘-동사',d:3,q:"Customer service representatives are trained to ------- complaints quickly and courteously.",opts:["address","confront","oppose","dismiss"],ans:0,exp:"address=(문제를) 처리하다, 다루다. '불만을 신속하고 정중하게 처리'. confront=맞서다, oppose=반대하다, dismiss=일축하다.",v:["address","complaint rate","professionalism"]},
+{id:'x03',y:'2023',type:'어휘-동사',d:3,q:"To ------- the shipping process, the warehouse installed an automated sorting system.",opts:["expedite","postpone","prolong","suspend"],ans:0,exp:"expedite=신속히 처리하다. '자동 분류 시스템 설치로 배송을 빠르게'. postpone=연기, prolong=연장, suspend=중단.",v:["expedite","shipment","installation"]},
+{id:'x04',y:'2023',type:'어휘-동사',d:3,q:"The bank agreed to ------- the late payment fee as a courtesy to its long-time customer.",opts:["waive","impose","collect","charge"],ans:0,exp:"waive=(요금·규정을) 면제하다. '오랜 고객에 대한 배려로 연체료 면제'. impose=부과하다, collect=수금하다, charge=청구하다.",v:["waive","patronage"]},
+{id:'x05',y:'2024',type:'어휘-동사',d:3,q:"All laboratory staff must ------- with the updated safety regulations by the end of the month.",opts:["comply","agree","observe","follow"],ans:0,exp:"comply with=~을 준수하다(자동사+전치사). observe/follow는 타동사라 with 불필요. agree는 agree with(사람)/to(제안).",v:["comply","regulation","mandatory"]},
+{id:'x06',y:'2025',type:'어휘-동사',d:2,q:"Ms. Alvarez will ------- the marketing department while the director is on leave.",opts:["oversee","overlook","overtake","overcome"],ans:0,exp:"oversee=감독하다. '부장 부재 중 부서를 감독'. overlook=간과하다, overtake=추월하다, overcome=극복하다. over- 어휘 구분 단골 문제.",v:["oversee","department manager"]},
+// ── 어휘-명사 ──
+{id:'x07',y:'2021',type:'어휘-명사',d:2,q:"A detailed ------- for the business trip, including flights and hotel bookings, was emailed to each participant.",opts:["itinerary","agenda","receipt","catalog"],ans:0,exp:"itinerary=여행 일정표. '항공편·호텔 포함 출장 일정'. agenda=회의 안건, receipt=영수증, catalog=상품 목록.",v:["itinerary","participant","reservation"]},
+{id:'x08',y:'2022',type:'어휘-명사',d:3,q:"Please request a written ------- from the repair shop before authorizing any work on the company vehicles.",opts:["estimate","recipe","prescription","subscription"],ans:0,exp:"estimate=견적서. '수리 승인 전 서면 견적 요청'. recipe=조리법, prescription=처방전, subscription=구독.",v:["estimate","authorize"]},
+{id:'x09',y:'2023',type:'어휘-명사',d:3,q:"The city council approved the construction of new ------- such as a gym and a swimming pool for residents.",opts:["amenities","utilities","commodities","priorities"],ans:0,exp:"amenities=편의 시설. '체육관·수영장 같은 편의 시설'. utilities=공과금/공공설비, commodities=원자재, priorities=우선순위.",v:["amenity","construction","facility"]},
+{id:'x10',y:'2023',type:'어휘-명사',d:3,q:"Under the new lease, the ------- is responsible for all minor repairs inside the unit.",opts:["tenant","landlord","realtor","occupation"],ans:0,exp:"tenant=세입자. 문맥상 '임대차 계약에서 내부 경미한 수리는 세입자 부담'. landlord=임대인, realtor=공인중개사.",v:["tenant","landlord","lease"]},
+{id:'x11',y:'2024',type:'어휘-명사',d:3,q:"Because of a large ------- of unprocessed orders, the fulfillment center hired temporary workers.",opts:["backlog","outage","surplus","deficit"],ans:0,exp:"backlog=밀린 업무(량). '미처리 주문 적체로 임시 인력 고용'. outage=(전력)중단, surplus=흑자/잉여, deficit=적자.",v:["backlog","fulfillment"]},
+{id:'x12',y:'2025',type:'어휘-명사',d:2,q:"Guests may exchange the ------- included in the welcome packet for one free beverage at the lobby café.",opts:["voucher","currency","allowance","warranty"],ans:0,exp:"voucher=상품권/교환권. '웰컴 패킷의 쿠폰을 무료 음료로 교환'. redeem a voucher 형태로도 자주 출제.",v:["voucher","redeem","complimentary"]},
+// ── 어휘-형용사 ──
+{id:'x13',y:'2021',type:'어휘-형용사',d:2,q:"All conference attendees will receive a ------- breakfast before the keynote speech.",opts:["complimentary","complementary","commendable","comparable"],ans:0,exp:"complimentary=무료의. complementary(상호 보완적인)와 철자 혼동 단골. commendable=칭찬할 만한, comparable=비슷한.",v:["complimentary","keynote","attendance"]},
+{id:'x14',y:'2022',type:'어휘-형용사',d:3,q:"The meeting schedule is still ------- and may change depending on the executives' availability.",opts:["tentative","definitive","persistent","decisive"],ans:0,exp:"tentative=잠정적인. '임원 일정에 따라 변경될 수 있는 잠정 일정'. definitive=최종적인, persistent=끈질긴, decisive=결정적인.",v:["tentative","executive"]},
+{id:'x15',y:'2023',type:'어휘-형용사',d:3,q:"Customers who received ------- merchandise should contact the retailer for a full refund or replacement.",opts:["defective","deficient","destructive","detached"],ans:0,exp:"defective=결함이 있는. '불량 상품 → 환불/교체'. deficient=부족한, destructive=파괴적인, detached=분리된.",v:["defective","merchandise","refund","replacement"]},
+{id:'x16',y:'2023',type:'어휘-형용사',d:3,q:"The proposed site is ------- to the highway, making it ideal for a new distribution center.",opts:["adjacent","approximate","immediate","respective"],ans:0,exp:"adjacent to=~에 인접한. '고속도로에 인접해 물류센터로 이상적'. approximate=대략의, respective=각각의.",v:["adjacent","distribution network","proximity"]},
+{id:'x17',y:'2024',type:'어휘-형용사',d:3,q:"Applicants must be ------- in at least two foreign languages to qualify for the interpreter position.",opts:["proficient","efficient","sufficient","deficient"],ans:0,exp:"proficient in=~에 능숙한. -ficient 계열 구분: efficient=효율적인, sufficient=충분한, deficient=부족한.",v:["proficient","qualification","candidate"]},
+{id:'x18',y:'2025',type:'어휘-형용사',d:3,q:"Investing in the new market proved highly -------, generating twice the projected revenue in its first year.",opts:["lucrative","expensive","tolerable","redundant"],ans:0,exp:"lucrative=수익성이 좋은. '예상 매출의 2배 창출'. tolerable=견딜 만한, redundant=불필요한/중복의.",v:["lucrative","projected","revenue"]},
+// ── 어휘-부사 ──
+{id:'x19',y:'2021',type:'어휘-부사',d:2,q:"Please respond ------- to the client's inquiry, as the contract deadline is approaching.",opts:["promptly","shortly","lately","nearly"],ans:0,exp:"promptly=즉시, 신속히. '계약 마감이 다가오니 즉시 응답'. shortly=곧, lately=최근에, nearly=거의.",v:["promptly","tight deadline"]},
+{id:'x20',y:'2022',type:'어휘-부사',d:3,q:"The two software packages are ------- identical, but only one includes free technical support.",opts:["virtually","approvingly","consecutively","abundantly"],ans:0,exp:"virtually identical=사실상 동일한. 정도 부사 콜로케이션. consecutively=연속으로, abundantly=풍부하게.",v:["specification","technical support"]},
+{id:'x21',y:'2024',type:'어휘-부사',d:3,q:"Ticket prices for the exhibition have increased -------, rising nearly 40 percent over two years.",opts:["substantially","precisely","punctually","attentively"],ans:0,exp:"substantially=상당히. '2년간 약 40% 인상'과 호응. precisely=정확히, punctually=시간을 지켜, attentively=주의 깊게.",v:["substantial","admission"]},
+{id:'x22',y:'2025',type:'어휘-부사',d:3,q:"The store has been open for ten ------- years without a single day of closure.",opts:["consecutive","continual","following","gradual"],ans:0,exp:"consecutive=연속의. 'ten consecutive years'=10년 연속. 형태는 형용사 유형이지만 수식 어휘 선택 문제. continual=거듭되는.",v:["consecutive","closed"]},
+// ── 짝표현·콜로케이션 ──
+{id:'x23',y:'2021',type:'짝표현',d:3,q:"------- the terms of the agreement, tenants must give 60 days' notice before vacating the premises.",opts:["According to","Owing to","In case of","On behalf of"],ans:0,exp:"according to=~에 따르면. '계약 조건에 따르면 60일 전 통지'. owing to=~때문에, on behalf of=~를 대표하여.",v:["term","premises","notify"]},
+{id:'x24',y:'2022',type:'짝표현',d:3,q:"The new manager has made a ------- impression on both colleagues and clients within just a month.",opts:["favorable","preferable","agreeable","profitable"],ans:0,exp:"make a favorable impression=좋은 인상을 주다(고정 콜로케이션). preferable=더 선호되는, profitable=수익성 있는.",v:["colleague","client meeting"]},
+{id:'x25',y:'2024',type:'짝표현',d:3,q:"Employees may take up to five days of paid leave ------- notice, provided a supervisor approves it.",opts:["on short","in short","at short","by short"],ans:2,exp:"at short notice=촉박한 통보에도, 갑작스럽게. 전치사 고정 표현. (미국식은 on short notice도 쓰이나 TOEIC 표준은 at).",v:["supervisor","approval","in advance"]},
+{id:'x26',y:'2025',type:'짝표현',d:3,q:"The finance team worked around the ------- to finalize the annual report before the audit.",opts:["clock","time","hour","watch"],ans:0,exp:"around the clock=24시간 내내, 밤낮없이. 고정 표현. '감사 전 연차 보고서 마무리를 위해 밤낮없이 근무'.",v:["finalize","annual report","audit"]},
+// ── 대명사 ──
+{id:'x27',y:'2021',type:'대명사',d:2,q:"Employees who have not yet submitted ------- expense reports should do so by Friday.",opts:["their","theirs","them","themselves"],ans:0,exp:"명사(expense reports) 앞 소유격 their. theirs=소유대명사(명사 없이), themselves=재귀대명사.",v:["submission","reimbursement"]},
+{id:'x28',y:'2023',type:'대명사',d:3,q:"Of the two proposals, the board found Ms. Chen's more persuasive than ------- submitted by the consulting firm.",opts:["the one","one another","each other","another one"],ans:0,exp:"the one=앞의 명사(proposal)를 받는 대명사. 'the one submitted by ~'=컨설팅사가 제출한 것. one another/each other=서로.",v:["proposal","board","consultant"]},
+{id:'x29',y:'2024',type:'대명사',d:3,q:"The CEO announced that ------- of the branch offices will be renovated next quarter.",opts:["several","every","each other","one another"],ans:0,exp:"several of + 복수명사 + 복수동사(will be). every는 of 구조 불가(every one of는 가능). '지점 중 여러 곳 개보수'.",v:["headquarters","quarterly"]},
+// ── 분사 ──
+{id:'x30',y:'2021',type:'분사',d:3,q:"The ------- schedule for the product launch will be distributed at tomorrow's staff meeting.",opts:["revised","revising","revise","revision"],ans:0,exp:"명사 schedule 수식, '수정되는' 수동 관계 → 과거분사 revised. revising=수정하는(능동), revision=명사.",v:["revise","launch","distribute"]},
+{id:'x31',y:'2023',type:'분사',d:3,q:"Passengers ------- to Chicago should proceed to Gate 22 for immediate boarding.",opts:["traveling","traveled","travels","travel"],ans:0,exp:"명사 뒤 분사구: 승객이 '이동하는' 능동 관계 → 현재분사 traveling. 'Passengers (who are) traveling to ~'의 축약.",v:["proceed","boarding pass","departure"]},
+{id:'x32',y:'2025',type:'분사',d:4,q:"------- by the overwhelming demand, the bakery decided to extend its weekend hours.",opts:["Encouraged","Encouraging","Encourage","Encouragement"],ans:0,exp:"분사구문: 주어(the bakery)가 '고무된' 수동 관계 → 과거분사 Encouraged. Encouraging이면 빵집이 격려하는 주체가 되어 어색.",v:["overwhelming","demand","extend"]},
+// ── 동명사/부정사 ──
+{id:'x33',y:'2022',type:'동명사',d:3,q:"The IT department recommends ------- your password every three months for security purposes.",opts:["changing","to change","change","changed"],ans:0,exp:"recommend + 동명사(-ing). suggest, consider, avoid, postpone도 동명사만 취함. '보안을 위해 3개월마다 비밀번호 변경 권장'.",v:["recommend","cybersecurity"]},
+{id:'x34',y:'2023',type:'to부정사',d:3,q:"In an effort ------- costs, the airline now charges for checked baggage on domestic flights.",opts:["to reduce","reducing","reduced","reduces"],ans:0,exp:"in an effort to do=~하기 위한 노력으로(고정 표현). effort는 to부정사 수식을 받는 명사. '비용 절감 노력으로 수하물 요금 부과'.",v:["reduce","extra fee"]},
+{id:'x35',y:'2024',type:'동명사',d:3,q:"Ms. Ito is responsible for ------- new vendors and negotiating supply contracts.",opts:["screening","screen","screened","screens"],ans:0,exp:"전치사 for 뒤 → 동명사. be responsible for -ing=~할 책임이 있다. and 뒤 negotiating과 병렬.",v:["screening","preferred vendor","negotiate"]},
+// ── 가정법 ──
+{id:'x36',y:'2022',type:'가정법',d:4,q:"------- the shipment arrive damaged, please photograph the packaging and contact us within 48 hours.",opts:["Should","Would","Could","Might"],ans:0,exp:"Should + 주어 + 동사원형 = If the shipment should arrive의 도치(만일 ~라면). 조건 도치 구문 단골 출제.",v:["shipment","packaging error","claim"]},
+{id:'x37',y:'2024',type:'가정법',d:4,q:"If the company ------- the merger last year, it would now control half of the regional market.",opts:["had approved","approved","approves","has approved"],ans:0,exp:"혼합 가정법: 과거 사실 반대(had approved) + 현재 결과(would now control). 'now'가 힌트.",v:["merger","approval","region"]},
+// ── 수일치 ──
+{id:'x38',y:'2021',type:'수일치',d:3,q:"Each of the training sessions ------- approximately two hours, including a question-and-answer period.",opts:["lasts","last","are lasting","have lasted"],ans:0,exp:"each of + 복수명사 → 단수동사. 'Each ... lasts two hours'. every, either, neither도 단수 취급.",v:["training program","workshop"]},
+{id:'x39',y:'2023',type:'수일치',d:3,q:"The number of applicants for the internship program ------- doubled since the company revised its benefits.",opts:["has","have","are","were"],ans:0,exp:"the number of + 복수명사=단수 취급('~의 수'). cf. a number of(많은)=복수 취급. 'since+과거' → 현재완료 has doubled.",v:["application","candidate","revise"]},
+// ── 부사 자리 ──
+{id:'x40',y:'2021',type:'부사자리',d:2,q:"The maintenance crew ------- inspects the elevators to ensure passenger safety.",opts:["regularly","regular","regularity","regularize"],ans:0,exp:"주어와 동사(inspects) 사이 → 부사 자리. regularly=정기적으로. 빈도부사 위치 기본 유형.",v:["ensure","facility"]},
+{id:'x41',y:'2022',type:'부사자리',d:3,q:"The quarterly figures were ------- higher than analysts had predicted.",opts:["considerably","considerable","consideration","considered"],ans:0,exp:"비교급(higher) 강조 부사 자리: considerably/significantly/substantially + 비교급. considerable=형용사.",v:["quarterly earnings","exceed"]},
+{id:'x42',y:'2025',type:'부사자리',d:3,q:"------- located near two subway lines, the new office is easy for employees to reach.",opts:["Conveniently","Convenient","Convenience","Conveniences"],ans:0,exp:"분사(located) 수식 → 부사. 'Conveniently located'=편리한 곳에 위치한. 광고·부동산 지문 단골 표현.",v:["proximity","relocation"]},
+// ── 상관접속사 ──
+{id:'x43',y:'2022',type:'상관접속사',d:3,q:"The new copier is ------- faster but also more energy-efficient than the previous model.",opts:["not only","either","neither","both"],ans:0,exp:"not only A but also B 상관접속사. 'not only faster but also more energy-efficient'. either~or, neither~nor, both~and 짝 암기.",v:["efficiency","energy cost"]},
+{id:'x44',y:'2024',type:'상관접속사',d:3,q:"Attendees may register ------- online or in person at the reception desk on the day of the event.",opts:["either","both","not only","whether"],ans:0,exp:"either A or B=A 또는 B. 뒤의 or가 결정적 힌트. both~and, not only~but also와 짝 구분.",v:["registration","reception desk"]},
+// ── 전치사 ──
+{id:'x45',y:'2023',type:'전치사',d:3,q:"The office will remain closed ------- further notice due to the building renovation.",opts:["until","by","within","since"],ans:0,exp:"until further notice=추후 공지가 있을 때까지(고정 표현). by=~까지(완료 기한), within=~이내, since=~이후.",v:["renovation","notify","temporarily"]},
+{id:'x46',y:'2025',type:'전치사',d:3,q:"------- its compact size, the new printer produces documents faster than most full-size models.",opts:["Despite","Although","Nevertheless","Whereas"],ans:0,exp:"Despite + 명사구=~에도 불구하고(전치사). Although/Whereas는 접속사(절 필요), Nevertheless는 부사.",v:["specification","outperform"]},
+// ── 관계사 ──
+{id:'x47',y:'2024',type:'관계대명사',d:3,q:"Applicants ------- resumes are received by March 1 will be contacted for a first-round interview.",opts:["whose","who","whom","which"],ans:0,exp:"뒤에 명사(resumes)가 바로 → 소유격 관계대명사 whose. 'whose resumes are received'=이력서가 접수된 (지원자들).",v:["resume","first-round","interview"]},
+{id:'x48',y:'2025',type:'관계부사',d:3,q:"The company is relocating to Austin, ------- operating costs are significantly lower.",opts:["where","which","that","what"],ans:0,exp:"장소 선행사(Austin) + 뒤 문장이 완전한 절 → 관계부사 where. which였다면 뒤 절에 주어나 목적어 공백 필요.",v:["relocate","expenditure","significant"]},
+];
+P5.push(...P5_EXTRA);
 
 const P6_SETS = [
 // SET A
@@ -1305,11 +1465,34 @@ function initHome(){
   document.getElementById('totalStudied').textContent=Math.floor(total/2)+'일';
 
   _updateAiRecoSub();
+
+  // 미완료 세션이 있으면 홈 진입 시 바로 이어하기 배너 표시
+  const _sess = _unfinishedSession();
+  if (_sess) _showResumeBanner(_sess);
+  else { const rb = document.getElementById('_resumeBanner'); if (rb) rb.style.display = 'none'; }
 }
 
 // ════════════════════════════════════════════════════════════
 //  BUILD QUESTION QUEUE
 // ════════════════════════════════════════════════════════════
+
+// ── P6/P7 세부 유형 자동 분류 (AI 분석 정밀화) ──
+function _p6Skill(q){
+  const opts = q.opts || [];
+  const avgLen = opts.reduce((a,b)=>a+b.length,0) / (opts.length||1);
+  if (avgLen > 25) return 'P6 문장 삽입';
+  if (/\b(however|therefore|moreover|meanwhile|consequently|nevertheless|furthermore|in addition|for (example|instance)|instead|otherwise|thus|likewise|accordingly)\b/i.test(opts.join(' '))) return 'P6 접속부사';
+  return 'P6 문맥 어휘·어형';
+}
+function _p7Skill(q){
+  const t = q.q || '';
+  if (/closest in meaning|synonym/i.test(t)) return 'P7 동의어';
+  if (/\bNOT\b|EXCEPT/.test(t)) return 'P7 사실 확인(NOT)';
+  if (/inferred|imply|implied|suggest|most likely|probably/i.test(t)) return 'P7 추론';
+  if (/purpose|main(ly)? (topic|about)|why (was|did) the (letter|memo|notice|article|e-?mail)/i.test(t)) return 'P7 주제·목적';
+  return 'P7 세부 정보';
+}
+
 function buildQueue(dayNum){
   const plan = DAY_PLANS.find(p=>p.day===dayNum);
   const queue = [];
@@ -1340,7 +1523,7 @@ function buildQueue(dayNum){
       queue.push({
         type:'q',part:'6',secLabel:'Part 6',
         num:globalNum++,
-        year:set.year,qtype:'장문 빈칸',d:3,
+        year:set.year,qtype:_p6Skill(q),d:3,
         text:q.q,opts:q.opts,ans:q.ans,exp:q.exp,v:q.v,
         passage:set.passage,
       });
@@ -1355,17 +1538,17 @@ function buildQueue(dayNum){
     if(sec.type==='single'){
       queue.push({type:'passage_header',passage:sec.passage,title:`[${sec.year}년 기출 유형] ${sec.context}`,year:sec.year});
       sec.qs.forEach(q=>{
-        queue.push({type:'q',part:'7',secLabel:'Part 7',num:globalNum++,year:sec.year,qtype:sec.context,d:3,text:q.q,opts:q.opts,ans:q.ans,exp:q.exp,v:q.v,passage:sec.passage});
+        queue.push({type:'q',part:'7',secLabel:'Part 7',num:globalNum++,year:sec.year,qtype:_p7Skill(q),d:3,text:q.q,opts:q.opts,ans:q.ans,exp:q.exp,v:q.v,passage:sec.passage});
       });
     } else if(sec.type==='double'){
       queue.push({type:'passage_header',passage:`[Document 1]\n${sec.passageA}\n\n[Document 2]\n${sec.passageB}`,title:`[${sec.year}년 기출 유형] 이중지문 — ${sec.context}`,year:sec.year,isDouble:true});
       sec.qs.forEach(q=>{
-        queue.push({type:'q',part:'7',secLabel:'Part 7',num:globalNum++,year:sec.year,qtype:'이중지문',d:4,text:q.q,opts:q.opts,ans:q.ans,exp:q.exp,v:q.v,passage:`[Doc 1]\n${sec.passageA}\n\n[Doc 2]\n${sec.passageB}`});
+        queue.push({type:'q',part:'7',secLabel:'Part 7',num:globalNum++,year:sec.year,qtype:_p7Skill(q),d:4,text:q.q,opts:q.opts,ans:q.ans,exp:q.exp,v:q.v,passage:`[Doc 1]\n${sec.passageA}\n\n[Doc 2]\n${sec.passageB}`});
       });
     } else if(sec.type==='triple'){
       queue.push({type:'passage_header',passage:`[Document 1]\n${sec.passageA}\n\n[Document 2]\n${sec.passageB}\n\n[Document 3]\n${sec.passageC}`,title:`[${sec.year}년 기출 유형] 삼중지문 — ${sec.context}`,year:sec.year,isTriple:true});
       sec.qs.forEach(q=>{
-        queue.push({type:'q',part:'7',secLabel:'Part 7',num:globalNum++,year:sec.year,qtype:'삼중지문',d:5,text:q.q,opts:q.opts,ans:q.ans,exp:q.exp,v:q.v,passage:`[Doc 1]\n${sec.passageA}\n\n[Doc 2]\n${sec.passageB}\n\n[Doc 3]\n${sec.passageC}`});
+        queue.push({type:'q',part:'7',secLabel:'Part 7',num:globalNum++,year:sec.year,qtype:_p7Skill(q),d:5,text:q.q,opts:q.opts,ans:q.ans,exp:q.exp,v:q.v,passage:`[Doc 1]\n${sec.passageA}\n\n[Doc 2]\n${sec.passageB}\n\n[Doc 3]\n${sec.passageC}`});
       });
     }
   });
@@ -1502,6 +1685,29 @@ function appendQCard(parent,item,idx){
   `;
   area.appendChild(card);
   parent.appendChild(area);
+
+  // 이어하기 복원: 이미 푼 문제는 답·해설 상태 그대로 표시
+  if(item.answered){
+    card.querySelectorAll('.opt').forEach((b,i)=>{
+      b.disabled=true;
+      if(!item.skipped){
+        if(i===item.ans)b.classList.add('ok');
+        else if(i===item._myAns&&!item._ok)b.classList.add('ng');
+        if(i===item._myAns)b.classList.add('sel');
+      }
+    });
+    if(!item.skipped){
+      const res=document.getElementById('res-'+idx);
+      res.className='res-row show '+(item._ok?'ok':'ng');
+      document.getElementById('resicon-'+idx).textContent=item._ok?'✓':'✗';
+      document.getElementById('resmsg-'+idx).textContent=item._ok?'정답입니다!':'오답. 정답: ('+L[item.ans]+') '+item.opts[item.ans];
+      const expEl=document.getElementById('aiexp-'+idx);
+      expEl.classList.add('show');
+      document.getElementById('aibody-'+idx).innerHTML=item.exp;
+      _renderVocabRow(idx,item);
+    }
+    document.getElementById('acts-'+idx).innerHTML=`<button class="btn btn-main" onclick="nextQ(${idx})">다음 문제 →</button>`;
+  }
 }
 
 // ════════════════════════════════════════════════════════════
@@ -1638,9 +1844,7 @@ ${ok?'✅ 정답':'❌ 오답'}
     bodyEl.innerHTML=item.exp;
   }
 
-  const vEl=document.getElementById('vocab-'+idx);
-  if (item.v?.length) { const hint = document.createElement('span'); hint.style.cssText='font-size:9px;color:var(--muted);margin-right:4px;letter-spacing:1px'; hint.textContent='탭→저장'; vEl.appendChild(hint); }
-  vEl.innerHTML+=(item.v||[]).map(v=>`<span class="vt" style="cursor:pointer" onclick="_quickSaveVocab('${v.replace(/'/g,"\'")}','${item.year||''}년 Part ${item.part||'?'}',this)" title="탭하여 단어장에 저장">${v}</span>`).join('');
+  _renderVocabRow(idx, item);
 }
 
 // ════════════════════════════════════════════════════════════
@@ -1692,7 +1896,7 @@ function showWrongReview(){
   if(wrongItems.length===0){el.style.display='block';grid.innerHTML='<div style="text-align:center;color:var(--dim);padding:40px">오답이 없습니다! 🎉</div>';return;}
   const L=['A','B','C','D'];
   grid.innerHTML='';
-  wrongItems.forEach(({item,myAns})=>{
+  wrongItems.forEach(({item,myAns},wIdx)=>{
     const c=document.createElement('div');
     c.className='rcard';
     c.innerHTML=`
@@ -1704,7 +1908,7 @@ function showWrongReview(){
         <span style="font-size:11px;color:var(--muted)">정답:</span><span class="chip chip-ok">(${L[item.ans]}) ${item.opts[item.ans]}</span>
       </div>
       <div class="rcard-exp">${item.exp}</div>
-      <div class="rcard-vocab">${(item.v||[]).map(v=>`<span class="vt">${v}</span>`).join('')}</div>
+      <div class="rcard-vocab"><span style="font-size:9px;color:var(--muted);margin-right:4px;letter-spacing:1px">탭→저장</span>${(item.v||[]).map((v,vi)=>`<span class="vt tappable" onclick="_qsvW(${wIdx},${vi},this)" title="탭하여 단어장에 저장">${v}</span>`).join('')}</div>
     `;
     grid.appendChild(c);
   });
@@ -1727,16 +1931,33 @@ function goHome(){
   initHome();
 }
 
-function _startOrResume(dayNum) {
+// 미완료 세션 여부 확인
+function _unfinishedSession() {
   const sess = _loadSession();
-  if (sess && sess.day===dayNum && sess.answeredCount>0 && sess.answeredCount<sess.totalCount) {
-    // ask user
-    const plan = DAY_PLANS.find(p=>p.day===dayNum);
-    const rb = document.getElementById('_resumeBanner');
-    document.getElementById('_resumeDesc').textContent =
-      'DAY '+dayNum+' ('+plan.name+') — '+sess.answeredCount+'/'+sess.totalCount+'번 문제까지 저장됨';
-    rb.style.display='flex';
-    window._pendingSession = sess;
+  if (sess && sess.answeredCount > 0 && sess.answeredCount < sess.totalCount) return sess;
+  return null;
+}
+
+// 이어하기 배너 표시 (홈 진입·앱 시작·요일 카드 탭 공용)
+function _showResumeBanner(sess) {
+  const rb = document.getElementById('_resumeBanner');
+  let label;
+  if (sess.day === 'ai') {
+    label = '🎯 AI 맞춤 학습';
+  } else {
+    const plan = DAY_PLANS.find(p => p.day === sess.day);
+    label = 'DAY ' + sess.day + (plan ? ' (' + plan.name + ')' : '');
+  }
+  document.getElementById('_resumeDesc').textContent =
+    label + ' — ' + sess.answeredCount + '/' + sess.totalCount + '문제까지 저장됨';
+  rb.style.display = 'flex';
+  window._pendingSession = sess;
+}
+
+function _startOrResume(dayNum) {
+  const sess = _unfinishedSession();
+  if (sess && sess.day === dayNum) {
+    _showResumeBanner(sess);
   } else {
     startDay(dayNum, false, null);
   }
@@ -1745,17 +1966,25 @@ function _startOrResume(dayNum) {
 function _resumeNow() {
   document.getElementById('_resumeBanner').style.display='none';
   const sess = window._pendingSession;
-  if (sess) startDay(sess.day, true, sess);
+  if (!sess) return;
+  if (sess.day === 'ai') startAiSession(true, sess);
+  else startDay(sess.day, true, sess);
+}
+
+// "처음부터": 세션 버리고 같은 세트를 새로 시작
+function _resumeFresh() {
+  const sess = window._pendingSession;   // _clearSession 전에 캡처 (기존 버그 수정)
+  document.getElementById('_resumeBanner').style.display='none';
+  _clearSession();
+  window._pendingSession = null;
+  if (!sess) return;
+  if (sess.day === 'ai') startAiSession();
+  else startDay(sess.day, false, null);
 }
 
 function _resumeDismiss() {
   document.getElementById('_resumeBanner').style.display='none';
-  _clearSession();
   window._pendingSession = null;
-  const sess = window._pendingSession;
-  // start fresh for that day
-  const rb = document.getElementById('_resumeBanner');
-  const match = rb ? rb.getAttribute('data-day') : null;
 }
 
 function updateProgress(ni){
@@ -1868,13 +2097,54 @@ function buildAiQueue() {
   return queue;
 }
 
-function startAiSession() {
+// 저장된 문제 id 목록으로 동일한 AI 세트 재구성 (이어하기용)
+function buildAiQueueFromBids(bids) {
+  const queue = [];
+  let num = 1;
+  queue.push({ type: 'section_header', label: 'AI 맞춤', cls: 'p5', title: '🎯 AI 맞춤 학습', desc: '저장된 세션 이어하기', time: 900 });
+  (bids || []).forEach(bid => {
+    const q = P5.find(p => p.id === bid);
+    if (!q) return;
+    queue.push({
+      type: 'q', part: '5', secLabel: 'AI 맞춤',
+      num: num++, bid: q.id,
+      year: q.y, qtype: q.type, d: q.d,
+      text: q.q || q.text, opts: q.opts, ans: q.ans,
+      exp: q.exp, v: q.v,
+      passage: null,
+    });
+  });
+  return queue;
+}
+
+// 저장 세션의 답안을 현재 큐에 복원
+function _restoreAnswers(sess) {
+  const map = {};
+  (sess?.answered || []).forEach(a => { map[a.num] = a; });
+  allQs.forEach((item, idx) => {
+    if (item.type !== 'q') return;
+    const sv = map[item.num];
+    if (!sv) return;
+    item.answered = true; item._myAns = sv.myAns; item._ok = sv.ok; item.skipped = sv.skipped || false;
+    selectedOpts[idx] = sv.myAns;
+    if (!sv.ok && !sv.skipped) wrongItems.push({ item, myAns: sv.myAns, idx });
+  });
+}
+
+function startAiSession(_isResume, _savedSess) {
   currentDay = 'ai';
-  stats = { correct: 0, wrong: 0, p5c: 0, p5t: 0, p6c: 0, p6t: 0, p7c: 0, p7t: 0 };
   wrongItems = [];
-  allQs = buildAiQueue();
+  if (_isResume && _savedSess?.bids?.length) {
+    stats = { ...(_savedSess.stats || { correct: 0, wrong: 0, p5c: 0, p5t: 0, p6c: 0, p6t: 0, p7c: 0, p7t: 0 }) };
+    allQs = buildAiQueueFromBids(_savedSess.bids);
+    _restoreAnswers(_savedSess);
+  } else {
+    stats = { correct: 0, wrong: 0, p5c: 0, p5t: 0, p6c: 0, p6t: 0, p7c: 0, p7t: 0 };
+    _clearSession();
+    allQs = buildAiQueue();
+  }
   qIdx = 0;
-  sessionStart = Date.now();
+  sessionStart = Date.now() - ((_isResume && _savedSess?.elapsed) || 0) * 1000;
 
   document.getElementById('qhdrTitle').textContent = '🎯 AI 맞춤 학습';
   updateHeaderMini();
@@ -1889,6 +2159,13 @@ function startAiSession() {
     const el = document.getElementById('progTime');
     if (el) el.textContent = `경과: ${m}:${String(s).padStart(2, '0')}`;
   }, 1000);
+}
+
+// AI 학습 진입: 미완료 AI 세션이 있으면 이어하기 배너, 없으면 새로 시작
+function startAiSmart() {
+  const sess = _unfinishedSession();
+  if (sess && sess.day === 'ai') _showResumeBanner(sess);
+  else startAiSession();
 }
 
 // ── 홈 화면 AI 카드 문구 갱신 ──
@@ -1922,7 +2199,7 @@ function renderStats() {
         <div class="score-num" style="font-size:40px">진단 중</div>
         <div class="score-diag">예상 점수를 계산하려면 최소 10문제의 풀이 기록이 필요합니다.<br>지금까지 <b style="color:var(--blue)">${n} / 10</b> 문제</div>
         <div class="diag-prog"><i style="width:${Math.min(100, n * 10)}%"></i></div>
-        <div style="margin-top:20px"><button class="ai-reco-btn" onclick="startAiSession()">🎯 진단 문제 풀러 가기</button></div>
+        <div style="margin-top:20px"><button class="ai-reco-btn" onclick="startAiSmart()">🎯 진단 문제 풀러 가기</button></div>
       </div>
       <div class="stats-empty" style="margin-top:16px">학습 탭에서 요일별 미션을 풀거나, AI 맞춤 학습을 시작하면<br>이곳에 예상 점수와 취약 유형 분석이 표시됩니다.</div>`;
     return;
@@ -2003,7 +2280,7 @@ function renderStats() {
     <div class="trend-chart">${trendCols}</div>
 
     <div style="text-align:center;margin-top:28px">
-      <button class="ai-reco-btn" onclick="startAiSession()">🎯 취약 유형 집중 학습 시작</button>
+      <button class="ai-reco-btn" onclick="startAiSmart()">🎯 취약 유형 집중 학습 시작</button>
     </div>`;
 }
 
