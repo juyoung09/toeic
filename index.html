@@ -6,6 +6,10 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="TOEIC">
+<meta name="theme-color" content="#0c0c14">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="icon" type="image/png" href="icons/icon-192.png">
 <title>TOEIC Master</title>
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Noto+Sans+KR:wght@300;400;500;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
@@ -664,6 +668,77 @@ nav{
 .app-page.on{display:block}
 /* hide old homeView nav (not present) but keep qhdr */
 
+/* ══════════════ AI 분석 (Santa-style) ══════════════ */
+.ai-reco-card{
+  width:100%;max-width:980px;margin-bottom:24px;
+  background:linear-gradient(135deg,rgba(91,141,238,0.12),rgba(232,184,75,0.08));
+  border:1.5px solid rgba(91,141,238,0.35);
+  border-radius:18px;padding:20px 22px;
+  display:flex;align-items:center;gap:18px;flex-wrap:wrap;
+  cursor:pointer;transition:all 0.2s;position:relative;overflow:hidden;
+}
+.ai-reco-card:hover{border-color:var(--blue);transform:translateY(-2px);box-shadow:0 12px 32px rgba(91,141,238,0.2)}
+.ai-reco-icon{font-size:34px;line-height:1}
+.ai-reco-body{flex:1;min-width:200px}
+.ai-reco-title{font-family:'Syne',sans-serif;font-size:16px;font-weight:800;color:var(--text);margin-bottom:4px}
+.ai-reco-title em{color:var(--blue);font-style:normal}
+.ai-reco-sub{font-size:12px;color:var(--dim);line-height:1.5}
+.ai-reco-sub b{color:var(--accent);font-weight:700}
+.ai-reco-btn{
+  background:var(--blue);color:#fff;border:none;border-radius:10px;
+  padding:12px 22px;font-family:'Noto Sans KR',sans-serif;font-weight:700;font-size:13px;
+  cursor:pointer;white-space:nowrap;
+}
+
+.stats-wrap{max-width:760px;margin:0 auto;padding:24px 20px 0}
+.score-card{
+  background:var(--s1);border:1px solid var(--border);border-radius:20px;
+  padding:28px 24px;text-align:center;margin-top:16px;position:relative;overflow:hidden;
+}
+.score-card::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at 50% -20%,rgba(91,141,238,0.15),transparent 60%);pointer-events:none}
+.score-label{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:2px;color:var(--blue);margin-bottom:10px}
+.score-num{font-family:'Syne',sans-serif;font-size:64px;font-weight:800;line-height:1;color:var(--text)}
+.score-num small{font-size:22px;color:var(--dim);font-weight:600}
+.score-range{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--dim);margin-top:8px}
+.score-total{margin-top:14px;font-size:13px;color:var(--dim)}
+.score-total b{color:var(--accent);font-family:'JetBrains Mono',monospace;font-size:15px}
+.score-delta{display:inline-block;margin-top:10px;font-family:'JetBrains Mono',monospace;font-size:11px;padding:4px 12px;border-radius:100px}
+.score-delta.up{color:var(--correct);background:var(--cbg)}
+.score-delta.down{color:var(--wrong);background:var(--wbg)}
+.score-delta.flat{color:var(--dim);background:var(--s2)}
+.score-diag{margin-top:14px;font-size:12px;color:var(--dim);line-height:1.6}
+.diag-prog{height:6px;background:var(--s3);border-radius:100px;overflow:hidden;margin:10px auto 0;max-width:280px}
+.diag-prog i{display:block;height:100%;background:var(--blue);border-radius:100px}
+
+.stat-sec-title{font-family:'Syne',sans-serif;font-size:15px;font-weight:700;color:var(--text);margin:32px 0 4px}
+.stat-sec-sub{font-size:11px;color:var(--dim);margin-bottom:14px}
+
+.part-acc-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.part-acc{background:var(--s1);border:1px solid var(--border);border-radius:14px;padding:16px 14px;text-align:center}
+.part-acc .pa-lbl{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:1px;color:var(--dim);margin-bottom:8px}
+.part-acc .pa-val{font-family:'Syne',sans-serif;font-size:26px;font-weight:800;color:var(--accent)}
+.part-acc .pa-sub{font-size:10px;color:var(--muted);margin-top:4px;font-family:'JetBrains Mono',monospace}
+
+.weak-list{display:flex;flex-direction:column;gap:8px}
+.weak-row{background:var(--s1);border:1px solid var(--border);border-radius:12px;padding:12px 16px}
+.weak-top{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px}
+.weak-name{font-size:13px;font-weight:700;color:var(--text)}
+.weak-name .wk-part{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--dim);margin-left:6px;letter-spacing:1px}
+.weak-pct{font-family:'JetBrains Mono',monospace;font-size:12px}
+.weak-pct.bad{color:var(--wrong)} .weak-pct.mid{color:var(--accent)} .weak-pct.good{color:var(--correct)}
+.weak-bar{height:6px;background:var(--s3);border-radius:100px;overflow:hidden}
+.weak-bar i{display:block;height:100%;border-radius:100px;transition:width 0.6s ease}
+.weak-bar i.bad{background:var(--wrong)} .weak-bar i.mid{background:var(--accent)} .weak-bar i.good{background:var(--correct)}
+.weak-meta{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted);margin-top:6px}
+
+.trend-chart{display:flex;align-items:flex-end;gap:6px;height:110px;background:var(--s1);border:1px solid var(--border);border-radius:14px;padding:16px 16px 28px;position:relative}
+.trend-col{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%;position:relative}
+.trend-fill{width:100%;max-width:34px;background:linear-gradient(180deg,var(--blue),rgba(91,141,238,0.3));border-radius:6px 6px 2px 2px;min-height:3px}
+.trend-fill.nodata{background:var(--s3)}
+.trend-day{position:absolute;bottom:-20px;font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--muted)}
+.trend-val{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--dim);margin-bottom:4px}
+
+.stats-empty{background:var(--s1);border:1px dashed var(--muted);border-radius:14px;padding:32px 20px;text-align:center;color:var(--dim);font-size:13px;line-height:1.7}
 </style>
 </head>
 <body>
@@ -674,6 +749,15 @@ nav{
     <div class="home-brand">TOEIC DAILY MISSION</div>
     <div class="home-title">매일 <em>90분</em><br>기출 완전정복</div>
     <div class="home-sub">5개년 기출 유형 기반 · Part 5~7 전 파트 · AI 해설</div>
+  </div>
+
+  <div class="ai-reco-card" onclick="startAiSession()">
+    <div class="ai-reco-icon">🎯</div>
+    <div class="ai-reco-body">
+      <div class="ai-reco-title">AI <em>맞춤 학습</em></div>
+      <div class="ai-reco-sub" id="aiRecoSub">내 취약 유형을 분석해 딱 맞는 문제만 골라 드립니다</div>
+    </div>
+    <button class="ai-reco-btn" onclick="event.stopPropagation();startAiSession()">지금 시작 →</button>
   </div>
 
   <div class="day-grid" id="dayGrid"></div>
@@ -801,6 +885,28 @@ function _saveWrongNote(item, myAns) {
   } catch(e) {}
 }
 
+// ── 답안 로그 (AI 분석용 — 산타 스타일 예상점수/취약유형의 데이터 소스) ──
+const KEY_ANS_LOG = 'toeic_answer_log_v1';
+
+function _loadAnsLog() {
+  try { return JSON.parse(localStorage.getItem(KEY_ANS_LOG)||'[]'); } catch(e){ return []; }
+}
+function _logAnswer(item, ok) {
+  try {
+    let log = _loadAnsLog();
+    log.push({
+      t: Date.now(),
+      bid: item.bid || null,   // question bank id (P5만 존재)
+      part: item.part,
+      qtype: item.qtype,
+      d: item.d || 3,
+      ok: !!ok,
+    });
+    if (log.length > 2000) log = log.slice(-2000);
+    localStorage.setItem(KEY_ANS_LOG, JSON.stringify(log));
+  } catch(e) {}
+}
+
 const _KEY_SESS = 'toeic_session_v1';
 
 function _saveProgress(data) {
@@ -823,7 +929,7 @@ let _saveTimer = null;
 function _scheduleSave() {
   clearTimeout(_saveTimer);
   _saveTimer = setTimeout(() => {
-    if (!currentDay || !allQs.length) return;
+    if (!currentDay || currentDay === 'ai' || !allQs.length) return;
     const answered = allQs
       .filter(q => q.type==='q' && q.answered)
       .map(q => ({ num:q.num, myAns:q._myAns, ok:q._ok, skipped:q.skipped||false }));
@@ -1197,6 +1303,8 @@ function initHome(){
   Object.keys(progress).forEach(k=>{if(progress[k])total++});
   document.getElementById('streakNum').textContent=streak;
   document.getElementById('totalStudied').textContent=Math.floor(total/2)+'일';
+
+  _updateAiRecoSub();
 }
 
 // ════════════════════════════════════════════════════════════
@@ -1214,7 +1322,7 @@ function buildQueue(dayNum){
   p5qs.forEach(q=>{
     queue.push({
       type:'q',part:'5',secLabel:'Part 5',
-      num: globalNum++,
+      num: globalNum++, bid:q.id,
       year:q.y, qtype:q.type, d:q.d,
       text:q.q||q.text, opts:q.opts, ans:q.ans,
       exp:q.exp, v:q.v,
@@ -1435,6 +1543,7 @@ function submitQ(idx){
   else{stats.wrong++;wrongItems.push({item,myAns,idx});_saveWrongNote(item,myAns);}
   if(item.part==='5')stats.p5t++;else if(item.part==='6')stats.p6t++;else stats.p7t++;
   item._myAns=myAns; item._ok=ok;
+  _logAnswer(item, ok);
   _scheduleSave();
 
   // hide submit, show next
@@ -1541,10 +1650,12 @@ function finishDay(){
   clearInterval(elapsedInterval);
   clearTimeout(_saveTimer);
   _clearSession();
-  // save progress
-  progress['day'+currentDay]=true;
-  progress['day'+currentDay+'_date']=new Date().toDateString();
-  _saveProgress(progress);
+  // save progress (AI 맞춤 세션은 요일 진도에 반영하지 않음)
+  if (currentDay !== 'ai') {
+    progress['day'+currentDay]=true;
+    progress['day'+currentDay+'_date']=new Date().toDateString();
+    _saveProgress(progress);
+  }
 
   const tot=stats.correct+stats.wrong;
   const pct=tot===0?0:Math.round(stats.correct/tot*100);
@@ -1555,7 +1666,7 @@ function finishDay(){
   else if(pct>=60){grade='📚 Keep Going!';desc='기초 문법과 어휘를 강화할 필요가 있습니다.';}
   else{grade='💪 Don\'t Give Up!';desc='매일 꾸준히 하면 반드시 오릅니다. 오늘도 수고했습니다!';}
 
-  document.getElementById('rDay').textContent=`DAY ${currentDay} — 오늘의 결과`;
+  document.getElementById('rDay').textContent=currentDay==='ai'?'🎯 AI 맞춤 학습 — 결과':`DAY ${currentDay} — 오늘의 결과`;
   document.getElementById('rPct').textContent=pct+'%';
   document.getElementById('rGrade').textContent=grade;
   document.getElementById('rDesc').textContent=desc;
@@ -1665,6 +1776,238 @@ function updateHeaderMini(){
 
 
 // ════════════════════════════════════════════════════════════
+//  AI 분석 엔진 — 산타(Santa) 스타일
+//  예상 점수 · 취약 유형 진단 · 맞춤 문제 추천
+// ════════════════════════════════════════════════════════════
+
+// ── 예상 RC 점수 모델 ──
+// 최근 풀이에 가중치(최신 문제일수록↑, 어려운 문제일수록↑)를 두고
+// 가중 정답률을 5~495 RC 점수로 매핑. 데이터가 적으면 신뢰 구간이 넓어짐.
+function _computeScore(log) {
+  const recent = log.slice(-200);
+  const n = recent.length;
+  if (n === 0) return null;
+  let sw = 0, swOk = 0;
+  recent.forEach((e, i) => {
+    const rec = Math.pow(0.99, n - 1 - i);          // 최신 가중
+    const w = rec * (0.6 + 0.2 * (e.d || 3));       // 난이도 가중
+    sw += w;
+    if (e.ok) swOk += w;
+  });
+  const acc = sw ? swOk / sw : 0;
+  const raw = 5 + Math.pow(acc, 1.12) * 490;
+  const rc = Math.max(5, Math.min(495, Math.round(raw / 5) * 5));
+  const conf = Math.max(15, 80 - Math.min(60, n));  // ± 범위(문제 수 많을수록 좁아짐)
+  return { rc, acc, n, conf };
+}
+
+// ── 유형별 통계 ──
+function _computeTypeStats(log) {
+  const map = {};
+  log.forEach(e => {
+    if (!e.qtype) return;
+    const k = e.part + '|' + e.qtype;
+    if (!map[k]) map[k] = { part: e.part, qtype: e.qtype, t: 0, c: 0 };
+    map[k].t++;
+    if (e.ok) map[k].c++;
+  });
+  return Object.values(map).map(s => ({ ...s, acc: s.t ? s.c / s.t : 0 }));
+}
+
+function _weakTypes(log, minAttempts) {
+  return _computeTypeStats(log)
+    .filter(s => s.t >= (minAttempts || 2))
+    .sort((a, b) => a.acc - b.acc)
+    .filter(s => s.acc < 0.8);
+}
+
+// ── 문제은행(P5) 기준 마지막 풀이 결과 ──
+function _bidResults(log) {
+  const res = {}; // bid -> 마지막 풀이 ok 여부
+  log.forEach(e => { if (e.bid) res[e.bid] = e.ok; });
+  return res;
+}
+
+// ── AI 맞춤 학습: 취약 유형 위주로 12문제 큐 구성 ──
+const AI_SESSION_SIZE = 12;
+
+function buildAiQueue() {
+  const log = _loadAnsLog();
+  const weak = _weakTypes(log, 2);
+  const weakRank = {};
+  weak.forEach((s, i) => { if (s.part === '5') weakRank[s.qtype] = weak.length - i; });
+  const bidRes = _bidResults(log);
+
+  // 각 문제에 우선순위 점수 부여
+  const scored = P5.map((q, i) => {
+    let sc = 0;
+    if (bidRes[q.id] === false) sc += 5;                 // 전에 틀린 문제 최우선
+    if (weakRank[q.type]) sc += 2 + weakRank[q.type] * 0.3; // 취약 유형
+    if (!(q.id in bidRes)) sc += 1.5;                    // 안 풀어본 문제
+    if (bidRes[q.id] === true) sc -= 3;                  // 이미 맞힌 문제는 뒤로
+    sc += ((i * 2654435761) % 97) / 97 * 0.5;            // 결정적 셔플(동점 분산)
+    return { q, sc };
+  }).sort((a, b) => b.sc - a.sc);
+
+  const picked = scored.slice(0, AI_SESSION_SIZE).map(s => s.q);
+
+  const queue = [];
+  let num = 1;
+  const focusLabel = weak.filter(s=>s.part==='5').slice(0, 3).map(s => s.qtype).join(' · ') || '전 유형 골고루';
+  queue.push({ type: 'section_header', label: 'AI 맞춤', cls: 'p5', title: '🎯 AI 맞춤 학습', desc: `집중 공략: ${focusLabel}`, time: 900 });
+  picked.forEach(q => {
+    queue.push({
+      type: 'q', part: '5', secLabel: 'AI 맞춤',
+      num: num++, bid: q.id,
+      year: q.y, qtype: q.type, d: q.d,
+      text: q.q || q.text, opts: q.opts, ans: q.ans,
+      exp: q.exp, v: q.v,
+      passage: null,
+    });
+  });
+  return queue;
+}
+
+function startAiSession() {
+  currentDay = 'ai';
+  stats = { correct: 0, wrong: 0, p5c: 0, p5t: 0, p6c: 0, p6t: 0, p7c: 0, p7t: 0 };
+  wrongItems = [];
+  allQs = buildAiQueue();
+  qIdx = 0;
+  sessionStart = Date.now();
+
+  document.getElementById('qhdrTitle').textContent = '🎯 AI 맞춤 학습';
+  updateHeaderMini();
+  switchApp('study');
+  showView('quizView');
+  renderFromIdx();
+
+  clearInterval(elapsedInterval);
+  elapsedInterval = setInterval(() => {
+    const e = Math.floor((Date.now() - sessionStart) / 1000);
+    const m = Math.floor(e / 60), s = e % 60;
+    const el = document.getElementById('progTime');
+    if (el) el.textContent = `경과: ${m}:${String(s).padStart(2, '0')}`;
+  }, 1000);
+}
+
+// ── 홈 화면 AI 카드 문구 갱신 ──
+function _updateAiRecoSub() {
+  const el = document.getElementById('aiRecoSub');
+  if (!el) return;
+  const log = _loadAnsLog();
+  const score = _computeScore(log);
+  if (!score || score.n < 10) {
+    el.innerHTML = '문제를 풀수록 분석이 정교해집니다 — 12문제로 바로 진단 시작';
+    return;
+  }
+  const weak = _weakTypes(log, 2).slice(0, 2).map(s => s.qtype);
+  const weakTxt = weak.length ? `취약 유형 <b>${weak.join(', ')}</b> 집중 공략` : '전 유형 고른 실력! 난이도 상향 추천';
+  el.innerHTML = `예상 RC <b>${score.rc}점</b> · ${weakTxt}`;
+}
+
+// ── AI 분석 페이지 렌더 ──
+function renderStats() {
+  const el = document.getElementById('statsContent');
+  if (!el) return;
+  const log = _loadAnsLog();
+  const score = _computeScore(log);
+
+  // 데이터 부족 → 진단 모드
+  if (!score || score.n < 10) {
+    const n = score ? score.n : 0;
+    el.innerHTML = `
+      <div class="score-card">
+        <div class="score-label">AI 진단 테스트</div>
+        <div class="score-num" style="font-size:40px">진단 중</div>
+        <div class="score-diag">예상 점수를 계산하려면 최소 10문제의 풀이 기록이 필요합니다.<br>지금까지 <b style="color:var(--blue)">${n} / 10</b> 문제</div>
+        <div class="diag-prog"><i style="width:${Math.min(100, n * 10)}%"></i></div>
+        <div style="margin-top:20px"><button class="ai-reco-btn" onclick="startAiSession()">🎯 진단 문제 풀러 가기</button></div>
+      </div>
+      <div class="stats-empty" style="margin-top:16px">학습 탭에서 요일별 미션을 풀거나, AI 맞춤 학습을 시작하면<br>이곳에 예상 점수와 취약 유형 분석이 표시됩니다.</div>`;
+    return;
+  }
+
+  // 추세: 최근 30문제 제외한 점수와 비교
+  let deltaHtml = '<span class="score-delta flat">— 변화 없음</span>';
+  if (log.length > 40) {
+    const prev = _computeScore(log.slice(0, -30));
+    if (prev) {
+      const d = score.rc - prev.rc;
+      if (d > 0) deltaHtml = `<span class="score-delta up">▲ +${d}점 상승 중</span>`;
+      else if (d < 0) deltaHtml = `<span class="score-delta down">▼ ${d}점 — 복습 필요</span>`;
+    }
+  }
+
+  // 파트별 정답률
+  const pt = { '5': { t: 0, c: 0 }, '6': { t: 0, c: 0 }, '7': { t: 0, c: 0 } };
+  log.forEach(e => { if (pt[e.part]) { pt[e.part].t++; if (e.ok) pt[e.part].c++; } });
+  const paCell = (p, name) => {
+    const s = pt[p];
+    const v = s.t ? Math.round(s.c / s.t * 100) + '%' : '—';
+    return `<div class="part-acc"><div class="pa-lbl">${name}</div><div class="pa-val">${v}</div><div class="pa-sub">${s.t ? s.c + '/' + s.t : '기록 없음'}</div></div>`;
+  };
+
+  // 유형별 취약점 (시도 2회 이상, 정답률 낮은 순)
+  const types = _computeTypeStats(log).filter(s => s.t >= 2).sort((a, b) => a.acc - b.acc).slice(0, 8);
+  const weakRows = types.map(s => {
+    const pct = Math.round(s.acc * 100);
+    const cls = pct < 60 ? 'bad' : pct < 80 ? 'mid' : 'good';
+    return `<div class="weak-row">
+      <div class="weak-top"><div class="weak-name">${s.qtype}<span class="wk-part">PART ${s.part}</span></div><div class="weak-pct ${cls}">${pct}%</div></div>
+      <div class="weak-bar"><i class="${cls}" style="width:${pct}%"></i></div>
+      <div class="weak-meta">${s.c}/${s.t} 정답</div>
+    </div>`;
+  }).join('') || '<div class="stats-empty">아직 유형별 데이터가 부족합니다</div>';
+
+  // 최근 7일 정답률 추이
+  const byDay = {};
+  log.forEach(e => {
+    const d = new Date(e.t); const k = `${d.getMonth() + 1}/${d.getDate()}`;
+    if (!byDay[k]) byDay[k] = { t: 0, c: 0 };
+    byDay[k].t++; if (e.ok) byDay[k].c++;
+  });
+  let trendCols = '';
+  for (let i = 6; i >= 0; i--) {
+    const d = new Date(); d.setDate(d.getDate() - i);
+    const k = `${d.getMonth() + 1}/${d.getDate()}`;
+    const s = byDay[k];
+    const pct = s && s.t ? Math.round(s.c / s.t * 100) : null;
+    trendCols += `<div class="trend-col">
+      ${pct !== null ? `<div class="trend-val">${pct}%</div>` : ''}
+      <div class="trend-fill${pct === null ? ' nodata' : ''}" style="height:${pct === null ? 3 : Math.max(4, pct)}%"></div>
+      <div class="trend-day">${k}</div>
+    </div>`;
+  }
+
+  const total990 = Math.min(990, score.rc * 2);
+  el.innerHTML = `
+    <div class="score-card">
+      <div class="score-label">AI 예상 점수 — READING</div>
+      <div class="score-num">${score.rc}<small> / 495</small></div>
+      <div class="score-range">신뢰 구간 ±${score.conf} · 분석 문항 ${score.n}개</div>
+      <div class="score-total">LC를 비슷한 수준으로 가정한 총점 <b>${total990}점</b> 안팎</div>
+      <div>${deltaHtml}</div>
+    </div>
+
+    <div class="stat-sec-title">파트별 정답률</div>
+    <div class="stat-sec-sub">전체 풀이 기록 기준</div>
+    <div class="part-acc-grid">${paCell('5', 'PART 5')}${paCell('6', 'PART 6')}${paCell('7', 'PART 7')}</div>
+
+    <div class="stat-sec-title">유형별 취약점 진단</div>
+    <div class="stat-sec-sub">정답률이 낮은 유형부터 — AI 맞춤 학습이 이 유형을 우선 출제합니다</div>
+    <div class="weak-list">${weakRows}</div>
+
+    <div class="stat-sec-title">최근 7일 정답률 추이</div>
+    <div class="stat-sec-sub">매일 꾸준히가 점수를 만듭니다</div>
+    <div class="trend-chart">${trendCols}</div>
+
+    <div style="text-align:center;margin-top:28px">
+      <button class="ai-reco-btn" onclick="startAiSession()">🎯 취약 유형 집중 학습 시작</button>
+    </div>`;
+}
+
+// ════════════════════════════════════════════════════════════
 //  APP TAB SWITCHER
 // ════════════════════════════════════════════════════════════
 const _STUDY_VIEWS = ['homeView','quizView','resultView'];
@@ -1682,6 +2025,8 @@ function switchApp(tab) {
   document.getElementById('atab-'+tab).classList.add('on');
   if(tab !== 'study') document.getElementById('app-'+tab).classList.add('on');
 
+  if(tab==='study') { _updateAiRecoSub(); }
+  if(tab==='stats') { renderStats(); }
   if(tab==='vocab') { _vocabInit(); renderVocab(); }
   if(tab==='flash') { _vocabInit(); initFlash(); }
   if(tab==='ox')    { _vocabInit(); initOx(); }
@@ -2252,11 +2597,19 @@ function toast(msg){
 
 // ─── COMBINED INIT ───
 window.onload = () => { initHome(); _updateBadges(); };
+
+// ── PWA: 서비스 워커 등록 (아이패드 홈 화면 앱 + 오프라인 지원) ──
+if ('serviceWorker' in navigator && location.protocol !== 'file:') {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('sw.js').catch(() => {});
+  });
+}
 </script>
 
 <!-- ══ BOTTOM TAB BAR ══ -->
 <div id="appTabBar">
   <button class="atab on" id="atab-study" onclick="switchApp('study')"><div class="atab-icon">📚</div><div class="atab-lbl">학습</div></button>
+  <button class="atab" id="atab-stats" onclick="switchApp('stats')"><div class="atab-icon">📊</div><div class="atab-lbl">AI분석</div></button>
   <button class="atab" id="atab-vocab" onclick="switchApp('vocab')"><div class="atab-icon">📖</div><div class="atab-lbl">단어장</div><div class="atab-badge" id="badge-vocab"></div></button>
   <button class="atab" id="atab-flash" onclick="switchApp('flash')"><div class="atab-icon">🃏</div><div class="atab-lbl">플래시카드</div></button>
   <button class="atab" id="atab-ox" onclick="switchApp('ox')"><div class="atab-icon">❓</div><div class="atab-lbl">OX퀴즈</div></button>
@@ -2301,6 +2654,15 @@ window.onload = () => { initHome(); _updateBadges(); };
     <div class="sec-title">OX 퀴즈</div>
     <div class="sec-sub">뜻을 보고 알맞은 단어를 고르세요</div>
     <div class="ox-wrap" id="oxWrap" style="margin-top:16px"></div>
+  </div>
+</div>
+
+<!-- ══ AI 분석 PAGE (Santa-style) ══ -->
+<div class="app-page" id="app-stats">
+  <div class="stats-wrap">
+    <div class="sec-title">AI 분석</div>
+    <div class="sec-sub">풀이 기록 기반 예상 점수 · 취약 유형 진단</div>
+    <div id="statsContent"></div>
   </div>
 </div>
 
