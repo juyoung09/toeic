@@ -1,7 +1,7 @@
 {
-  "date": "2026-10-10",
+  "date": "2026-10-11",
   "timezone": "Asia/Seoul",
-  "generated_at": "2026-10-10T06:00:00+09:00",
+  "generated_at": "2026-10-11T06:00:00+09:00",
   "summary": {
     "question_count": 8,
     "vocabulary_count": 12,
@@ -10,20 +10,20 @@
   "questions": [
     {
       "part": "Part 5",
-      "skill": "subject-verb agreement",
-      "prompt": "The list of approved vendors ___ updated every quarter.",
+      "skill": "conjunctions",
+      "prompt": "The seminar was postponed ___ the speaker had a scheduling conflict.",
       "choices": {
-        "A": "are",
-        "B": "were",
-        "C": "is",
-        "D": "have been"
+        "A": "because",
+        "B": "although",
+        "C": "unless",
+        "D": "so that"
       },
-      "answer": "C",
-      "explanation": "The subject is singular: 'the list', not 'vendors'.",
+      "answer": "A",
+      "explanation": "The second clause gives the reason for the postponement.",
       "focus": [
-        "vendor",
-        "approved",
-        "quarter"
+        "postpone",
+        "speaker",
+        "scheduling conflict"
       ],
       "number": 1
     },
@@ -48,25 +48,6 @@
     },
     {
       "part": "Part 5",
-      "skill": "relative clauses",
-      "prompt": "The technician ___ repaired the printer will return tomorrow to inspect the scanner.",
-      "choices": {
-        "A": "whose",
-        "B": "whom",
-        "C": "who",
-        "D": "which"
-      },
-      "answer": "C",
-      "explanation": "'Who' is the subject of the relative clause referring to a person.",
-      "focus": [
-        "technician",
-        "repair",
-        "inspect"
-      ],
-      "number": 3
-    },
-    {
-      "part": "Part 5",
       "skill": "vocabulary",
       "prompt": "The company will ___ a new training program for all supervisors next month.",
       "choices": {
@@ -82,24 +63,43 @@
         "supervisor",
         "launch"
       ],
+      "number": 3
+    },
+    {
+      "part": "Part 5",
+      "skill": "tense",
+      "prompt": "By the time the client arrives, the proposal ___ by the design team.",
+      "choices": {
+        "A": "completed",
+        "B": "will have been completed",
+        "C": "has completed",
+        "D": "completing"
+      },
+      "answer": "B",
+      "explanation": "Future perfect passive fits an action completed before a future time.",
+      "focus": [
+        "proposal",
+        "client",
+        "design team"
+      ],
       "number": 4
     },
     {
-      "part": "Part 6",
-      "skill": "sentence insertion",
-      "prompt": "Memo: We have updated the visitor policy. Employees must register guests at least 24 hours before arrival. ___ Security badges will be prepared in advance.",
+      "part": "Part 5",
+      "skill": "articles",
+      "prompt": "The warehouse manager ordered ___ additional scanner for the shipping desk.",
       "choices": {
-        "A": "This will allow reception staff to confirm each appointment.",
-        "B": "The cafeteria will be closed during renovations.",
-        "C": "Several employees requested new parking spaces.",
-        "D": "The invoice was sent last week."
+        "A": "a",
+        "B": "an",
+        "C": "the",
+        "D": "no article"
       },
-      "answer": "A",
-      "explanation": "Choice A connects visitor registration with reception and security preparation.",
+      "answer": "B",
+      "explanation": "'Additional' starts with a vowel sound, so 'an' is used before it.",
       "focus": [
-        "visitor policy",
-        "register",
-        "security badge"
+        "warehouse",
+        "scanner",
+        "shipping desk"
       ],
       "number": 5
     },
@@ -124,93 +124,53 @@
     },
     {
       "part": "Part 5",
-      "skill": "conjunctions",
-      "prompt": "The seminar was postponed ___ the speaker had a scheduling conflict.",
+      "skill": "relative clauses",
+      "prompt": "The technician ___ repaired the printer will return tomorrow to inspect the scanner.",
       "choices": {
-        "A": "because",
-        "B": "although",
-        "C": "unless",
-        "D": "so that"
+        "A": "whose",
+        "B": "whom",
+        "C": "who",
+        "D": "which"
       },
-      "answer": "A",
-      "explanation": "The second clause gives the reason for the postponement.",
+      "answer": "C",
+      "explanation": "'Who' is the subject of the relative clause referring to a person.",
       "focus": [
-        "postpone",
-        "speaker",
-        "scheduling conflict"
+        "technician",
+        "repair",
+        "inspect"
       ],
       "number": 7
     },
     {
       "part": "Part 5",
-      "skill": "phrasal verbs",
-      "prompt": "Please ___ the attached invoice before forwarding it to the finance department.",
+      "skill": "word form",
+      "prompt": "The new software update will be installed ___ after the office closes.",
       "choices": {
-        "A": "look up",
-        "B": "look over",
-        "C": "look after",
-        "D": "look into"
+        "A": "automatic",
+        "B": "automate",
+        "C": "automatically",
+        "D": "automation"
       },
-      "answer": "B",
-      "explanation": "'Look over' means to review or inspect something briefly.",
+      "answer": "C",
+      "explanation": "An adverb is needed to modify the verb phrase 'will be installed'.",
       "focus": [
-        "invoice",
-        "forward",
-        "finance department"
+        "software update",
+        "install",
+        "office closes"
       ],
       "number": 8
     }
   ],
   "vocabulary": [
     {
-      "word": "allocate",
-      "meaning": "to assign or set aside resources",
-      "example": "The manager allocated more staff to the urgent project."
-    },
-    {
       "word": "relocate",
       "meaning": "to move to another place",
       "example": "The branch office will relocate in July."
     },
     {
-      "word": "shipment",
-      "meaning": "goods sent for delivery",
-      "example": "The shipment arrived ahead of schedule."
-    },
-    {
-      "word": "courier",
-      "meaning": "a delivery service or person",
-      "example": "The documents were sent by courier."
-    },
-    {
-      "word": "delegate",
-      "meaning": "to assign a task to another person",
-      "example": "Supervisors should delegate routine tasks."
-    },
-    {
-      "word": "negotiate",
-      "meaning": "to discuss terms and reach an agreement",
-      "example": "The vendor negotiated a lower delivery fee."
-    },
-    {
-      "word": "specification",
-      "meaning": "a detailed requirement",
-      "example": "The device meets all technical specifications."
-    },
-    {
-      "word": "mandatory",
-      "meaning": "required",
-      "example": "Attendance at the safety briefing is mandatory."
-    },
-    {
-      "word": "inventory",
-      "meaning": "goods held in stock",
-      "example": "The warehouse inventory is checked weekly."
-    },
-    {
-      "word": "warranty",
-      "meaning": "a written guarantee",
-      "example": "The printer includes a two-year warranty."
+      "word": "procurement",
+      "meaning": "the process of obtaining supplies",
+      "example": "Procurement approved the equipment purchase."
     },
     {
       "word": "amend",
@@ -218,9 +178,49 @@
       "example": "The contract was amended after legal review."
     },
     {
-      "word": "compliance",
-      "meaning": "following rules or standards",
-      "example": "The policy ensures compliance with safety regulations."
+      "word": "shortage",
+      "meaning": "a lack of something needed",
+      "example": "A supply shortage delayed production."
+    },
+    {
+      "word": "shipment",
+      "meaning": "goods sent for delivery",
+      "example": "The shipment arrived ahead of schedule."
+    },
+    {
+      "word": "delegate",
+      "meaning": "to assign a task to another person",
+      "example": "Supervisors should delegate routine tasks."
+    },
+    {
+      "word": "reimburse",
+      "meaning": "to pay someone back",
+      "example": "The company will reimburse travel expenses."
+    },
+    {
+      "word": "allocate",
+      "meaning": "to assign or set aside resources",
+      "example": "The manager allocated more staff to the urgent project."
+    },
+    {
+      "word": "negotiate",
+      "meaning": "to discuss terms and reach an agreement",
+      "example": "The vendor negotiated a lower delivery fee."
+    },
+    {
+      "word": "inventory",
+      "meaning": "goods held in stock",
+      "example": "The warehouse inventory is checked weekly."
+    },
+    {
+      "word": "tentative",
+      "meaning": "not final or confirmed",
+      "example": "The meeting date is still tentative."
+    },
+    {
+      "word": "courier",
+      "meaning": "a delivery service or person",
+      "example": "The documents were sent by courier."
     }
   ]
 }
