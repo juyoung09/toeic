@@ -1,0 +1,226 @@
+{
+  "date": "2026-10-14",
+  "timezone": "Asia/Seoul",
+  "generated_at": "2026-10-14T06:00:00+09:00",
+  "summary": {
+    "question_count": 8,
+    "vocabulary_count": 12,
+    "target_minutes": 35
+  },
+  "questions": [
+    {
+      "part": "Part 5",
+      "skill": "prepositions",
+      "prompt": "The accounting team asked employees ___ all travel receipts by Friday.",
+      "choices": {
+        "A": "for",
+        "B": "to",
+        "C": "about",
+        "D": "with"
+      },
+      "answer": "B",
+      "explanation": "ask + someone + to do something is the correct structure.",
+      "focus": [
+        "receipt",
+        "travel expense",
+        "deadline"
+      ],
+      "number": 1
+    },
+    {
+      "part": "Part 5",
+      "skill": "tense",
+      "prompt": "By the time the client arrives, the proposal ___ by the design team.",
+      "choices": {
+        "A": "completed",
+        "B": "will have been completed",
+        "C": "has completed",
+        "D": "completing"
+      },
+      "answer": "B",
+      "explanation": "Future perfect passive fits an action completed before a future time.",
+      "focus": [
+        "proposal",
+        "client",
+        "design team"
+      ],
+      "number": 2
+    },
+    {
+      "part": "Part 6",
+      "skill": "sentence insertion",
+      "prompt": "Memo: We have updated the visitor policy. Employees must register guests at least 24 hours before arrival. ___ Security badges will be prepared in advance.",
+      "choices": {
+        "A": "This will allow reception staff to confirm each appointment.",
+        "B": "The cafeteria will be closed during renovations.",
+        "C": "Several employees requested new parking spaces.",
+        "D": "The invoice was sent last week."
+      },
+      "answer": "A",
+      "explanation": "Choice A connects visitor registration with reception and security preparation.",
+      "focus": [
+        "visitor policy",
+        "register",
+        "security badge"
+      ],
+      "number": 3
+    },
+    {
+      "part": "Part 7",
+      "skill": "inference",
+      "prompt": "Notice: The 3 P.M. product demonstration has been moved from Room 204 to the main auditorium because attendance is higher than expected. What can be inferred?",
+      "choices": {
+        "A": "The demonstration was canceled.",
+        "B": "More people plan to attend than originally anticipated.",
+        "C": "Room 204 is being renovated.",
+        "D": "The event will begin earlier."
+      },
+      "answer": "B",
+      "explanation": "The room changed because expected attendance increased.",
+      "focus": [
+        "demonstration",
+        "auditorium",
+        "attendance"
+      ],
+      "number": 4
+    },
+    {
+      "part": "Part 5",
+      "skill": "comparatives",
+      "prompt": "This year's customer survey was ___ detailed than last year's version.",
+      "choices": {
+        "A": "many",
+        "B": "more",
+        "C": "most",
+        "D": "much"
+      },
+      "answer": "B",
+      "explanation": "Use 'more + adjective + than' for comparative forms of many longer adjectives.",
+      "focus": [
+        "survey",
+        "detailed",
+        "version"
+      ],
+      "number": 5
+    },
+    {
+      "part": "Part 5",
+      "skill": "word form",
+      "prompt": "The new software update will be installed ___ after the office closes.",
+      "choices": {
+        "A": "automatic",
+        "B": "automate",
+        "C": "automatically",
+        "D": "automation"
+      },
+      "answer": "C",
+      "explanation": "An adverb is needed to modify the verb phrase 'will be installed'.",
+      "focus": [
+        "software update",
+        "install",
+        "office closes"
+      ],
+      "number": 6
+    },
+    {
+      "part": "Part 5",
+      "skill": "relative clauses",
+      "prompt": "The technician ___ repaired the printer will return tomorrow to inspect the scanner.",
+      "choices": {
+        "A": "whose",
+        "B": "whom",
+        "C": "who",
+        "D": "which"
+      },
+      "answer": "C",
+      "explanation": "'Who' is the subject of the relative clause referring to a person.",
+      "focus": [
+        "technician",
+        "repair",
+        "inspect"
+      ],
+      "number": 7
+    },
+    {
+      "part": "Part 5",
+      "skill": "subject-verb agreement",
+      "prompt": "The list of approved vendors ___ updated every quarter.",
+      "choices": {
+        "A": "are",
+        "B": "were",
+        "C": "is",
+        "D": "have been"
+      },
+      "answer": "C",
+      "explanation": "The subject is singular: 'the list', not 'vendors'.",
+      "focus": [
+        "vendor",
+        "approved",
+        "quarter"
+      ],
+      "number": 8
+    }
+  ],
+  "vocabulary": [
+    {
+      "word": "shortage",
+      "meaning": "a lack of something needed",
+      "example": "A supply shortage delayed production."
+    },
+    {
+      "word": "relocate",
+      "meaning": "to move to another place",
+      "example": "The branch office will relocate in July."
+    },
+    {
+      "word": "warranty",
+      "meaning": "a written guarantee",
+      "example": "The printer includes a two-year warranty."
+    },
+    {
+      "word": "mandatory",
+      "meaning": "required",
+      "example": "Attendance at the safety briefing is mandatory."
+    },
+    {
+      "word": "renewal",
+      "meaning": "an extension of a contract or license",
+      "example": "The license renewal is due next week."
+    },
+    {
+      "word": "reimburse",
+      "meaning": "to pay someone back",
+      "example": "The company will reimburse travel expenses."
+    },
+    {
+      "word": "overdue",
+      "meaning": "late or past the deadline",
+      "example": "Several payments are now overdue."
+    },
+    {
+      "word": "specification",
+      "meaning": "a detailed requirement",
+      "example": "The device meets all technical specifications."
+    },
+    {
+      "word": "allocate",
+      "meaning": "to assign or set aside resources",
+      "example": "The manager allocated more staff to the urgent project."
+    },
+    {
+      "word": "tentative",
+      "meaning": "not final or confirmed",
+      "example": "The meeting date is still tentative."
+    },
+    {
+      "word": "compliance",
+      "meaning": "following rules or standards",
+      "example": "The policy ensures compliance with safety regulations."
+    },
+    {
+      "word": "courier",
+      "meaning": "a delivery service or person",
+      "example": "The documents were sent by courier."
+    }
+  ]
+}
