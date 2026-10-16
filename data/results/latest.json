@@ -1,7 +1,7 @@
 {
-  "date": "2026-10-16",
+  "date": "2026-10-17",
   "timezone": "Asia/Seoul",
-  "generated_at": "2026-10-16T06:00:00+09:00",
+  "generated_at": "2026-10-17T06:00:00+09:00",
   "summary": {
     "question_count": 8,
     "vocabulary_count": 12,
@@ -10,60 +10,41 @@
   "questions": [
     {
       "part": "Part 5",
-      "skill": "articles",
-      "prompt": "The warehouse manager ordered ___ additional scanner for the shipping desk.",
+      "skill": "relative clauses",
+      "prompt": "The technician ___ repaired the printer will return tomorrow to inspect the scanner.",
       "choices": {
-        "A": "a",
-        "B": "an",
-        "C": "the",
-        "D": "no article"
+        "A": "whose",
+        "B": "whom",
+        "C": "who",
+        "D": "which"
       },
-      "answer": "B",
-      "explanation": "'Additional' starts with a vowel sound, so 'an' is used before it.",
+      "answer": "C",
+      "explanation": "'Who' is the subject of the relative clause referring to a person.",
       "focus": [
-        "warehouse",
-        "scanner",
-        "shipping desk"
+        "technician",
+        "repair",
+        "inspect"
       ],
       "number": 1
     },
     {
       "part": "Part 5",
-      "skill": "phrasal verbs",
-      "prompt": "Please ___ the attached invoice before forwarding it to the finance department.",
+      "skill": "tense",
+      "prompt": "By the time the client arrives, the proposal ___ by the design team.",
       "choices": {
-        "A": "look up",
-        "B": "look over",
-        "C": "look after",
-        "D": "look into"
+        "A": "completed",
+        "B": "will have been completed",
+        "C": "has completed",
+        "D": "completing"
       },
       "answer": "B",
-      "explanation": "'Look over' means to review or inspect something briefly.",
+      "explanation": "Future perfect passive fits an action completed before a future time.",
       "focus": [
-        "invoice",
-        "forward",
-        "finance department"
+        "proposal",
+        "client",
+        "design team"
       ],
       "number": 2
-    },
-    {
-      "part": "Part 5",
-      "skill": "subject-verb agreement",
-      "prompt": "The list of approved vendors ___ updated every quarter.",
-      "choices": {
-        "A": "are",
-        "B": "were",
-        "C": "is",
-        "D": "have been"
-      },
-      "answer": "C",
-      "explanation": "The subject is singular: 'the list', not 'vendors'.",
-      "focus": [
-        "vendor",
-        "approved",
-        "quarter"
-      ],
-      "number": 3
     },
     {
       "part": "Part 5",
@@ -82,7 +63,7 @@
         "travel expense",
         "deadline"
       ],
-      "number": 4
+      "number": 3
     },
     {
       "part": "Part 6",
@@ -101,24 +82,43 @@
         "register",
         "security badge"
       ],
+      "number": 4
+    },
+    {
+      "part": "Part 7",
+      "skill": "inference",
+      "prompt": "Notice: The 3 P.M. product demonstration has been moved from Room 204 to the main auditorium because attendance is higher than expected. What can be inferred?",
+      "choices": {
+        "A": "The demonstration was canceled.",
+        "B": "More people plan to attend than originally anticipated.",
+        "C": "Room 204 is being renovated.",
+        "D": "The event will begin earlier."
+      },
+      "answer": "B",
+      "explanation": "The room changed because expected attendance increased.",
+      "focus": [
+        "demonstration",
+        "auditorium",
+        "attendance"
+      ],
       "number": 5
     },
     {
       "part": "Part 5",
-      "skill": "tense",
-      "prompt": "By the time the client arrives, the proposal ___ by the design team.",
+      "skill": "articles",
+      "prompt": "The warehouse manager ordered ___ additional scanner for the shipping desk.",
       "choices": {
-        "A": "completed",
-        "B": "will have been completed",
-        "C": "has completed",
-        "D": "completing"
+        "A": "a",
+        "B": "an",
+        "C": "the",
+        "D": "no article"
       },
       "answer": "B",
-      "explanation": "Future perfect passive fits an action completed before a future time.",
+      "explanation": "'Additional' starts with a vowel sound, so 'an' is used before it.",
       "focus": [
-        "proposal",
-        "client",
-        "design team"
+        "warehouse",
+        "scanner",
+        "shipping desk"
       ],
       "number": 6
     },
@@ -163,24 +163,9 @@
   ],
   "vocabulary": [
     {
-      "word": "renewal",
-      "meaning": "an extension of a contract or license",
-      "example": "The license renewal is due next week."
-    },
-    {
-      "word": "reimburse",
-      "meaning": "to pay someone back",
-      "example": "The company will reimburse travel expenses."
-    },
-    {
-      "word": "inventory",
-      "meaning": "goods held in stock",
-      "example": "The warehouse inventory is checked weekly."
-    },
-    {
-      "word": "overdue",
-      "meaning": "late or past the deadline",
-      "example": "Several payments are now overdue."
+      "word": "procurement",
+      "meaning": "the process of obtaining supplies",
+      "example": "Procurement approved the equipment purchase."
     },
     {
       "word": "shipment",
@@ -188,24 +173,9 @@
       "example": "The shipment arrived ahead of schedule."
     },
     {
-      "word": "specification",
-      "meaning": "a detailed requirement",
-      "example": "The device meets all technical specifications."
-    },
-    {
-      "word": "audit",
-      "meaning": "a formal inspection of records",
-      "example": "The annual audit will begin on Monday."
-    },
-    {
-      "word": "shortage",
-      "meaning": "a lack of something needed",
-      "example": "A supply shortage delayed production."
-    },
-    {
-      "word": "tentative",
-      "meaning": "not final or confirmed",
-      "example": "The meeting date is still tentative."
+      "word": "allocate",
+      "meaning": "to assign or set aside resources",
+      "example": "The manager allocated more staff to the urgent project."
     },
     {
       "word": "compliance",
@@ -213,14 +183,44 @@
       "example": "The policy ensures compliance with safety regulations."
     },
     {
-      "word": "allocate",
-      "meaning": "to assign or set aside resources",
-      "example": "The manager allocated more staff to the urgent project."
+      "word": "renewal",
+      "meaning": "an extension of a contract or license",
+      "example": "The license renewal is due next week."
     },
     {
-      "word": "procurement",
-      "meaning": "the process of obtaining supplies",
-      "example": "Procurement approved the equipment purchase."
+      "word": "negotiate",
+      "meaning": "to discuss terms and reach an agreement",
+      "example": "The vendor negotiated a lower delivery fee."
+    },
+    {
+      "word": "relocate",
+      "meaning": "to move to another place",
+      "example": "The branch office will relocate in July."
+    },
+    {
+      "word": "courier",
+      "meaning": "a delivery service or person",
+      "example": "The documents were sent by courier."
+    },
+    {
+      "word": "mandatory",
+      "meaning": "required",
+      "example": "Attendance at the safety briefing is mandatory."
+    },
+    {
+      "word": "delegate",
+      "meaning": "to assign a task to another person",
+      "example": "Supervisors should delegate routine tasks."
+    },
+    {
+      "word": "amend",
+      "meaning": "to change or correct a document",
+      "example": "The contract was amended after legal review."
+    },
+    {
+      "word": "specification",
+      "meaning": "a detailed requirement",
+      "example": "The device meets all technical specifications."
     }
   ]
 }
