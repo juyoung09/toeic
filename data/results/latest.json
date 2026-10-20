@@ -1,7 +1,7 @@
 {
-  "date": "2026-10-20",
+  "date": "2026-10-21",
   "timezone": "Asia/Seoul",
-  "generated_at": "2026-10-20T06:00:00+09:00",
+  "generated_at": "2026-10-21T06:00:00+09:00",
   "summary": {
     "question_count": 8,
     "vocabulary_count": 12,
@@ -10,20 +10,20 @@
   "questions": [
     {
       "part": "Part 5",
-      "skill": "conjunctions",
-      "prompt": "The seminar was postponed ___ the speaker had a scheduling conflict.",
+      "skill": "subject-verb agreement",
+      "prompt": "The list of approved vendors ___ updated every quarter.",
       "choices": {
-        "A": "because",
-        "B": "although",
-        "C": "unless",
-        "D": "so that"
+        "A": "are",
+        "B": "were",
+        "C": "is",
+        "D": "have been"
       },
-      "answer": "A",
-      "explanation": "The second clause gives the reason for the postponement.",
+      "answer": "C",
+      "explanation": "The subject is singular: 'the list', not 'vendors'.",
       "focus": [
-        "postpone",
-        "speaker",
-        "scheduling conflict"
+        "vendor",
+        "approved",
+        "quarter"
       ],
       "number": 1
     },
@@ -67,25 +67,6 @@
     },
     {
       "part": "Part 5",
-      "skill": "articles",
-      "prompt": "The warehouse manager ordered ___ additional scanner for the shipping desk.",
-      "choices": {
-        "A": "a",
-        "B": "an",
-        "C": "the",
-        "D": "no article"
-      },
-      "answer": "B",
-      "explanation": "'Additional' starts with a vowel sound, so 'an' is used before it.",
-      "focus": [
-        "warehouse",
-        "scanner",
-        "shipping desk"
-      ],
-      "number": 4
-    },
-    {
-      "part": "Part 5",
       "skill": "comparatives",
       "prompt": "This year's customer survey was ___ detailed than last year's version.",
       "choices": {
@@ -101,24 +82,43 @@
         "detailed",
         "version"
       ],
+      "number": 4
+    },
+    {
+      "part": "Part 7",
+      "skill": "inference",
+      "prompt": "Notice: The 3 P.M. product demonstration has been moved from Room 204 to the main auditorium because attendance is higher than expected. What can be inferred?",
+      "choices": {
+        "A": "The demonstration was canceled.",
+        "B": "More people plan to attend than originally anticipated.",
+        "C": "Room 204 is being renovated.",
+        "D": "The event will begin earlier."
+      },
+      "answer": "B",
+      "explanation": "The room changed because expected attendance increased.",
+      "focus": [
+        "demonstration",
+        "auditorium",
+        "attendance"
+      ],
       "number": 5
     },
     {
       "part": "Part 5",
-      "skill": "prepositions",
-      "prompt": "The accounting team asked employees ___ all travel receipts by Friday.",
+      "skill": "phrasal verbs",
+      "prompt": "Please ___ the attached invoice before forwarding it to the finance department.",
       "choices": {
-        "A": "for",
-        "B": "to",
-        "C": "about",
-        "D": "with"
+        "A": "look up",
+        "B": "look over",
+        "C": "look after",
+        "D": "look into"
       },
       "answer": "B",
-      "explanation": "ask + someone + to do something is the correct structure.",
+      "explanation": "'Look over' means to review or inspect something briefly.",
       "focus": [
-        "receipt",
-        "travel expense",
-        "deadline"
+        "invoice",
+        "forward",
+        "finance department"
       ],
       "number": 6
     },
@@ -142,30 +142,30 @@
       "number": 7
     },
     {
-      "part": "Part 7",
-      "skill": "inference",
-      "prompt": "Notice: The 3 P.M. product demonstration has been moved from Room 204 to the main auditorium because attendance is higher than expected. What can be inferred?",
+      "part": "Part 5",
+      "skill": "tense",
+      "prompt": "By the time the client arrives, the proposal ___ by the design team.",
       "choices": {
-        "A": "The demonstration was canceled.",
-        "B": "More people plan to attend than originally anticipated.",
-        "C": "Room 204 is being renovated.",
-        "D": "The event will begin earlier."
+        "A": "completed",
+        "B": "will have been completed",
+        "C": "has completed",
+        "D": "completing"
       },
       "answer": "B",
-      "explanation": "The room changed because expected attendance increased.",
+      "explanation": "Future perfect passive fits an action completed before a future time.",
       "focus": [
-        "demonstration",
-        "auditorium",
-        "attendance"
+        "proposal",
+        "client",
+        "design team"
       ],
       "number": 8
     }
   ],
   "vocabulary": [
     {
-      "word": "specification",
-      "meaning": "a detailed requirement",
-      "example": "The device meets all technical specifications."
+      "word": "shortage",
+      "meaning": "a lack of something needed",
+      "example": "A supply shortage delayed production."
     },
     {
       "word": "relocate",
@@ -173,19 +173,39 @@
       "example": "The branch office will relocate in July."
     },
     {
+      "word": "audit",
+      "meaning": "a formal inspection of records",
+      "example": "The annual audit will begin on Monday."
+    },
+    {
       "word": "delegate",
       "meaning": "to assign a task to another person",
       "example": "Supervisors should delegate routine tasks."
     },
     {
-      "word": "compliance",
-      "meaning": "following rules or standards",
-      "example": "The policy ensures compliance with safety regulations."
+      "word": "inventory",
+      "meaning": "goods held in stock",
+      "example": "The warehouse inventory is checked weekly."
     },
     {
-      "word": "allocate",
-      "meaning": "to assign or set aside resources",
-      "example": "The manager allocated more staff to the urgent project."
+      "word": "mandatory",
+      "meaning": "required",
+      "example": "Attendance at the safety briefing is mandatory."
+    },
+    {
+      "word": "negotiate",
+      "meaning": "to discuss terms and reach an agreement",
+      "example": "The vendor negotiated a lower delivery fee."
+    },
+    {
+      "word": "reimburse",
+      "meaning": "to pay someone back",
+      "example": "The company will reimburse travel expenses."
+    },
+    {
+      "word": "courier",
+      "meaning": "a delivery service or person",
+      "example": "The documents were sent by courier."
     },
     {
       "word": "overdue",
@@ -198,29 +218,9 @@
       "example": "Procurement approved the equipment purchase."
     },
     {
-      "word": "reimburse",
-      "meaning": "to pay someone back",
-      "example": "The company will reimburse travel expenses."
-    },
-    {
-      "word": "tentative",
-      "meaning": "not final or confirmed",
-      "example": "The meeting date is still tentative."
-    },
-    {
-      "word": "negotiate",
-      "meaning": "to discuss terms and reach an agreement",
-      "example": "The vendor negotiated a lower delivery fee."
-    },
-    {
-      "word": "dispatch",
-      "meaning": "to send something to a destination",
-      "example": "The replacement parts were dispatched yesterday."
-    },
-    {
-      "word": "audit",
-      "meaning": "a formal inspection of records",
-      "example": "The annual audit will begin on Monday."
+      "word": "amend",
+      "meaning": "to change or correct a document",
+      "example": "The contract was amended after legal review."
     }
   ]
 }
