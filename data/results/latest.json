@@ -1,7 +1,7 @@
 {
-  "date": "2026-10-24",
+  "date": "2026-10-25",
   "timezone": "Asia/Seoul",
-  "generated_at": "2026-10-24T06:00:00+09:00",
+  "generated_at": "2026-10-25T06:00:00+09:00",
   "summary": {
     "question_count": 8,
     "vocabulary_count": 12,
@@ -29,60 +29,22 @@
     },
     {
       "part": "Part 5",
-      "skill": "prepositions",
-      "prompt": "The accounting team asked employees ___ all travel receipts by Friday.",
+      "skill": "comparatives",
+      "prompt": "This year's customer survey was ___ detailed than last year's version.",
       "choices": {
-        "A": "for",
-        "B": "to",
-        "C": "about",
-        "D": "with"
+        "A": "many",
+        "B": "more",
+        "C": "most",
+        "D": "much"
       },
       "answer": "B",
-      "explanation": "ask + someone + to do something is the correct structure.",
+      "explanation": "Use 'more + adjective + than' for comparative forms of many longer adjectives.",
       "focus": [
-        "receipt",
-        "travel expense",
-        "deadline"
+        "survey",
+        "detailed",
+        "version"
       ],
       "number": 2
-    },
-    {
-      "part": "Part 5",
-      "skill": "articles",
-      "prompt": "The warehouse manager ordered ___ additional scanner for the shipping desk.",
-      "choices": {
-        "A": "a",
-        "B": "an",
-        "C": "the",
-        "D": "no article"
-      },
-      "answer": "B",
-      "explanation": "'Additional' starts with a vowel sound, so 'an' is used before it.",
-      "focus": [
-        "warehouse",
-        "scanner",
-        "shipping desk"
-      ],
-      "number": 3
-    },
-    {
-      "part": "Part 5",
-      "skill": "conjunctions",
-      "prompt": "The seminar was postponed ___ the speaker had a scheduling conflict.",
-      "choices": {
-        "A": "because",
-        "B": "although",
-        "C": "unless",
-        "D": "so that"
-      },
-      "answer": "A",
-      "explanation": "The second clause gives the reason for the postponement.",
-      "focus": [
-        "postpone",
-        "speaker",
-        "scheduling conflict"
-      ],
-      "number": 4
     },
     {
       "part": "Part 5",
@@ -101,45 +63,64 @@
         "supervisor",
         "launch"
       ],
+      "number": 3
+    },
+    {
+      "part": "Part 6",
+      "skill": "sentence insertion",
+      "prompt": "Memo: We have updated the visitor policy. Employees must register guests at least 24 hours before arrival. ___ Security badges will be prepared in advance.",
+      "choices": {
+        "A": "This will allow reception staff to confirm each appointment.",
+        "B": "The cafeteria will be closed during renovations.",
+        "C": "Several employees requested new parking spaces.",
+        "D": "The invoice was sent last week."
+      },
+      "answer": "A",
+      "explanation": "Choice A connects visitor registration with reception and security preparation.",
+      "focus": [
+        "visitor policy",
+        "register",
+        "security badge"
+      ],
+      "number": 4
+    },
+    {
+      "part": "Part 5",
+      "skill": "articles",
+      "prompt": "The warehouse manager ordered ___ additional scanner for the shipping desk.",
+      "choices": {
+        "A": "a",
+        "B": "an",
+        "C": "the",
+        "D": "no article"
+      },
+      "answer": "B",
+      "explanation": "'Additional' starts with a vowel sound, so 'an' is used before it.",
+      "focus": [
+        "warehouse",
+        "scanner",
+        "shipping desk"
+      ],
       "number": 5
     },
     {
       "part": "Part 5",
-      "skill": "word form",
-      "prompt": "The new software update will be installed ___ after the office closes.",
+      "skill": "relative clauses",
+      "prompt": "The technician ___ repaired the printer will return tomorrow to inspect the scanner.",
       "choices": {
-        "A": "automatic",
-        "B": "automate",
-        "C": "automatically",
-        "D": "automation"
+        "A": "whose",
+        "B": "whom",
+        "C": "who",
+        "D": "which"
       },
       "answer": "C",
-      "explanation": "An adverb is needed to modify the verb phrase 'will be installed'.",
+      "explanation": "'Who' is the subject of the relative clause referring to a person.",
       "focus": [
-        "software update",
-        "install",
-        "office closes"
+        "technician",
+        "repair",
+        "inspect"
       ],
       "number": 6
-    },
-    {
-      "part": "Part 5",
-      "skill": "subject-verb agreement",
-      "prompt": "The list of approved vendors ___ updated every quarter.",
-      "choices": {
-        "A": "are",
-        "B": "were",
-        "C": "is",
-        "D": "have been"
-      },
-      "answer": "C",
-      "explanation": "The subject is singular: 'the list', not 'vendors'.",
-      "focus": [
-        "vendor",
-        "approved",
-        "quarter"
-      ],
-      "number": 7
     },
     {
       "part": "Part 7",
@@ -158,15 +139,29 @@
         "auditorium",
         "attendance"
       ],
+      "number": 7
+    },
+    {
+      "part": "Part 5",
+      "skill": "subject-verb agreement",
+      "prompt": "The list of approved vendors ___ updated every quarter.",
+      "choices": {
+        "A": "are",
+        "B": "were",
+        "C": "is",
+        "D": "have been"
+      },
+      "answer": "C",
+      "explanation": "The subject is singular: 'the list', not 'vendors'.",
+      "focus": [
+        "vendor",
+        "approved",
+        "quarter"
+      ],
       "number": 8
     }
   ],
   "vocabulary": [
-    {
-      "word": "mandatory",
-      "meaning": "required",
-      "example": "Attendance at the safety briefing is mandatory."
-    },
     {
       "word": "dispatch",
       "meaning": "to send something to a destination",
@@ -178,24 +173,9 @@
       "example": "The manager allocated more staff to the urgent project."
     },
     {
-      "word": "overdue",
-      "meaning": "late or past the deadline",
-      "example": "Several payments are now overdue."
-    },
-    {
-      "word": "delegate",
-      "meaning": "to assign a task to another person",
-      "example": "Supervisors should delegate routine tasks."
-    },
-    {
-      "word": "relocate",
-      "meaning": "to move to another place",
-      "example": "The branch office will relocate in July."
-    },
-    {
-      "word": "specification",
-      "meaning": "a detailed requirement",
-      "example": "The device meets all technical specifications."
+      "word": "shortage",
+      "meaning": "a lack of something needed",
+      "example": "A supply shortage delayed production."
     },
     {
       "word": "courier",
@@ -203,9 +183,19 @@
       "example": "The documents were sent by courier."
     },
     {
-      "word": "inventory",
-      "meaning": "goods held in stock",
-      "example": "The warehouse inventory is checked weekly."
+      "word": "mandatory",
+      "meaning": "required",
+      "example": "Attendance at the safety briefing is mandatory."
+    },
+    {
+      "word": "reimburse",
+      "meaning": "to pay someone back",
+      "example": "The company will reimburse travel expenses."
+    },
+    {
+      "word": "compliance",
+      "meaning": "following rules or standards",
+      "example": "The policy ensures compliance with safety regulations."
     },
     {
       "word": "procurement",
@@ -213,14 +203,24 @@
       "example": "Procurement approved the equipment purchase."
     },
     {
-      "word": "audit",
-      "meaning": "a formal inspection of records",
-      "example": "The annual audit will begin on Monday."
+      "word": "relocate",
+      "meaning": "to move to another place",
+      "example": "The branch office will relocate in July."
     },
     {
-      "word": "reimburse",
-      "meaning": "to pay someone back",
-      "example": "The company will reimburse travel expenses."
+      "word": "shipment",
+      "meaning": "goods sent for delivery",
+      "example": "The shipment arrived ahead of schedule."
+    },
+    {
+      "word": "specification",
+      "meaning": "a detailed requirement",
+      "example": "The device meets all technical specifications."
+    },
+    {
+      "word": "amend",
+      "meaning": "to change or correct a document",
+      "example": "The contract was amended after legal review."
     }
   ]
 }
