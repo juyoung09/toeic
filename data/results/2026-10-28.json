@@ -1,0 +1,226 @@
+{
+  "date": "2026-10-28",
+  "timezone": "Asia/Seoul",
+  "generated_at": "2026-10-28T06:00:00+09:00",
+  "summary": {
+    "question_count": 8,
+    "vocabulary_count": 12,
+    "target_minutes": 35
+  },
+  "questions": [
+    {
+      "part": "Part 6",
+      "skill": "sentence insertion",
+      "prompt": "Memo: We have updated the visitor policy. Employees must register guests at least 24 hours before arrival. ___ Security badges will be prepared in advance.",
+      "choices": {
+        "A": "This will allow reception staff to confirm each appointment.",
+        "B": "The cafeteria will be closed during renovations.",
+        "C": "Several employees requested new parking spaces.",
+        "D": "The invoice was sent last week."
+      },
+      "answer": "A",
+      "explanation": "Choice A connects visitor registration with reception and security preparation.",
+      "focus": [
+        "visitor policy",
+        "register",
+        "security badge"
+      ],
+      "number": 1
+    },
+    {
+      "part": "Part 5",
+      "skill": "subject-verb agreement",
+      "prompt": "The list of approved vendors ___ updated every quarter.",
+      "choices": {
+        "A": "are",
+        "B": "were",
+        "C": "is",
+        "D": "have been"
+      },
+      "answer": "C",
+      "explanation": "The subject is singular: 'the list', not 'vendors'.",
+      "focus": [
+        "vendor",
+        "approved",
+        "quarter"
+      ],
+      "number": 2
+    },
+    {
+      "part": "Part 5",
+      "skill": "prepositions",
+      "prompt": "The accounting team asked employees ___ all travel receipts by Friday.",
+      "choices": {
+        "A": "for",
+        "B": "to",
+        "C": "about",
+        "D": "with"
+      },
+      "answer": "B",
+      "explanation": "ask + someone + to do something is the correct structure.",
+      "focus": [
+        "receipt",
+        "travel expense",
+        "deadline"
+      ],
+      "number": 3
+    },
+    {
+      "part": "Part 7",
+      "skill": "inference",
+      "prompt": "Notice: The 3 P.M. product demonstration has been moved from Room 204 to the main auditorium because attendance is higher than expected. What can be inferred?",
+      "choices": {
+        "A": "The demonstration was canceled.",
+        "B": "More people plan to attend than originally anticipated.",
+        "C": "Room 204 is being renovated.",
+        "D": "The event will begin earlier."
+      },
+      "answer": "B",
+      "explanation": "The room changed because expected attendance increased.",
+      "focus": [
+        "demonstration",
+        "auditorium",
+        "attendance"
+      ],
+      "number": 4
+    },
+    {
+      "part": "Part 5",
+      "skill": "articles",
+      "prompt": "The warehouse manager ordered ___ additional scanner for the shipping desk.",
+      "choices": {
+        "A": "a",
+        "B": "an",
+        "C": "the",
+        "D": "no article"
+      },
+      "answer": "B",
+      "explanation": "'Additional' starts with a vowel sound, so 'an' is used before it.",
+      "focus": [
+        "warehouse",
+        "scanner",
+        "shipping desk"
+      ],
+      "number": 5
+    },
+    {
+      "part": "Part 5",
+      "skill": "tense",
+      "prompt": "By the time the client arrives, the proposal ___ by the design team.",
+      "choices": {
+        "A": "completed",
+        "B": "will have been completed",
+        "C": "has completed",
+        "D": "completing"
+      },
+      "answer": "B",
+      "explanation": "Future perfect passive fits an action completed before a future time.",
+      "focus": [
+        "proposal",
+        "client",
+        "design team"
+      ],
+      "number": 6
+    },
+    {
+      "part": "Part 5",
+      "skill": "relative clauses",
+      "prompt": "The technician ___ repaired the printer will return tomorrow to inspect the scanner.",
+      "choices": {
+        "A": "whose",
+        "B": "whom",
+        "C": "who",
+        "D": "which"
+      },
+      "answer": "C",
+      "explanation": "'Who' is the subject of the relative clause referring to a person.",
+      "focus": [
+        "technician",
+        "repair",
+        "inspect"
+      ],
+      "number": 7
+    },
+    {
+      "part": "Part 5",
+      "skill": "phrasal verbs",
+      "prompt": "Please ___ the attached invoice before forwarding it to the finance department.",
+      "choices": {
+        "A": "look up",
+        "B": "look over",
+        "C": "look after",
+        "D": "look into"
+      },
+      "answer": "B",
+      "explanation": "'Look over' means to review or inspect something briefly.",
+      "focus": [
+        "invoice",
+        "forward",
+        "finance department"
+      ],
+      "number": 8
+    }
+  ],
+  "vocabulary": [
+    {
+      "word": "delegate",
+      "meaning": "to assign a task to another person",
+      "example": "Supervisors should delegate routine tasks."
+    },
+    {
+      "word": "compliance",
+      "meaning": "following rules or standards",
+      "example": "The policy ensures compliance with safety regulations."
+    },
+    {
+      "word": "audit",
+      "meaning": "a formal inspection of records",
+      "example": "The annual audit will begin on Monday."
+    },
+    {
+      "word": "negotiate",
+      "meaning": "to discuss terms and reach an agreement",
+      "example": "The vendor negotiated a lower delivery fee."
+    },
+    {
+      "word": "shipment",
+      "meaning": "goods sent for delivery",
+      "example": "The shipment arrived ahead of schedule."
+    },
+    {
+      "word": "overdue",
+      "meaning": "late or past the deadline",
+      "example": "Several payments are now overdue."
+    },
+    {
+      "word": "procurement",
+      "meaning": "the process of obtaining supplies",
+      "example": "Procurement approved the equipment purchase."
+    },
+    {
+      "word": "shortage",
+      "meaning": "a lack of something needed",
+      "example": "A supply shortage delayed production."
+    },
+    {
+      "word": "tentative",
+      "meaning": "not final or confirmed",
+      "example": "The meeting date is still tentative."
+    },
+    {
+      "word": "reimburse",
+      "meaning": "to pay someone back",
+      "example": "The company will reimburse travel expenses."
+    },
+    {
+      "word": "inventory",
+      "meaning": "goods held in stock",
+      "example": "The warehouse inventory is checked weekly."
+    },
+    {
+      "word": "allocate",
+      "meaning": "to assign or set aside resources",
+      "example": "The manager allocated more staff to the urgent project."
+    }
+  ]
+}
