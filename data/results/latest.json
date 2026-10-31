@@ -1,7 +1,7 @@
 {
-  "date": "2026-10-31",
+  "date": "2026-11-01",
   "timezone": "Asia/Seoul",
-  "generated_at": "2026-10-31T06:00:00+09:00",
+  "generated_at": "2026-11-01T06:00:00+09:00",
   "summary": {
     "question_count": 8,
     "vocabulary_count": 12,
@@ -10,77 +10,77 @@
   "questions": [
     {
       "part": "Part 5",
-      "skill": "phrasal verbs",
-      "prompt": "Please ___ the attached invoice before forwarding it to the finance department.",
+      "skill": "tense",
+      "prompt": "By the time the client arrives, the proposal ___ by the design team.",
       "choices": {
-        "A": "look up",
-        "B": "look over",
-        "C": "look after",
-        "D": "look into"
+        "A": "completed",
+        "B": "will have been completed",
+        "C": "has completed",
+        "D": "completing"
       },
       "answer": "B",
-      "explanation": "'Look over' means to review or inspect something briefly.",
+      "explanation": "Future perfect passive fits an action completed before a future time.",
       "focus": [
-        "invoice",
-        "forward",
-        "finance department"
+        "proposal",
+        "client",
+        "design team"
       ],
       "number": 1
     },
     {
       "part": "Part 5",
-      "skill": "subject-verb agreement",
-      "prompt": "The list of approved vendors ___ updated every quarter.",
+      "skill": "relative clauses",
+      "prompt": "The technician ___ repaired the printer will return tomorrow to inspect the scanner.",
       "choices": {
-        "A": "are",
-        "B": "were",
-        "C": "is",
-        "D": "have been"
+        "A": "whose",
+        "B": "whom",
+        "C": "who",
+        "D": "which"
       },
       "answer": "C",
-      "explanation": "The subject is singular: 'the list', not 'vendors'.",
+      "explanation": "'Who' is the subject of the relative clause referring to a person.",
       "focus": [
-        "vendor",
-        "approved",
-        "quarter"
+        "technician",
+        "repair",
+        "inspect"
       ],
       "number": 2
     },
     {
       "part": "Part 5",
-      "skill": "prepositions",
-      "prompt": "The accounting team asked employees ___ all travel receipts by Friday.",
+      "skill": "vocabulary",
+      "prompt": "The company will ___ a new training program for all supervisors next month.",
       "choices": {
-        "A": "for",
-        "B": "to",
-        "C": "about",
-        "D": "with"
+        "A": "launch",
+        "B": "depart",
+        "C": "observe",
+        "D": "retain"
       },
-      "answer": "B",
-      "explanation": "ask + someone + to do something is the correct structure.",
+      "answer": "A",
+      "explanation": "'Launch' means to start or introduce a new program or product.",
       "focus": [
-        "receipt",
-        "travel expense",
-        "deadline"
+        "training program",
+        "supervisor",
+        "launch"
       ],
       "number": 3
     },
     {
-      "part": "Part 7",
-      "skill": "inference",
-      "prompt": "Notice: The 3 P.M. product demonstration has been moved from Room 204 to the main auditorium because attendance is higher than expected. What can be inferred?",
+      "part": "Part 5",
+      "skill": "conjunctions",
+      "prompt": "The seminar was postponed ___ the speaker had a scheduling conflict.",
       "choices": {
-        "A": "The demonstration was canceled.",
-        "B": "More people plan to attend than originally anticipated.",
-        "C": "Room 204 is being renovated.",
-        "D": "The event will begin earlier."
+        "A": "because",
+        "B": "although",
+        "C": "unless",
+        "D": "so that"
       },
-      "answer": "B",
-      "explanation": "The room changed because expected attendance increased.",
+      "answer": "A",
+      "explanation": "The second clause gives the reason for the postponement.",
       "focus": [
-        "demonstration",
-        "auditorium",
-        "attendance"
+        "postpone",
+        "speaker",
+        "scheduling conflict"
       ],
       "number": 4
     },
@@ -105,25 +105,6 @@
     },
     {
       "part": "Part 5",
-      "skill": "relative clauses",
-      "prompt": "The technician ___ repaired the printer will return tomorrow to inspect the scanner.",
-      "choices": {
-        "A": "whose",
-        "B": "whom",
-        "C": "who",
-        "D": "which"
-      },
-      "answer": "C",
-      "explanation": "'Who' is the subject of the relative clause referring to a person.",
-      "focus": [
-        "technician",
-        "repair",
-        "inspect"
-      ],
-      "number": 6
-    },
-    {
-      "part": "Part 5",
       "skill": "comparatives",
       "prompt": "This year's customer survey was ___ detailed than last year's version.",
       "choices": {
@@ -138,6 +119,25 @@
         "survey",
         "detailed",
         "version"
+      ],
+      "number": 6
+    },
+    {
+      "part": "Part 5",
+      "skill": "prepositions",
+      "prompt": "The accounting team asked employees ___ all travel receipts by Friday.",
+      "choices": {
+        "A": "for",
+        "B": "to",
+        "C": "about",
+        "D": "with"
+      },
+      "answer": "B",
+      "explanation": "ask + someone + to do something is the correct structure.",
+      "focus": [
+        "receipt",
+        "travel expense",
+        "deadline"
       ],
       "number": 7
     },
@@ -163,51 +163,6 @@
   ],
   "vocabulary": [
     {
-      "word": "dispatch",
-      "meaning": "to send something to a destination",
-      "example": "The replacement parts were dispatched yesterday."
-    },
-    {
-      "word": "relocate",
-      "meaning": "to move to another place",
-      "example": "The branch office will relocate in July."
-    },
-    {
-      "word": "shortage",
-      "meaning": "a lack of something needed",
-      "example": "A supply shortage delayed production."
-    },
-    {
-      "word": "compliance",
-      "meaning": "following rules or standards",
-      "example": "The policy ensures compliance with safety regulations."
-    },
-    {
-      "word": "specification",
-      "meaning": "a detailed requirement",
-      "example": "The device meets all technical specifications."
-    },
-    {
-      "word": "shipment",
-      "meaning": "goods sent for delivery",
-      "example": "The shipment arrived ahead of schedule."
-    },
-    {
-      "word": "reimburse",
-      "meaning": "to pay someone back",
-      "example": "The company will reimburse travel expenses."
-    },
-    {
-      "word": "delegate",
-      "meaning": "to assign a task to another person",
-      "example": "Supervisors should delegate routine tasks."
-    },
-    {
-      "word": "overdue",
-      "meaning": "late or past the deadline",
-      "example": "Several payments are now overdue."
-    },
-    {
       "word": "renewal",
       "meaning": "an extension of a contract or license",
       "example": "The license renewal is due next week."
@@ -218,9 +173,54 @@
       "example": "The printer includes a two-year warranty."
     },
     {
-      "word": "inventory",
-      "meaning": "goods held in stock",
-      "example": "The warehouse inventory is checked weekly."
+      "word": "specification",
+      "meaning": "a detailed requirement",
+      "example": "The device meets all technical specifications."
+    },
+    {
+      "word": "amend",
+      "meaning": "to change or correct a document",
+      "example": "The contract was amended after legal review."
+    },
+    {
+      "word": "tentative",
+      "meaning": "not final or confirmed",
+      "example": "The meeting date is still tentative."
+    },
+    {
+      "word": "delegate",
+      "meaning": "to assign a task to another person",
+      "example": "Supervisors should delegate routine tasks."
+    },
+    {
+      "word": "shipment",
+      "meaning": "goods sent for delivery",
+      "example": "The shipment arrived ahead of schedule."
+    },
+    {
+      "word": "procurement",
+      "meaning": "the process of obtaining supplies",
+      "example": "Procurement approved the equipment purchase."
+    },
+    {
+      "word": "compliance",
+      "meaning": "following rules or standards",
+      "example": "The policy ensures compliance with safety regulations."
+    },
+    {
+      "word": "allocate",
+      "meaning": "to assign or set aside resources",
+      "example": "The manager allocated more staff to the urgent project."
+    },
+    {
+      "word": "mandatory",
+      "meaning": "required",
+      "example": "Attendance at the safety briefing is mandatory."
+    },
+    {
+      "word": "overdue",
+      "meaning": "late or past the deadline",
+      "example": "Several payments are now overdue."
     }
   ]
 }
