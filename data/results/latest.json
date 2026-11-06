@@ -1,51 +1,13 @@
 {
-  "date": "2026-11-05",
+  "date": "2026-11-06",
   "timezone": "Asia/Seoul",
-  "generated_at": "2026-11-05T06:00:00+09:00",
+  "generated_at": "2026-11-06T06:00:00+09:00",
   "summary": {
     "question_count": 8,
     "vocabulary_count": 12,
     "target_minutes": 35
   },
   "questions": [
-    {
-      "part": "Part 5",
-      "skill": "vocabulary",
-      "prompt": "The company will ___ a new training program for all supervisors next month.",
-      "choices": {
-        "A": "launch",
-        "B": "depart",
-        "C": "observe",
-        "D": "retain"
-      },
-      "answer": "A",
-      "explanation": "'Launch' means to start or introduce a new program or product.",
-      "focus": [
-        "training program",
-        "supervisor",
-        "launch"
-      ],
-      "number": 1
-    },
-    {
-      "part": "Part 5",
-      "skill": "tense",
-      "prompt": "By the time the client arrives, the proposal ___ by the design team.",
-      "choices": {
-        "A": "completed",
-        "B": "will have been completed",
-        "C": "has completed",
-        "D": "completing"
-      },
-      "answer": "B",
-      "explanation": "Future perfect passive fits an action completed before a future time.",
-      "focus": [
-        "proposal",
-        "client",
-        "design team"
-      ],
-      "number": 2
-    },
     {
       "part": "Part 7",
       "skill": "inference",
@@ -63,7 +25,7 @@
         "auditorium",
         "attendance"
       ],
-      "number": 3
+      "number": 1
     },
     {
       "part": "Part 5",
@@ -82,7 +44,7 @@
         "forward",
         "finance department"
       ],
-      "number": 4
+      "number": 2
     },
     {
       "part": "Part 5",
@@ -101,7 +63,7 @@
         "scanner",
         "shipping desk"
       ],
-      "number": 5
+      "number": 3
     },
     {
       "part": "Part 5",
@@ -120,26 +82,7 @@
         "repair",
         "inspect"
       ],
-      "number": 6
-    },
-    {
-      "part": "Part 6",
-      "skill": "sentence insertion",
-      "prompt": "Memo: We have updated the visitor policy. Employees must register guests at least 24 hours before arrival. ___ Security badges will be prepared in advance.",
-      "choices": {
-        "A": "This will allow reception staff to confirm each appointment.",
-        "B": "The cafeteria will be closed during renovations.",
-        "C": "Several employees requested new parking spaces.",
-        "D": "The invoice was sent last week."
-      },
-      "answer": "A",
-      "explanation": "Choice A connects visitor registration with reception and security preparation.",
-      "focus": [
-        "visitor policy",
-        "register",
-        "security badge"
-      ],
-      "number": 7
+      "number": 4
     },
     {
       "part": "Part 5",
@@ -158,14 +101,76 @@
         "travel expense",
         "deadline"
       ],
+      "number": 5
+    },
+    {
+      "part": "Part 5",
+      "skill": "tense",
+      "prompt": "By the time the client arrives, the proposal ___ by the design team.",
+      "choices": {
+        "A": "completed",
+        "B": "will have been completed",
+        "C": "has completed",
+        "D": "completing"
+      },
+      "answer": "B",
+      "explanation": "Future perfect passive fits an action completed before a future time.",
+      "focus": [
+        "proposal",
+        "client",
+        "design team"
+      ],
+      "number": 6
+    },
+    {
+      "part": "Part 5",
+      "skill": "word form",
+      "prompt": "The new software update will be installed ___ after the office closes.",
+      "choices": {
+        "A": "automatic",
+        "B": "automate",
+        "C": "automatically",
+        "D": "automation"
+      },
+      "answer": "C",
+      "explanation": "An adverb is needed to modify the verb phrase 'will be installed'.",
+      "focus": [
+        "software update",
+        "install",
+        "office closes"
+      ],
+      "number": 7
+    },
+    {
+      "part": "Part 5",
+      "skill": "vocabulary",
+      "prompt": "The company will ___ a new training program for all supervisors next month.",
+      "choices": {
+        "A": "launch",
+        "B": "depart",
+        "C": "observe",
+        "D": "retain"
+      },
+      "answer": "A",
+      "explanation": "'Launch' means to start or introduce a new program or product.",
+      "focus": [
+        "training program",
+        "supervisor",
+        "launch"
+      ],
       "number": 8
     }
   ],
   "vocabulary": [
     {
-      "word": "allocate",
-      "meaning": "to assign or set aside resources",
-      "example": "The manager allocated more staff to the urgent project."
+      "word": "amend",
+      "meaning": "to change or correct a document",
+      "example": "The contract was amended after legal review."
+    },
+    {
+      "word": "specification",
+      "meaning": "a detailed requirement",
+      "example": "The device meets all technical specifications."
     },
     {
       "word": "negotiate",
@@ -173,19 +178,19 @@
       "example": "The vendor negotiated a lower delivery fee."
     },
     {
-      "word": "inventory",
-      "meaning": "goods held in stock",
-      "example": "The warehouse inventory is checked weekly."
+      "word": "reimburse",
+      "meaning": "to pay someone back",
+      "example": "The company will reimburse travel expenses."
     },
     {
-      "word": "tentative",
-      "meaning": "not final or confirmed",
-      "example": "The meeting date is still tentative."
+      "word": "delegate",
+      "meaning": "to assign a task to another person",
+      "example": "Supervisors should delegate routine tasks."
     },
     {
-      "word": "amend",
-      "meaning": "to change or correct a document",
-      "example": "The contract was amended after legal review."
+      "word": "compliance",
+      "meaning": "following rules or standards",
+      "example": "The policy ensures compliance with safety regulations."
     },
     {
       "word": "renewal",
@@ -193,29 +198,24 @@
       "example": "The license renewal is due next week."
     },
     {
+      "word": "tentative",
+      "meaning": "not final or confirmed",
+      "example": "The meeting date is still tentative."
+    },
+    {
+      "word": "courier",
+      "meaning": "a delivery service or person",
+      "example": "The documents were sent by courier."
+    },
+    {
       "word": "procurement",
       "meaning": "the process of obtaining supplies",
       "example": "Procurement approved the equipment purchase."
     },
     {
-      "word": "dispatch",
-      "meaning": "to send something to a destination",
-      "example": "The replacement parts were dispatched yesterday."
-    },
-    {
-      "word": "reimburse",
-      "meaning": "to pay someone back",
-      "example": "The company will reimburse travel expenses."
-    },
-    {
       "word": "warranty",
       "meaning": "a written guarantee",
       "example": "The printer includes a two-year warranty."
-    },
-    {
-      "word": "relocate",
-      "meaning": "to move to another place",
-      "example": "The branch office will relocate in July."
     },
     {
       "word": "overdue",
