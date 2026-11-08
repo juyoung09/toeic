@@ -1,7 +1,7 @@
 {
-  "date": "2026-11-07",
+  "date": "2026-11-08",
   "timezone": "Asia/Seoul",
-  "generated_at": "2026-11-07T06:00:00+09:00",
+  "generated_at": "2026-11-08T06:00:00+09:00",
   "summary": {
     "question_count": 8,
     "vocabulary_count": 12,
@@ -10,39 +10,39 @@
   "questions": [
     {
       "part": "Part 5",
-      "skill": "relative clauses",
-      "prompt": "The technician ___ repaired the printer will return tomorrow to inspect the scanner.",
+      "skill": "comparatives",
+      "prompt": "This year's customer survey was ___ detailed than last year's version.",
       "choices": {
-        "A": "whose",
-        "B": "whom",
-        "C": "who",
-        "D": "which"
+        "A": "many",
+        "B": "more",
+        "C": "most",
+        "D": "much"
       },
-      "answer": "C",
-      "explanation": "'Who' is the subject of the relative clause referring to a person.",
+      "answer": "B",
+      "explanation": "Use 'more + adjective + than' for comparative forms of many longer adjectives.",
       "focus": [
-        "technician",
-        "repair",
-        "inspect"
+        "survey",
+        "detailed",
+        "version"
       ],
       "number": 1
     },
     {
       "part": "Part 5",
-      "skill": "vocabulary",
-      "prompt": "The company will ___ a new training program for all supervisors next month.",
+      "skill": "tense",
+      "prompt": "By the time the client arrives, the proposal ___ by the design team.",
       "choices": {
-        "A": "launch",
-        "B": "depart",
-        "C": "observe",
-        "D": "retain"
+        "A": "completed",
+        "B": "will have been completed",
+        "C": "has completed",
+        "D": "completing"
       },
-      "answer": "A",
-      "explanation": "'Launch' means to start or introduce a new program or product.",
+      "answer": "B",
+      "explanation": "Future perfect passive fits an action completed before a future time.",
       "focus": [
-        "training program",
-        "supervisor",
-        "launch"
+        "proposal",
+        "client",
+        "design team"
       ],
       "number": 2
     },
@@ -67,41 +67,22 @@
     },
     {
       "part": "Part 5",
-      "skill": "conjunctions",
-      "prompt": "The seminar was postponed ___ the speaker had a scheduling conflict.",
+      "skill": "vocabulary",
+      "prompt": "The company will ___ a new training program for all supervisors next month.",
       "choices": {
-        "A": "because",
-        "B": "although",
-        "C": "unless",
-        "D": "so that"
+        "A": "launch",
+        "B": "depart",
+        "C": "observe",
+        "D": "retain"
       },
       "answer": "A",
-      "explanation": "The second clause gives the reason for the postponement.",
+      "explanation": "'Launch' means to start or introduce a new program or product.",
       "focus": [
-        "postpone",
-        "speaker",
-        "scheduling conflict"
+        "training program",
+        "supervisor",
+        "launch"
       ],
       "number": 4
-    },
-    {
-      "part": "Part 5",
-      "skill": "tense",
-      "prompt": "By the time the client arrives, the proposal ___ by the design team.",
-      "choices": {
-        "A": "completed",
-        "B": "will have been completed",
-        "C": "has completed",
-        "D": "completing"
-      },
-      "answer": "B",
-      "explanation": "Future perfect passive fits an action completed before a future time.",
-      "focus": [
-        "proposal",
-        "client",
-        "design team"
-      ],
-      "number": 5
     },
     {
       "part": "Part 7",
@@ -120,24 +101,43 @@
         "auditorium",
         "attendance"
       ],
+      "number": 5
+    },
+    {
+      "part": "Part 5",
+      "skill": "conjunctions",
+      "prompt": "The seminar was postponed ___ the speaker had a scheduling conflict.",
+      "choices": {
+        "A": "because",
+        "B": "although",
+        "C": "unless",
+        "D": "so that"
+      },
+      "answer": "A",
+      "explanation": "The second clause gives the reason for the postponement.",
+      "focus": [
+        "postpone",
+        "speaker",
+        "scheduling conflict"
+      ],
       "number": 6
     },
     {
       "part": "Part 5",
-      "skill": "phrasal verbs",
-      "prompt": "Please ___ the attached invoice before forwarding it to the finance department.",
+      "skill": "relative clauses",
+      "prompt": "The technician ___ repaired the printer will return tomorrow to inspect the scanner.",
       "choices": {
-        "A": "look up",
-        "B": "look over",
-        "C": "look after",
-        "D": "look into"
+        "A": "whose",
+        "B": "whom",
+        "C": "who",
+        "D": "which"
       },
-      "answer": "B",
-      "explanation": "'Look over' means to review or inspect something briefly.",
+      "answer": "C",
+      "explanation": "'Who' is the subject of the relative clause referring to a person.",
       "focus": [
-        "invoice",
-        "forward",
-        "finance department"
+        "technician",
+        "repair",
+        "inspect"
       ],
       "number": 7
     },
@@ -163,34 +163,19 @@
   ],
   "vocabulary": [
     {
-      "word": "specification",
-      "meaning": "a detailed requirement",
-      "example": "The device meets all technical specifications."
+      "word": "delegate",
+      "meaning": "to assign a task to another person",
+      "example": "Supervisors should delegate routine tasks."
     },
     {
-      "word": "overdue",
-      "meaning": "late or past the deadline",
-      "example": "Several payments are now overdue."
+      "word": "warranty",
+      "meaning": "a written guarantee",
+      "example": "The printer includes a two-year warranty."
     },
     {
-      "word": "compliance",
-      "meaning": "following rules or standards",
-      "example": "The policy ensures compliance with safety regulations."
-    },
-    {
-      "word": "dispatch",
-      "meaning": "to send something to a destination",
-      "example": "The replacement parts were dispatched yesterday."
-    },
-    {
-      "word": "reimburse",
-      "meaning": "to pay someone back",
-      "example": "The company will reimburse travel expenses."
-    },
-    {
-      "word": "allocate",
-      "meaning": "to assign or set aside resources",
-      "example": "The manager allocated more staff to the urgent project."
+      "word": "tentative",
+      "meaning": "not final or confirmed",
+      "example": "The meeting date is still tentative."
     },
     {
       "word": "relocate",
@@ -198,9 +183,24 @@
       "example": "The branch office will relocate in July."
     },
     {
-      "word": "negotiate",
-      "meaning": "to discuss terms and reach an agreement",
-      "example": "The vendor negotiated a lower delivery fee."
+      "word": "overdue",
+      "meaning": "late or past the deadline",
+      "example": "Several payments are now overdue."
+    },
+    {
+      "word": "dispatch",
+      "meaning": "to send something to a destination",
+      "example": "The replacement parts were dispatched yesterday."
+    },
+    {
+      "word": "allocate",
+      "meaning": "to assign or set aside resources",
+      "example": "The manager allocated more staff to the urgent project."
+    },
+    {
+      "word": "specification",
+      "meaning": "a detailed requirement",
+      "example": "The device meets all technical specifications."
     },
     {
       "word": "courier",
@@ -208,19 +208,19 @@
       "example": "The documents were sent by courier."
     },
     {
-      "word": "shortage",
-      "meaning": "a lack of something needed",
-      "example": "A supply shortage delayed production."
+      "word": "negotiate",
+      "meaning": "to discuss terms and reach an agreement",
+      "example": "The vendor negotiated a lower delivery fee."
     },
     {
-      "word": "renewal",
-      "meaning": "an extension of a contract or license",
-      "example": "The license renewal is due next week."
+      "word": "amend",
+      "meaning": "to change or correct a document",
+      "example": "The contract was amended after legal review."
     },
     {
-      "word": "shipment",
-      "meaning": "goods sent for delivery",
-      "example": "The shipment arrived ahead of schedule."
+      "word": "inventory",
+      "meaning": "goods held in stock",
+      "example": "The warehouse inventory is checked weekly."
     }
   ]
 }
