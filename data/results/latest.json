@@ -1,13 +1,32 @@
 {
-  "date": "2026-11-26",
+  "date": "2026-11-27",
   "timezone": "Asia/Seoul",
-  "generated_at": "2026-11-26T06:00:00+09:00",
+  "generated_at": "2026-11-27T06:00:00+09:00",
   "summary": {
     "question_count": 8,
     "vocabulary_count": 12,
     "target_minutes": 35
   },
   "questions": [
+    {
+      "part": "Part 7",
+      "skill": "inference",
+      "prompt": "Notice: The 3 P.M. product demonstration has been moved from Room 204 to the main auditorium because attendance is higher than expected. What can be inferred?",
+      "choices": {
+        "A": "The demonstration was canceled.",
+        "B": "More people plan to attend than originally anticipated.",
+        "C": "Room 204 is being renovated.",
+        "D": "The event will begin earlier."
+      },
+      "answer": "B",
+      "explanation": "The room changed because expected attendance increased.",
+      "focus": [
+        "demonstration",
+        "auditorium",
+        "attendance"
+      ],
+      "number": 1
+    },
     {
       "part": "Part 6",
       "skill": "sentence insertion",
@@ -25,64 +44,26 @@
         "register",
         "security badge"
       ],
-      "number": 1
-    },
-    {
-      "part": "Part 5",
-      "skill": "conjunctions",
-      "prompt": "The seminar was postponed ___ the speaker had a scheduling conflict.",
-      "choices": {
-        "A": "because",
-        "B": "although",
-        "C": "unless",
-        "D": "so that"
-      },
-      "answer": "A",
-      "explanation": "The second clause gives the reason for the postponement.",
-      "focus": [
-        "postpone",
-        "speaker",
-        "scheduling conflict"
-      ],
       "number": 2
     },
     {
       "part": "Part 5",
-      "skill": "phrasal verbs",
-      "prompt": "Please ___ the attached invoice before forwarding it to the finance department.",
+      "skill": "subject-verb agreement",
+      "prompt": "The list of approved vendors ___ updated every quarter.",
       "choices": {
-        "A": "look up",
-        "B": "look over",
-        "C": "look after",
-        "D": "look into"
+        "A": "are",
+        "B": "were",
+        "C": "is",
+        "D": "have been"
       },
-      "answer": "B",
-      "explanation": "'Look over' means to review or inspect something briefly.",
+      "answer": "C",
+      "explanation": "The subject is singular: 'the list', not 'vendors'.",
       "focus": [
-        "invoice",
-        "forward",
-        "finance department"
+        "vendor",
+        "approved",
+        "quarter"
       ],
       "number": 3
-    },
-    {
-      "part": "Part 5",
-      "skill": "articles",
-      "prompt": "The warehouse manager ordered ___ additional scanner for the shipping desk.",
-      "choices": {
-        "A": "a",
-        "B": "an",
-        "C": "the",
-        "D": "no article"
-      },
-      "answer": "B",
-      "explanation": "'Additional' starts with a vowel sound, so 'an' is used before it.",
-      "focus": [
-        "warehouse",
-        "scanner",
-        "shipping desk"
-      ],
-      "number": 4
     },
     {
       "part": "Part 5",
@@ -101,45 +82,45 @@
         "repair",
         "inspect"
       ],
-      "number": 5
-    },
-    {
-      "part": "Part 7",
-      "skill": "inference",
-      "prompt": "Notice: The 3 P.M. product demonstration has been moved from Room 204 to the main auditorium because attendance is higher than expected. What can be inferred?",
-      "choices": {
-        "A": "The demonstration was canceled.",
-        "B": "More people plan to attend than originally anticipated.",
-        "C": "Room 204 is being renovated.",
-        "D": "The event will begin earlier."
-      },
-      "answer": "B",
-      "explanation": "The room changed because expected attendance increased.",
-      "focus": [
-        "demonstration",
-        "auditorium",
-        "attendance"
-      ],
-      "number": 6
+      "number": 4
     },
     {
       "part": "Part 5",
-      "skill": "prepositions",
-      "prompt": "The accounting team asked employees ___ all travel receipts by Friday.",
+      "skill": "phrasal verbs",
+      "prompt": "Please ___ the attached invoice before forwarding it to the finance department.",
       "choices": {
-        "A": "for",
-        "B": "to",
-        "C": "about",
-        "D": "with"
+        "A": "look up",
+        "B": "look over",
+        "C": "look after",
+        "D": "look into"
       },
       "answer": "B",
-      "explanation": "ask + someone + to do something is the correct structure.",
+      "explanation": "'Look over' means to review or inspect something briefly.",
       "focus": [
-        "receipt",
-        "travel expense",
-        "deadline"
+        "invoice",
+        "forward",
+        "finance department"
       ],
-      "number": 7
+      "number": 5
+    },
+    {
+      "part": "Part 5",
+      "skill": "articles",
+      "prompt": "The warehouse manager ordered ___ additional scanner for the shipping desk.",
+      "choices": {
+        "A": "a",
+        "B": "an",
+        "C": "the",
+        "D": "no article"
+      },
+      "answer": "B",
+      "explanation": "'Additional' starts with a vowel sound, so 'an' is used before it.",
+      "focus": [
+        "warehouse",
+        "scanner",
+        "shipping desk"
+      ],
+      "number": 6
     },
     {
       "part": "Part 5",
@@ -158,24 +139,43 @@
         "client",
         "design team"
       ],
+      "number": 7
+    },
+    {
+      "part": "Part 5",
+      "skill": "conjunctions",
+      "prompt": "The seminar was postponed ___ the speaker had a scheduling conflict.",
+      "choices": {
+        "A": "because",
+        "B": "although",
+        "C": "unless",
+        "D": "so that"
+      },
+      "answer": "A",
+      "explanation": "The second clause gives the reason for the postponement.",
+      "focus": [
+        "postpone",
+        "speaker",
+        "scheduling conflict"
+      ],
       "number": 8
     }
   ],
   "vocabulary": [
     {
-      "word": "mandatory",
-      "meaning": "required",
-      "example": "Attendance at the safety briefing is mandatory."
+      "word": "relocate",
+      "meaning": "to move to another place",
+      "example": "The branch office will relocate in July."
     },
     {
-      "word": "shipment",
-      "meaning": "goods sent for delivery",
-      "example": "The shipment arrived ahead of schedule."
+      "word": "inventory",
+      "meaning": "goods held in stock",
+      "example": "The warehouse inventory is checked weekly."
     },
     {
-      "word": "shortage",
-      "meaning": "a lack of something needed",
-      "example": "A supply shortage delayed production."
+      "word": "dispatch",
+      "meaning": "to send something to a destination",
+      "example": "The replacement parts were dispatched yesterday."
     },
     {
       "word": "tentative",
@@ -188,14 +188,9 @@
       "example": "The vendor negotiated a lower delivery fee."
     },
     {
-      "word": "amend",
-      "meaning": "to change or correct a document",
-      "example": "The contract was amended after legal review."
-    },
-    {
-      "word": "relocate",
-      "meaning": "to move to another place",
-      "example": "The branch office will relocate in July."
+      "word": "delegate",
+      "meaning": "to assign a task to another person",
+      "example": "Supervisors should delegate routine tasks."
     },
     {
       "word": "allocate",
@@ -203,19 +198,24 @@
       "example": "The manager allocated more staff to the urgent project."
     },
     {
-      "word": "delegate",
-      "meaning": "to assign a task to another person",
-      "example": "Supervisors should delegate routine tasks."
+      "word": "shortage",
+      "meaning": "a lack of something needed",
+      "example": "A supply shortage delayed production."
     },
     {
-      "word": "compliance",
-      "meaning": "following rules or standards",
-      "example": "The policy ensures compliance with safety regulations."
+      "word": "overdue",
+      "meaning": "late or past the deadline",
+      "example": "Several payments are now overdue."
     },
     {
-      "word": "renewal",
-      "meaning": "an extension of a contract or license",
-      "example": "The license renewal is due next week."
+      "word": "warranty",
+      "meaning": "a written guarantee",
+      "example": "The printer includes a two-year warranty."
+    },
+    {
+      "word": "mandatory",
+      "meaning": "required",
+      "example": "Attendance at the safety briefing is mandatory."
     },
     {
       "word": "reimburse",
